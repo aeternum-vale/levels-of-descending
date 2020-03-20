@@ -5,6 +5,8 @@ using UnityEngine;
 public class Player : MonoBehaviour {
 
 	[SerializeField] private PlayerCamera playerCamera;
+	[SerializeField] public Inventory inventory;
+
 
 	private Camera playerCameraComponent;
 
@@ -27,9 +29,12 @@ public class Player : MonoBehaviour {
 	}
 
 	void Update () {
-		updateMouse ();
-		updateMovement ();
-		updateSquatting ();
+		if (!inventory.IsInventoryModeOn)
+		{
+			updateMouse();
+			updateMovement();
+			updateSquatting();
+		}
 		updateInventoryButton ();
 	}
 

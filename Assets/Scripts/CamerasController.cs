@@ -14,38 +14,39 @@ public class CamerasController : MonoBehaviour {
 	private AudioListener inventoryCameraALComponent;
 
 	void Awake () {
-		playerCameraComponent = playerCamera.GetComponent<Camera> ();
-		inventoryCameraComponent = inventoryCamera.GetComponent<Camera> ();
+		playerCameraComponent = playerCamera.GetComponent<Camera>();
+		inventoryCameraComponent = inventoryCamera.GetComponent<Camera>();
 
 		playerCameraALComponent = playerCamera.GetComponent<AudioListener> ();
 		inventoryCameraALComponent = inventoryCamera.GetComponent<AudioListener> ();
 	}
 
-	public void setActive (ECameraID cameraID) {
-		disableAllCameras ();
+	public void Activate (ECameraID cameraID) {
+		DisableAllCameras();
 
 		switch (cameraID) {
 			case ECameraID.INVENTORY:
-				inventoryCamera.tag = "MainCamera";
 				inventoryCamera.SetActive (true);
 				inventoryCameraALComponent.enabled = true;
 				break;
 			case ECameraID.PLAYER:
-				playerCamera.tag = "MainCamera";
-				playerCamera.SetActive (false);
-				playerCameraALComponent.enabled = false;
+				playerCameraComponent.targetTexture = null;
+				playerCamera.SetActive (true);
+				playerCameraALComponent.enabled = true;
 				break;
-
 		}
 	}
 
-	protected void disableAllCameras () {
-		playerCamera.tag = "Untagged";
-		inventoryCamera.tag = "Untagged";
+	protected void DisableAllCameras () {
 		playerCamera.SetActive (false);
 		inventoryCamera.SetActive (false);
 		inventoryCameraALComponent.enabled = false;
 		playerCameraALComponent.enabled = false;
+	}
 
+	public void SetInventoryCameraBackroundTexture() {
+		playerCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 0);
+		playerCameraComponent.Render();
+		inventoryCamera.GetComponent<InventoryCamera>().BackgroundTexture = playerCameraComponent.targetTexture;
 	}
 }

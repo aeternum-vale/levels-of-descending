@@ -9,10 +9,10 @@ public class AnimatedSelectableObject : SelectableObject {
 	}
 
 	public override void onClick () {
-		startAnimation ();
+		StartAnimation ();
 	}
 
-	private void startAnimation () {
+	private void StartAnimation () {
 		anim.SetTrigger("Active");
 	}
 }

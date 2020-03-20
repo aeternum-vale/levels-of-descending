@@ -4,19 +4,13 @@ using UnityEngine;
 public class Inventory : MonoBehaviour {
 
     [SerializeField] private CamerasController camerasController;
-
-    private HashSet<EInventoryObjectIDs> objects = new HashSet<EInventoryObjectIDs> ();
-    public HashSet<EInventoryObjectIDs> Objects { get { return this.objects; } }
-
-    private bool isInventoryModeOn;
-    public bool IsInventoryModeOn { get { return isInventoryModeOn; } }
-
-    private Dictionary<EInventoryObjectIDs, GameObject> instances  = new Dictionary<EInventoryObjectIDs, GameObject>();
+    public HashSet<EInventoryObjectIDs> Objects { get; } = new HashSet<EInventoryObjectIDs>();
+    public bool IsInventoryModeOn { get; private set; }
+    private readonly Dictionary<EInventoryObjectIDs, GameObject> instances  = new Dictionary<EInventoryObjectIDs, GameObject>();
 
     void Awake () {
-
-        Messenger<EInventoryObjectIDs>.AddListener (Events.ADD_OBJECT_TO_INVENTORY, onObjectAdding);
-        Messenger.AddListener (Events.INVENTORY_BUTTON_PRESSED, onInventoryButtonPressed);
+        Messenger<EInventoryObjectIDs>.AddListener (Events.ADD_OBJECT_TO_INVENTORY, OnObjectAdding);
+        Messenger.AddListener (Events.INVENTORY_BUTTON_PRESSED, OnInventoryButtonPressed);
 
         foreach (KeyValuePair<EInventoryObjectIDs, string> item in GameConstants.InventoryInstanceNameMap)
         {
@@ -25,16 +19,20 @@ public class Inventory : MonoBehaviour {
         }
     }
 
-    protected void onObjectAdding (EInventoryObjectIDs id) {
-        objects.Add (id);
+    protected void OnObjectAdding (EInventoryObjectIDs id) {
+        Objects.Add (id);
         Messenger.Broadcast (Events.INVENTORY_UPDATED);
     }
 
-    protected void onInventoryButtonPressed () {
-        if (!isInventoryModeOn) {
-            isInventoryModeOn = true;
-
-            camerasController.setActive(ECameraID.INVENTORY);
+    protected void OnInventoryButtonPressed () {
+        if (!IsInventoryModeOn) {
+            IsInventoryModeOn = true;
+            camerasController.SetInventoryCameraBackroundTexture();
+            camerasController.Activate(ECameraID.INVENTORY);
+        } else
+        {
+            IsInventoryModeOn = false;
+            camerasController.Activate(ECameraID.PLAYER);
         }
     }
 

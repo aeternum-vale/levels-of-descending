@@ -3,11 +3,8 @@ using System.Collections;
 
 public class PlayerCamera : MonoBehaviour {
 
-	[SerializeField] private GameObject inventoryCamera;
 	[SerializeField] private Material mat;
 	[SerializeField] private Inventory inventory;
-
-	private Camera inventoryCameraComponent;
 
 	private Camera cameraComponent;
 	private GameObject player;
@@ -27,18 +24,19 @@ public class PlayerCamera : MonoBehaviour {
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
 
-		inventoryCameraComponent = inventoryCamera.GetComponent<Camera> ();
-		inventoryCameraComponent.targetTexture = new RenderTexture (Screen.width, Screen.height, 24);
+		//inventoryCameraComponent.targetTexture = new RenderTexture (Screen.width, Screen.height, 24);
 	}
 	public float MouseSensitivity {
 		get { return mouseSensitivity; }
 	}
 
 	void Update () {
-		rotationX -= Input.GetAxis ("Mouse Y") * mouseSensitivity;
-		rotationX = Mathf.Clamp (rotationX, mouseVerticalMin, mouseVerticalMax);
-		transform.localEulerAngles = new Vector3 (rotationX, 0, 0);
-
+		if (!inventory.IsInventoryModeOn)
+		{
+			rotationX -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+			rotationX = Mathf.Clamp(rotationX, mouseVerticalMin, mouseVerticalMax);
+			transform.localEulerAngles = new Vector3(rotationX, 0, 0);
+		}
 	}
 
 	void OnGUI () {
@@ -50,23 +48,24 @@ public class PlayerCamera : MonoBehaviour {
 		}
 	}
 
-	void OnRenderImage (RenderTexture src, RenderTexture dest) {
-		if (inventory.IsInventoryModeOn) {
-			Graphics.Blit (src, dest, mat);
-
-			if (!currentInventoryObjectTexture) {
-				inventoryCameraComponent.Render ();
-				currentInventoryObjectTexture =  new Texture2D (Screen.width, Screen.height, TextureFormat.ARGB32, false);
-				Graphics.CopyTexture(inventoryCameraComponent.targetTexture, currentInventoryObjectTexture);
-			}
+	//void OnRenderImage (RenderTexture src, RenderTexture dest) {
+	//	if (inventory.IsInventoryModeOn) {
+	//		Graphics.Blit (src, dest, mat);
+	//		/*
+	//		if (!currentInventoryObjectTexture) {
+	//			inventoryCameraComponent.Render ();
+	//			currentInventoryObjectTexture =  new Texture2D (Screen.width, Screen.height, TextureFormat.ARGB32, false);
+	//			Graphics.CopyTexture(inventoryCameraComponent.targetTexture, currentInventoryObjectTexture);
+	//		}
 			
-			GL.PushMatrix ();
-			GL.LoadPixelMatrix ();
-			Graphics.DrawTexture (new Rect (0, 0, Screen.width, Screen.height), currentInventoryObjectTexture, null);
-			GL.PopMatrix ();
+	//		GL.PushMatrix ();
+	//		GL.LoadPixelMatrix ();
+	//		Graphics.DrawTexture (new Rect (0, 0, Screen.width, Screen.height), currentInventoryObjectTexture, null);
+	//		GL.PopMatrix ();
+	//		*/
 
-		} else {
-			Graphics.Blit (src, dest);
-		}
-	}
+	//	} else {
+	//		Graphics.Blit (src, dest);
+	//	}
+	//}
 }
