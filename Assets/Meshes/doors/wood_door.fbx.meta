@@ -1,0 +1,184 @@
+fileFormatVersion: 2
+guid: c485266c3517eac43a1d7de2960392fb
+timeCreated: 1582459094
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: Cylinder.000
+    100002: Cylinder.001
+    100004: Cylinder.002
+    100006: Cylinder.003
+    100008: Cylinder.004
+    100010: Cylinder.005
+    100012: door
+    100014: door.001
+    100016: door.002
+    100018: door_frame_hor
+    100020: door_frame_hor.001
+    100022: door_frame_vert_1
+    100024: door_frame_vert_1.001
+    100026: door_frame_vert_2
+    100028: door_frame_vert_2.001
+    100030: handler
+    100032: handler.001
+    100034: handler_base
+    100036: handler_base.001
+    100038: //RootNode
+    100040: doorBase
+    100042: doorhandle
+    400000: Cylinder.000
+    400002: Cylinder.001
+    400004: Cylinder.002
+    400006: Cylinder.003
+    400008: Cylinder.004
+    400010: Cylinder.005
+    400012: door
+    400014: door.001
+    400016: door.002
+    400018: door_frame_hor
+    400020: door_frame_hor.001
+    400022: door_frame_vert_1
+    400024: door_frame_vert_1.001
+    400026: door_frame_vert_2
+    400028: door_frame_vert_2.001
+    400030: handler
+    400032: handler.001
+    400034: handler_base
+    400036: handler_base.001
+    400038: //RootNode
+    400040: doorBase
+    400042: doorhandle
+    2300000: Cylinder.000
+    2300002: Cylinder.001
+    2300004: Cylinder.002
+    2300006: Cylinder.003
+    2300008: Cylinder.004
+    2300010: Cylinder.005
+    2300012: door
+    2300014: door.001
+    2300016: door.002
+    2300018: door_frame_hor
+    2300020: door_frame_hor.001
+    2300022: door_frame_vert_1
+    2300024: door_frame_vert_1.001
+    2300026: door_frame_vert_2
+    2300028: door_frame_vert_2.001
+    2300030: handler
+    2300032: handler.001
+    2300034: handler_base
+    2300036: handler_base.001
+    2300038: //RootNode
+    2300040: doorBase
+    2300042: doorhandle
+    3300000: Cylinder.000
+    3300002: Cylinder.001
+    3300004: Cylinder.002
+    3300006: Cylinder.003
+    3300008: Cylinder.004
+    3300010: Cylinder.005
+    3300012: door
+    3300014: door.001
+    3300016: door.002
+    3300018: door_frame_hor
+    3300020: door_frame_hor.001
+    3300022: door_frame_vert_1
+    3300024: door_frame_vert_1.001
+    3300026: door_frame_vert_2
+    3300028: door_frame_vert_2.001
+    3300030: handler
+    3300032: handler.001
+    3300034: handler_base
+    3300036: handler_base.001
+    3300038: //RootNode
+    3300040: doorBase
+    3300042: doorhandle
+    4300000: door.002
+    4300002: handler_base.001
+    4300004: handler.001
+    4300006: door_frame_vert_2.001
+    4300008: door_frame_hor.001
+    4300010: door.001
+    4300012: Cylinder.005
+    4300014: Cylinder.004
+    4300016: Cylinder.003
+    4300018: Cylinder.001
+    4300020: Cylinder.002
+    4300022: Cylinder.000
+    4300024: door
+    4300026: door_frame_hor
+    4300028: door_frame_vert_1
+    4300030: handler
+    4300032: handler_base
+    4300034: doorBase
+    4300036: doorhandle
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
