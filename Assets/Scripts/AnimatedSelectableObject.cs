@@ -5,7 +5,7 @@ public class AnimatedSelectableObject : SelectableObject {
     private Animator anim;
 
 	void Start() {
-		anim = (Animator) GetComponent<Animator>();
+		anim = GetComponent<Animator>();
 	}
 
 	public override void onClick () {

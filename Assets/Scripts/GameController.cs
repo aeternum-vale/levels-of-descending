@@ -118,13 +118,13 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void onInventoryUpdated() {
-		updateEnvironment();
+		UpdateEnvironment();
 	}
 
-	protected void updateEnvironment() {
-		if (inventory.Objects.Contains(EInventoryObjectIDs.POSTBOX_KEY)) {
+	protected void UpdateEnvironment() {
+		if (inventory.availableObjectsDict[EInventoryObjectID.POSTBOX_KEY]) {
 			for (int i = 0; i < floors.Length; i++) {
-				floors[i].removeObject(GameConstants.InventoryInstanceNameMap[EInventoryObjectIDs.POSTBOX_KEY]);
+				floors[i].removeObject(GameConstants.InventoryInstanceNameMap[EInventoryObjectID.POSTBOX_KEY]);
 			}
 		}
 	}

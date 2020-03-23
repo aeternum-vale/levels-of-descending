@@ -7,33 +7,21 @@ public class PlayerCamera : MonoBehaviour {
 	[SerializeField] private Inventory inventory;
 
 	private Camera cameraComponent;
-	private GameObject player;
-
-	private float mouseSensitivity = 1;
-	private float mouseVerticalMin = -80;
-	private float mouseVerticalMax = 70;
+	public float MouseSensitivity { get; } = 1;
+	private readonly float mouseVerticalMin = -80;
+	private readonly float mouseVerticalMax = 70;
 	private float rotationX;
-
-	private RenderTexture rt;
-
-	private Texture2D currentInventoryObjectTexture;
-	private RenderTexture nextInventoryObjectTexture;
 
 	void Start () {
 		cameraComponent = GetComponent<Camera> ();
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
-
-		//inventoryCameraComponent.targetTexture = new RenderTexture (Screen.width, Screen.height, 24);
-	}
-	public float MouseSensitivity {
-		get { return mouseSensitivity; }
 	}
 
 	void Update () {
 		if (!inventory.IsInventoryModeOn)
 		{
-			rotationX -= Input.GetAxis("Mouse Y") * mouseSensitivity;
+			rotationX -= Input.GetAxis("Mouse Y") * MouseSensitivity;
 			rotationX = Mathf.Clamp(rotationX, mouseVerticalMin, mouseVerticalMax);
 			transform.localEulerAngles = new Vector3(rotationX, 0, 0);
 		}
@@ -45,27 +33,21 @@ public class PlayerCamera : MonoBehaviour {
 			float posX = cameraComponent.pixelWidth / 2 - size / 2;
 			float posY = cameraComponent.pixelHeight / 2 - size;
 			GUI.Label (new Rect (posX, posY, 80, 80), "◦");
+		} else
+		{
+			inventory.DrawInventory();
 		}
 	}
 
-	//void OnRenderImage (RenderTexture src, RenderTexture dest) {
-	//	if (inventory.IsInventoryModeOn) {
-	//		Graphics.Blit (src, dest, mat);
-	//		/*
-	//		if (!currentInventoryObjectTexture) {
-	//			inventoryCameraComponent.Render ();
-	//			currentInventoryObjectTexture =  new Texture2D (Screen.width, Screen.height, TextureFormat.ARGB32, false);
-	//			Graphics.CopyTexture(inventoryCameraComponent.targetTexture, currentInventoryObjectTexture);
-	//		}
-			
-	//		GL.PushMatrix ();
-	//		GL.LoadPixelMatrix ();
-	//		Graphics.DrawTexture (new Rect (0, 0, Screen.width, Screen.height), currentInventoryObjectTexture, null);
-	//		GL.PopMatrix ();
-	//		*/
-
-	//	} else {
-	//		Graphics.Blit (src, dest);
-	//	}
-	//}
+	void OnRenderImage(RenderTexture src, RenderTexture dest)
+	{
+		if (inventory.IsInventoryModeOn)
+		{
+			Graphics.Blit(src, dest, mat);
+		}
+		else
+		{
+			Graphics.Blit(src, dest);
+		}
+	}
 }
