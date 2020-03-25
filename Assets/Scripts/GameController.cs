@@ -122,7 +122,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	protected void UpdateEnvironment() {
-		if (inventory.availableObjectsDict[EInventoryObjectID.POSTBOX_KEY]) {
+		if (inventory.AvailableObjectsDict[EInventoryObjectID.POSTBOX_KEY]) {
 			for (int i = 0; i < floors.Length; i++) {
 				floors[i].removeObject(GameConstants.InventoryInstanceNameMap[EInventoryObjectID.POSTBOX_KEY]);
 			}
