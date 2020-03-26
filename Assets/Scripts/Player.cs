@@ -17,7 +17,7 @@ public class Player : MonoBehaviour
 
     float startCameraY;
     readonly float squattingAmount = 2f;
-    readonly float squattingSpeed = 0.2f;
+    readonly float squattingSpeed = 6f;
 
     SelectableObject selectedObject;
 
@@ -58,8 +58,6 @@ public class Player : MonoBehaviour
             }
         }
     }
-
-
     void UpdateMouse()
     {
         float delta = Input.GetAxis("Mouse X") * mouseSensitivity;
@@ -110,11 +108,11 @@ public class Player : MonoBehaviour
     {
         if (Input.GetButton("Squat"))
         {
-            this.playerCamera.transform.localPosition += Vector3.down * this.squattingSpeed;
+            this.playerCamera.transform.localPosition += Vector3.down * this.squattingSpeed * Time.deltaTime;
         }
         else
         {
-            this.playerCamera.transform.localPosition += Vector3.up * this.squattingSpeed;
+            this.playerCamera.transform.localPosition += Vector3.up * this.squattingSpeed * Time.deltaTime;
         }
 
         float cameraY = Mathf.Clamp(this.playerCamera.transform.localPosition.y, this.startCameraY - this.squattingAmount, this.startCameraY);
