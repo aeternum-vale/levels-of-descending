@@ -19,7 +19,7 @@ public class SelectableObject : MonoBehaviour {
 		ShowNormal();
 	}
 
-	public virtual void OnClick(EInventoryObjectID? selectedInventoryObjectId = null) {
+	public virtual void OnClick(EInventoryItemID? selectedInventoryItemId = null) {
 	}
 
 	public virtual void ShowSelected() {

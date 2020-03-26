@@ -15,15 +15,15 @@ public class Inventory : MonoBehaviour
     Texture2D backgroundTexture;
     RenderTexture inventoryCameraTexture;
 
-    public Dictionary<EInventoryObjectID, bool> AvailableObjectsDict { get; } = new Dictionary<EInventoryObjectID, bool>() {
-        { EInventoryObjectID.POSTBOX_KEY, true },
-        { EInventoryObjectID.SCREWDRIVER, true }
+    public Dictionary<EInventoryItemID, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemID, bool>() {
+        { EInventoryItemID.POSTBOX_KEY, true },
+        { EInventoryItemID.SCREWDRIVER, true }
     };
     public bool IsInventoryModeOn { get; private set; }
 
-    readonly Dictionary<EInventoryObjectID, GameObject> instances = new Dictionary<EInventoryObjectID, GameObject>();
-    int currentObjectIndex;
-    List<EInventoryObjectID> listOfAvailableObjects;
+    readonly Dictionary<EInventoryItemID, GameObject> instances = new Dictionary<EInventoryItemID, GameObject>();
+    int currentItemIndex;
+    List<EInventoryItemID> listOfAvailableItems;
     float currentTransitionOpacity = 1f;
     bool isTransition;
     bool isTransitionOut = true;
@@ -34,12 +34,12 @@ public class Inventory : MonoBehaviour
     {
         get
         {
-            UpdateListOfAvailableObjects();
-            return (listOfAvailableObjects.Count != 0);
+            UpdateListOfAvailableItems();
+            return (listOfAvailableItems.Count != 0);
         }
     }
 
-    public EInventoryObjectID CurrentObjectID => listOfAvailableObjects[currentObjectIndex];
+    public EInventoryItemID CurrentItemID => listOfAvailableItems[currentItemIndex];
 
     void Awake()
     {
@@ -49,10 +49,10 @@ public class Inventory : MonoBehaviour
 
         backgroundImageComponent = transform.Find("Canvas").Find("Image").gameObject.GetComponent<Image>();
 
-        Messenger<EInventoryObjectID>.AddListener(Events.ADD_OBJECT_TO_INVENTORY, OnObjectAdding);
-        Messenger.AddListener(Events.INVENTORY_BUTTON_PRESSED, OnInventorySwitchToNextObject);
+        Messenger<EInventoryItemID>.AddListener(Events.ADD_ITEM_TO_INVENTORY, OnItemAdding);
+        Messenger.AddListener(Events.INVENTORY_BUTTON_PRESSED, OnInventorySwitchToNextItem);
 
-        foreach (KeyValuePair<EInventoryObjectID, string> item in GameConstants.InventoryInstanceNameMap)
+        foreach (KeyValuePair<EInventoryItemID, string> item in GameConstants.InventoryInstanceNameMap)
         {
             GameObject go = transform.Find(item.Value).gameObject;
             go.GetComponent<Renderer>().enabled = false;
@@ -60,16 +60,16 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private void UpdateListOfAvailableObjects()
+    private void UpdateListOfAvailableItems()
     {
-        listOfAvailableObjects = new List<EInventoryObjectID>(AvailableObjectsDict.Keys.Where(key => AvailableObjectsDict[key]));
+        listOfAvailableItems = new List<EInventoryItemID>(AvailableItemsDict.Keys.Where(key => AvailableItemsDict[key]));
     }
 
-    void OnObjectAdding(EInventoryObjectID id)
+    void OnItemAdding(EInventoryItemID id)
     {
         if (IsInventoryModeOn) return;
 
-        AvailableObjectsDict.Add(id, true);
+        AvailableItemsDict.Add(id, true);
         Messenger.Broadcast(Events.INVENTORY_UPDATED);
     }
 
@@ -86,7 +86,7 @@ public class Inventory : MonoBehaviour
 
     void StopInstanceAnimation(GameObject instance)
     {
-        instance.GetComponent<Animator>().Play("inventoryObjectRotation", -1, 0f);
+        instance.GetComponent<Animator>().Play("inventoryItemRotation", -1, 0f);
         instance.GetComponent<Animator>().speed = 0f;
 
     }
@@ -110,7 +110,7 @@ public class Inventory : MonoBehaviour
         if (CanActivateInventoryMode)
         {
             IsInventoryModeOn = true;
-            currentObjectIndex = 0;
+            currentItemIndex = 0;
 
             this.backgroundTexture = backgroundTexture;
             backgroundImageComponent.sprite = Sprite.Create(backgroundTexture, new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
@@ -119,14 +119,14 @@ public class Inventory : MonoBehaviour
             inventoryCamera.DrawInventory = DrawInventory;
 
             HideAllInstances();
-            GameObject currentInstance = instances[listOfAvailableObjects[currentObjectIndex]];
+            GameObject currentInstance = instances[listOfAvailableItems[currentItemIndex]];
             ShowInstance(currentInstance);
             StartInstanceAnimation(currentInstance);
             inventoryCameraGameObject.SetActive(true);
 
         }
         else
-            throw new Exception("cannot activate inventory mode: there is no objects in inventory");
+            throw new Exception("cannot activate inventory mode: there is no items in inventory");
     }
 
     public void DeactivateInventoryMode()
@@ -136,7 +136,7 @@ public class Inventory : MonoBehaviour
         inventoryCameraGameObject.SetActive(false);
     }
 
-    IEnumerator SwitchToNextObject()
+    IEnumerator SwitchToNextItem()
     {
         isTransition = true;
 
@@ -148,10 +148,10 @@ public class Inventory : MonoBehaviour
         HideAllInstances();
 
         isTransitionOut = true;
-        yield return StartCoroutine(FadeCurrentObject(true));
+        yield return StartCoroutine(FadeCurrentItem(true));
 
-        currentObjectIndex = (currentObjectIndex + 1) % listOfAvailableObjects.Count;
-        GameObject currentInstance = instances[listOfAvailableObjects[currentObjectIndex]];
+        currentItemIndex = (currentItemIndex + 1) % listOfAvailableItems.Count;
+        GameObject currentInstance = instances[listOfAvailableItems[currentItemIndex]];
 
         ShowInstance(currentInstance);
 
@@ -161,7 +161,7 @@ public class Inventory : MonoBehaviour
         inventoryCameraComponent.targetTexture = null;
 
         isTransitionOut = false;
-        yield return StartCoroutine(FadeCurrentObject(false));
+        yield return StartCoroutine(FadeCurrentItem(false));
 
         isTransition = false;
         inventoryCameraComponent.targetTexture = null;
@@ -169,15 +169,15 @@ public class Inventory : MonoBehaviour
         StartInstanceAnimation(currentInstance);
     }
 
-    public void OnInventorySwitchToNextObject()
+    public void OnInventorySwitchToNextItem()
     {
         if (IsInventoryModeOn && !isTransition)
         {
-            StartCoroutine(SwitchToNextObject());
+            StartCoroutine(SwitchToNextItem());
         }
     }
 
-    IEnumerator FadeCurrentObject(bool isOut)
+    IEnumerator FadeCurrentItem(bool isOut)
     {
         for (currentTransitionOpacity = (isOut ? 1f : 0f);
             currentTransitionOpacity >= 0 && currentTransitionOpacity <= 1f;

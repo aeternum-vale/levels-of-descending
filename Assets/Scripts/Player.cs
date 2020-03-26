@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
             }
             else
             {
-                inventory.OnInventorySwitchToNextObject();
+                inventory.OnInventorySwitchToNextItem();
             }
         }
     }
@@ -90,17 +90,17 @@ public class Player : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            EInventoryObjectID? selectedInventoryObject = null;
+            EInventoryItemID? selectedInventoryItem = null;
 
             if (inventory.IsInventoryModeOn)
             {
-                selectedInventoryObject = inventory.CurrentObjectID;
+                selectedInventoryItem = inventory.CurrentItemID;
                 DeactivateInventoryMode();
             }
 
             if (this.selectedObject)
             {
-                this.selectedObject.OnClick(selectedInventoryObject);
+                this.selectedObject.OnClick(selectedInventoryItem);
             }
         }
 

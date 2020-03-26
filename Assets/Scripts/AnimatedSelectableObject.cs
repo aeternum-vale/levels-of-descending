@@ -10,9 +10,9 @@ public class AnimatedSelectableObject : SelectableObject
         anim = GetComponent<Animator>();
     }
 
-    public override void OnClick(EInventoryObjectID? selectedInventoryObjectId = null)
+    public override void OnClick(EInventoryItemID? selectedInventoryItemId = null)
     {
-        base.OnClick(selectedInventoryObjectId);
+        base.OnClick(selectedInventoryItemId);
         StartAnimation();
     }
 

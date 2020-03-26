@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-public enum EInventoryObjectID {
+public enum EInventoryItemID {
 	POSTBOX_KEY,
 	SCREWDRIVER
 }
@@ -11,7 +11,7 @@ public enum ECameraID {
 }
 
 public class Events {
-	public static string ADD_OBJECT_TO_INVENTORY = "ADD_OBJECT_TO_INVENTORY";
+	public static string ADD_ITEM_TO_INVENTORY = "ADD_OBJECT_TO_INVENTORY";
 	public static string INVENTORY_UPDATED = "INVENTORY_UPDATED";
 	public static string INVENTORY_BUTTON_PRESSED = "INVENTORY_BUTTON_PRESSED";
 	public static string INVENTORY_MODE_ACTIVATED = "INVENTORY_CURRENT_OBJECT_CHANGED";
@@ -19,9 +19,9 @@ public class Events {
 
 
 public class GameConstants {
-	public static Dictionary<EInventoryObjectID, string> InventoryInstanceNameMap =
-		new Dictionary<EInventoryObjectID, string> () { 
-			{ EInventoryObjectID.POSTBOX_KEY, "key" }, 
-			{ EInventoryObjectID.SCREWDRIVER, "screwdriver" },
+	public static Dictionary<EInventoryItemID, string> InventoryInstanceNameMap =
+		new Dictionary<EInventoryItemID, string> () { 
+			{ EInventoryItemID.POSTBOX_KEY, "key" }, 
+			{ EInventoryItemID.SCREWDRIVER, "screwdriver" },
 		};
 }
