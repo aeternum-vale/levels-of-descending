@@ -62,4 +62,17 @@ public class PlayerCamera : MonoBehaviour
         Graphics.CopyTexture(cameraComponent.targetTexture, t2d);
         return t2d;
     }
+
+    public void ActivateInventoryMode()
+    {
+        IsInventoryModeOn = true;
+        gameObject.SetActive(false);
+    }
+
+    public void DeactivateInventoryMode()
+    {
+        IsInventoryModeOn = false;
+        cameraComponent.targetTexture = null;
+        gameObject.SetActive(true);
+    }
 }

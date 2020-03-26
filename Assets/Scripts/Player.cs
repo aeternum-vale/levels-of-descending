@@ -37,10 +37,11 @@ public class Player : MonoBehaviour
             UpdateMovement();
             UpdateSquatting();
         }
-        updateInventoryButton();
+        UpdateUseButton();
+        UpdateInventoryButton();
     }
 
-    void updateInventoryButton()
+    void UpdateInventoryButton()
     {
         if (Input.GetButtonDown("Inventory"))
         {
@@ -50,9 +51,10 @@ public class Player : MonoBehaviour
                 {
                     playerCamera.IsInventoryModeOn = true;
                     inventory.ActivateInventoryMode(playerCamera.GetBackgroundTexture());
-                    playerCamera.gameObject.SetActive(false);
+                    playerCamera.ActivateInventoryMode();
                 }
-            } else
+            }
+            else
             {
                 inventory.OnInventorySwitchToNextObject();
             }
@@ -64,14 +66,9 @@ public class Player : MonoBehaviour
         float rotationY = transform.localEulerAngles.y + delta;
         transform.localEulerAngles = new Vector3(0, rotationY, 0);
 
-        if (Input.GetMouseButtonDown(0) && this.selectedObject)
-        {
-            this.selectedObject.onClick();
-        }
-
         if (this.selectedObject)
         {
-            this.selectedObject.onOut();
+            this.selectedObject.OnOut();
             this.selectedObject = null;
         }
 
@@ -84,10 +81,35 @@ public class Player : MonoBehaviour
             if (currentSelectedObject)
             {
                 this.selectedObject = currentSelectedObject;
-                this.selectedObject.onOver();
+                this.selectedObject.OnOver();
+            }
+        }
+    }
+
+    void UpdateUseButton()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            EInventoryObjectID? selectedInventoryObject = null;
+
+            if (inventory.IsInventoryModeOn)
+            {
+                selectedInventoryObject = inventory.CurrentObjectID;
+                DeactivateInventoryMode();
+            }
+
+            if (this.selectedObject)
+            {
+                this.selectedObject.OnClick(selectedInventoryObject);
             }
         }
 
+    }
+
+    void DeactivateInventoryMode()
+    {
+        playerCamera.DeactivateInventoryMode();
+        inventory.DeactivateInventoryMode();
     }
 
     void UpdateMovement()

@@ -11,23 +11,22 @@ public class SelectableObject : MonoBehaviour {
 		selectableMaterial = GetComponent <MeshRenderer>().material;
 	}
 
-	public virtual void onOver() {
-		showSelected();
+	public virtual void OnOver() {
+		ShowSelected();
 	}
 
-	public virtual void onOut() {
-		showNormal();
+	public virtual void OnOut() {
+		ShowNormal();
 	}
 
-	public virtual void onClick() {
-		
+	public virtual void OnClick(EInventoryObjectID? selectedInventoryObjectId = null) {
 	}
 
-	public virtual void showSelected() {
+	public virtual void ShowSelected() {
 		selectableMaterial.SetFloat("_IsSelected", 1f);
 	}
 
-	public virtual void showNormal() {
+	public virtual void ShowNormal() {
 		selectableMaterial.SetFloat("_IsSelected", 0f);
 	}
 }

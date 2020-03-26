@@ -20,7 +20,7 @@ public class Inventory : MonoBehaviour
         { EInventoryObjectID.SCREWDRIVER, true }
     };
     public bool IsInventoryModeOn { get; private set; }
-    
+
     readonly Dictionary<EInventoryObjectID, GameObject> instances = new Dictionary<EInventoryObjectID, GameObject>();
     int currentObjectIndex;
     List<EInventoryObjectID> listOfAvailableObjects;
@@ -38,6 +38,8 @@ public class Inventory : MonoBehaviour
             return (listOfAvailableObjects.Count != 0);
         }
     }
+
+    public EInventoryObjectID CurrentObjectID => listOfAvailableObjects[currentObjectIndex];
 
     void Awake()
     {
@@ -125,7 +127,13 @@ public class Inventory : MonoBehaviour
         }
         else
             throw new Exception("cannot activate inventory mode: there is no objects in inventory");
+    }
 
+    public void DeactivateInventoryMode()
+    {
+        IsInventoryModeOn = false;
+        inventoryCamera.IsInventoryModeOn = false;
+        inventoryCameraGameObject.SetActive(false);
     }
 
     IEnumerator SwitchToNextObject()
