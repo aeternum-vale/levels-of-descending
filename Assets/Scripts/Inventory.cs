@@ -15,10 +15,7 @@ public class Inventory : MonoBehaviour
     Texture2D backgroundTexture;
     RenderTexture inventoryCameraTexture;
 
-    public Dictionary<EInventoryItemID, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemID, bool>() {
-        { EInventoryItemID.POSTBOX_KEY, true },
-        { EInventoryItemID.SCREWDRIVER, true }
-    };
+    public Dictionary<EInventoryItemID, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemID, bool>();
     public bool IsInventoryModeOn { get; private set; }
 
     readonly Dictionary<EInventoryItemID, GameObject> instances = new Dictionary<EInventoryItemID, GameObject>();
@@ -171,7 +168,7 @@ public class Inventory : MonoBehaviour
 
     public void OnInventorySwitchToNextItem()
     {
-        if (IsInventoryModeOn && !isTransition)
+        if (IsInventoryModeOn && !isTransition && listOfAvailableItems.Count > 1)
         {
             StartCoroutine(SwitchToNextItem());
         }
