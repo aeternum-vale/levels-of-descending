@@ -5,6 +5,11 @@ public enum EInventoryItemID {
 	SCREWDRIVER
 }
 
+public enum ESwitchableObjectID
+{
+	PAD
+}
+
 public enum ECameraID {
 	PLAYER,
 	INVENTORY
@@ -14,7 +19,7 @@ public class Events {
 	public static string ADD_ITEM_TO_INVENTORY = "ADD_OBJECT_TO_INVENTORY";
 	public static string INVENTORY_UPDATED = "INVENTORY_UPDATED";
 	public static string INVENTORY_BUTTON_PRESSED = "INVENTORY_BUTTON_PRESSED";
-	public static string INVENTORY_MODE_ACTIVATED = "INVENTORY_CURRENT_OBJECT_CHANGED";
+	public static string SWITCHABLE_OBJECT_OPENED = "SWITCHABLE_OBJECT_OPENED";
 };
 
 

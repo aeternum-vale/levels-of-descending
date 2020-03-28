@@ -46,6 +46,7 @@ public class GameController : MonoBehaviour
     void Awake()
     {
         Messenger.AddListener(Events.INVENTORY_UPDATED, OnInventoryUpdated);
+        Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_OPENED, OnSwitchableObjectOpened);
     }
 
     void UpdateFloorDoors(Floor floor)
@@ -131,8 +132,13 @@ public class GameController : MonoBehaviour
         UpdateEnvironment();
     }
 
+    void OnSwitchableObjectOpened(ESwitchableObjectID id)
+    {
+    }
+
     void UpdateEnvironment()
     {
+
         if (inventory.AvailableItemsDict[EInventoryItemID.POSTBOX_KEY])
         {
             for (int i = 0; i < floors.Length; i++)
