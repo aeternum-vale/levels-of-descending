@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     readonly float squattingSpeed = 6f;
 
     SelectableObject selectedObject;
+    public GameObject LastFloorTouched { get; private set; }
 
     void Start()
     {
@@ -103,6 +104,16 @@ public class Player : MonoBehaviour
             }
         }
 
+    }
+
+
+    void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        if (hit.collider.gameObject.name == "floor" && LastFloorTouched != hit.collider.gameObject)
+        {
+            LastFloorTouched = hit.collider.gameObject;
+            Messenger.Broadcast(Events.FLOOR_TOUCHED);
+        }
     }
 
     void DeactivateInventoryMode()

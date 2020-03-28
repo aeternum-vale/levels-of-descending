@@ -7,8 +7,10 @@ public class GameController : MonoBehaviour
 {
     [SerializeField] Inventory inventory;
     [SerializeField] GameObject floorPrefab;
-    [SerializeField] GameObject player;
+    [SerializeField] GameObject playerGameObject;
     [SerializeField] DoorFactory doorFactory;
+
+    Player player;
 
     readonly float floorHeight = 3.99f;
     readonly int floorCount = 5;
@@ -36,15 +38,18 @@ public class GameController : MonoBehaviour
 
         floorsHalf = (int)Mathf.Floor(floorCount / 2);
 
-        player.transform.localPosition = new Vector3(
-            player.transform.localPosition.x,
+        playerGameObject.transform.localPosition = new Vector3(
+            playerGameObject.transform.localPosition.x,
             floors[floorsHalf].transform.localPosition.y,
-            player.transform.localPosition.z
+            playerGameObject.transform.localPosition.z
         );
     }
 
     void Awake()
     {
+        player = playerGameObject.GetComponent<Player>();
+
+        Messenger.AddListener(Events.FLOOR_TOUCHED, OnFloorTouched);
         Messenger.AddListener(Events.INVENTORY_UPDATED, OnInventoryUpdated);
         Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_OPENED, OnSwitchableObjectOpened);
     }
@@ -96,11 +101,17 @@ public class GameController : MonoBehaviour
         //updateFloorDoors (floor);
     }
 
-    void Update()
+    void OnFloorTouched()
+    {
+        RearrangeFloors();
+        UpdateEnvironment();
+    }
+
+    void RearrangeFloors()
     {
         int lowestIndex = (highestFloorIndex + 1) % floorCount;
-        float distToHighestFloor = Mathf.Abs(player.transform.localPosition.y - floors[highestFloorIndex].transform.localPosition.y);
-        float distToLowestFloor = Mathf.Abs(player.transform.localPosition.y - floors[lowestIndex].transform.localPosition.y) + floorHeight;
+        float distToHighestFloor = Mathf.Abs(playerGameObject.transform.localPosition.y - floors[highestFloorIndex].transform.localPosition.y);
+        float distToLowestFloor = Mathf.Abs(playerGameObject.transform.localPosition.y - floors[lowestIndex].transform.localPosition.y) + floorHeight;
         float threshold = floorsHalf * floorHeight;
 
         // Debug.Log("distToHighestFloor: " + distToHighestFloor + " and should be < " + threshold);
@@ -139,12 +150,14 @@ public class GameController : MonoBehaviour
     void UpdateEnvironment()
     {
 
-        if (inventory.AvailableItemsDict[EInventoryItemID.POSTBOX_KEY])
+        for (int i = 0; i < floors.Length; i++)
         {
-            for (int i = 0; i < floors.Length; i++)
+
+            if (inventory.AvailableItemsDict.ContainsKey(EInventoryItemID.POSTBOX_KEY))
             {
                 floors[i].removeObject(GameConstants.InventoryInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
             }
+
         }
     }
 }

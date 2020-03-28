@@ -16,6 +16,7 @@ public enum ECameraID {
 }
 
 public class Events {
+	public static string FLOOR_TOUCHED = "FLOOR_TOUCHED";
 	public static string ADD_ITEM_TO_INVENTORY = "ADD_OBJECT_TO_INVENTORY";
 	public static string INVENTORY_UPDATED = "INVENTORY_UPDATED";
 	public static string INVENTORY_BUTTON_PRESSED = "INVENTORY_BUTTON_PRESSED";
