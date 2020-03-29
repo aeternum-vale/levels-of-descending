@@ -152,12 +152,22 @@ public class GameController : MonoBehaviour
 
         for (int i = 0; i < floors.Length; i++)
         {
+            if (player.LastFloorTouched && player.LastFloorTouched == floors[i].transform.Find("colliders").Find("floor").gameObject)
+            {
+                continue;
+            }
+
 
             if (inventory.AvailableItemsDict.ContainsKey(EInventoryItemID.POSTBOX_KEY))
             {
                 floors[i].removeObject(GameConstants.InventoryInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
             }
 
+            SwitchableSelectableObject s = floors[i].transform.Find("pad").gameObject.GetComponent<SwitchableSelectableObject>();
+            if (s.IsOpened)
+            {
+                s.Switch();
+            }
         }
     }
 }
