@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     float startCameraY;
     readonly float squattingAmount = 2f;
     readonly float squattingSpeed = 6f;
+    readonly float maxDistanceToSelectableObject = .8f;
 
     SelectableObject selectedObject;
     public GameObject LastFloorTouched { get; private set; }
@@ -75,7 +76,7 @@ public class Player : MonoBehaviour
         Vector3 point = new Vector3(playerCameraComponent.pixelWidth / 2, playerCameraComponent.pixelHeight / 2, 0);
         Ray ray = playerCameraComponent.ScreenPointToRay(point);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, 0.8f))
+        if (Physics.Raycast(ray, out hit, maxDistanceToSelectableObject))
         {
             SelectableObject currentSelectedObject = (SelectableObject)hit.transform.GetComponent<SelectableObject>();
             if (currentSelectedObject)

@@ -77,7 +77,7 @@ public class GameController : MonoBehaviour
         leftDoor.transform.position = floorLeftDoorBaseTransform.position;
 
         rightDoor.transform.position = floorRightDoorBaseTransform.position;
-        rightDoor.invert();
+        rightDoor.Invert();
 
         leftDoor.name = leftDoorObjectName;
 
