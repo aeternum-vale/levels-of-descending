@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour
     Player player;
 
     readonly float floorHeight = 3.99f;
-    readonly int floorCount = 5;
+    readonly int floorCount = 7;
 
     Floor[] floors;
 
