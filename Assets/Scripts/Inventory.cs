@@ -38,6 +38,8 @@ public class Inventory : MonoBehaviour
 
     public EInventoryItemID CurrentItemID => listOfAvailableItems[currentItemIndex];
 
+    public bool Contains(EInventoryItemID id) => AvailableItemsDict.ContainsKey(id);
+
     void Awake()
     {
         inventoryCameraGameObject = transform.Find("InventoryCamera").gameObject;

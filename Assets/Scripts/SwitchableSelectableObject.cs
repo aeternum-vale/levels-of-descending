@@ -11,7 +11,6 @@ public class SwitchableSelectableObject : SelectableObject
 
     readonly string switchStateName = "Switch";
     readonly string directionParamName = "Direction";
-
     void Start()
     {
         anim = GetComponent<Animator>();
@@ -21,7 +20,11 @@ public class SwitchableSelectableObject : SelectableObject
     {
         base.OnClick(selectedInventoryItemId);
         Messenger<ESwitchableObjectID>.Broadcast(Events.SWITCHABLE_OBJECT_OPENED, id);
-        Switch();
+        
+        if (IsOpened || SwitchCondition(selectedInventoryItemId))
+        {
+            Switch();
+        }
     }
 
     public void Switch()
@@ -42,6 +45,8 @@ public class SwitchableSelectableObject : SelectableObject
             }
         }
     }
+
+    protected virtual bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null) => true;
 
     void OnAnimationEnd()
     {
