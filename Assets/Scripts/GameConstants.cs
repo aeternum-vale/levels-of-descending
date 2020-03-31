@@ -8,7 +8,8 @@ public enum EInventoryItemID
 
 public enum ESwitchableObjectID
 {
-    PAD
+    PAD,
+    POSTBOX_DOOR
 }
 
 public enum ECameraID
