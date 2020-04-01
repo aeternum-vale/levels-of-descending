@@ -17,11 +17,10 @@
 
 		 _DetailNormalMapScale("Detail Normal Map Scale", Float) = 1
 		 [Normal]  _DetailNormalMap("Detail Normal Map", 2D) = "bump" { }
-		 [Enum(UV0,0,UV1,1)]  _UVSec("UV Set for secondary textures", Float) = 0
 
-		_FloorNumberTex("Floor Number Texture", 2D) = "white" {}
+		_FloorFontTex("Floor Font Texture", 2D) = "white" {}
 	}
-		SubShader
+	SubShader
 	{
 		Tags { "RenderType" = "Opaque" }
 		LOD 200
@@ -39,7 +38,7 @@
 			float2 uv_BumpMap;
 			float2 uv_DetailAlbedoMap;
 			float2 uv_DetailNormalMap;
-			float2 uv_FloorNumberTex;
+			float2 uv_FloorFontTex;
 		};
 
 		half _Glossiness;
@@ -55,7 +54,7 @@
 		sampler2D _BumpMap;
 		sampler2D _DetailAlbedoMap;
 		sampler2D _DetailNormalMap;
-		sampler2D _FloorNumberTex;
+		sampler2D _FloorFontTex;
 
 
 		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -71,9 +70,12 @@
 			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
 			fixed4 sec_c = tex2D(_DetailAlbedoMap, IN.uv_DetailAlbedoMap);
 
-			fixed4 fn_c = tex2D(_FloorNumberTex, IN.uv_FloorNumberTex);
+			float2 new_uv = IN.uv_FloorFontTex * float2(1.25, 1.25) + float2(-0.5, -0.125);
+			fixed4 fn_c = (IN.uv_MainTex.x > 0.4) && (IN.uv_MainTex.x < 0.6) && (IN.uv_MainTex.y > 0.7) && (IN.uv_MainTex.y < 0.9) ? (1 - tex2D(_FloorFontTex, new_uv).a) : 1;
 
-			o.Albedo = c.rgb * sec_c.rgb * (1 - fn_c.a);
+			
+
+			o.Albedo = c.rgb * sec_c.rgb * fn_c;
 			//o.Albedo = c.rgb * sec_c.rgb * fn_c.rgb;
 			// Metallic and smoothness come from slider variables
 
