@@ -24,6 +24,7 @@
 		_FloorNumberAreaY("Floor Number Area Y", Range(0,1)) = 0.7
 		_FloorNumberAreaWidth("Floor Number Area Width", Float) = 0.2
 		_FloorNumberAreaHeight("Floor Number Area Height", Float) = 0.2
+		_FloorNumberRankDist("Floor Number Rank Distance", Range(-1,1)) = 1
 
 	}
 		SubShader
@@ -67,7 +68,7 @@
 			half _FloorNumberAreaY;
 			half _FloorNumberAreaWidth;
 			half _FloorNumberAreaHeight;
-
+			half _FloorNumberRankDist;
 
 			// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
 			// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -87,12 +88,14 @@
 				float floor_number_rank2 = trunc(_FloorNumber - floor_number_rank1 * 10);
 				float floor_number_area_half_width = _FloorNumberAreaWidth / 2;
 
+				float floor_number_area_x_2 = _FloorNumberAreaX + _FloorNumberRankDist;
+
 				float2 cell_size = float2(1 / bitmap_font_col_count, 1 / bitmap_font_row_count);
 				float2 first_cell_coords = float2(0, 1 - cell_size.y);
 
 				float2 new_uv_scale = float2(cell_size.x / floor_number_area_half_width, cell_size.y / _FloorNumberAreaHeight);
 				float2 new_uv_offset_1 = float2(first_cell_coords.x - (_FloorNumberAreaX * new_uv_scale.x), first_cell_coords.y - (_FloorNumberAreaY * new_uv_scale.y));
-				float2 new_uv_offset_2 = float2(first_cell_coords.x - ((_FloorNumberAreaX + floor_number_area_half_width) * new_uv_scale.x), first_cell_coords.y - (_FloorNumberAreaY * new_uv_scale.y));
+				float2 new_uv_offset_2 = float2(first_cell_coords.x - ((floor_number_area_x_2 + floor_number_area_half_width) * new_uv_scale.x), first_cell_coords.y - (_FloorNumberAreaY * new_uv_scale.y));
 
 				float2 new_uv_font_offset_1 = float2(cell_size.x * (floor_number_rank1 % bitmap_font_col_count), -cell_size.y * trunc(floor_number_rank1 / bitmap_font_row_count));
 				float2 new_uv_font_offset_2 = float2(cell_size.x * (floor_number_rank2 % bitmap_font_col_count), -cell_size.y * trunc(floor_number_rank2 / bitmap_font_row_count));
@@ -100,13 +103,15 @@
 				float2 new_uv_1 = IN.uv_FloorNumberFontTex * new_uv_scale + new_uv_offset_1 + new_uv_font_offset_1;
 				float2 new_uv_2 = IN.uv_FloorNumberFontTex * new_uv_scale + new_uv_offset_2 + new_uv_font_offset_2;
 
-				bool is_first_rank_x  = (IN.uv_MainTex.x > _FloorNumberAreaX) && (IN.uv_MainTex.x < (_FloorNumberAreaX + floor_number_area_half_width));
-				bool is_second_rank_x = (IN.uv_MainTex.x > _FloorNumberAreaX + floor_number_area_half_width) && (IN.uv_MainTex.x < (_FloorNumberAreaX + _FloorNumberAreaWidth));
+				bool is_first_rank_x = (IN.uv_MainTex.x > _FloorNumberAreaX) && (IN.uv_MainTex.x < (_FloorNumberAreaX + floor_number_area_half_width));
+				bool is_second_rank_x = (IN.uv_MainTex.x > floor_number_area_x_2 + floor_number_area_half_width) && (IN.uv_MainTex.x < (floor_number_area_x_2 + _FloorNumberAreaWidth));
+				bool is_in_area = ((is_first_rank_x || is_second_rank_x) && (IN.uv_MainTex.y > _FloorNumberAreaY) && (IN.uv_MainTex.y < (_FloorNumberAreaY + _FloorNumberAreaHeight)));
 
-				fixed4 fn_c = (is_first_rank_x || is_second_rank_x)
-						   && (IN.uv_MainTex.y > _FloorNumberAreaY) && (IN.uv_MainTex.y < (_FloorNumberAreaY + _FloorNumberAreaHeight))
-						   ? 1 - tex2D(_FloorNumberFontTex, is_first_rank_x ? new_uv_1 : new_uv_2).a
-						   : 1;
+				fixed4 fn_c = is_in_area ? 
+					((is_first_rank_x && is_second_rank_x) ? 
+						1 - tex2D(_FloorNumberFontTex, new_uv_1).a - tex2D(_FloorNumberFontTex, new_uv_2).a
+						: 1 - tex2D(_FloorNumberFontTex, is_first_rank_x ? new_uv_1 : new_uv_2).a)
+					: 1;
 
 				o.Albedo = c.rgb * sec_c.rgb * fn_c;
 				// Metallic and smoothness come from slider variables
