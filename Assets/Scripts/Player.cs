@@ -110,7 +110,7 @@ public class Player : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (hit.collider.gameObject.name == "floor" && LastFloorTouched != hit.collider.gameObject)
+        if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName && LastFloorTouched != hit.collider.gameObject)
         {
             LastFloorTouched = hit.collider.gameObject;
             Messenger.Broadcast(Events.FLOOR_TOUCHED);

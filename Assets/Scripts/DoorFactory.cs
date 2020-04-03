@@ -6,12 +6,12 @@ public class DoorFactory : MonoBehaviour
 {
     [SerializeField] Door woodDoor;
 
-    Door getRandomWoodDoor()
+    Door GetRandomWoodDoor()
     {
         return Instantiate(woodDoor);
     }
 
-    public Door generateRandomDoor()
+    public Door GenerateRandomDoor()
     {
         // int randomNumber = Random.Range (0, 3);
 
@@ -26,6 +26,6 @@ public class DoorFactory : MonoBehaviour
         // 		return getRandomLeatherDoor ();
         // }
 
-        return getRandomWoodDoor();
+        return GetRandomWoodDoor();
     }
 }

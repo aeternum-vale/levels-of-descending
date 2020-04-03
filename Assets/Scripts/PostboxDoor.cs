@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class PostboxDoor : SwitchableSelectableObject
 {
-    protected override bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null)
-    {
-        return (selectedInventoryItemId == EInventoryItemID.POSTBOX_KEY);
-    }
+    protected override bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null) =>
+        (selectedInventoryItemId == EInventoryItemID.POSTBOX_KEY);
 }

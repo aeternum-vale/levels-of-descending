@@ -30,9 +30,19 @@ public class Events
 
 public class GameConstants
 {
-    public static Dictionary<EInventoryItemID, string> InventoryInstanceNameMap =
+    public static Dictionary<EInventoryItemID, string> inventoryItemToInstanceNameMap =
         new Dictionary<EInventoryItemID, string>() {
             { EInventoryItemID.POSTBOX_KEY, "key" },
             { EInventoryItemID.SCREWDRIVER, "screwdriver" },
         };
+
+    public static Dictionary<ESwitchableObjectID, string> switchableObjectToInstanceNameMap =
+        new Dictionary<ESwitchableObjectID, string>() {
+            { ESwitchableObjectID.PAD, "pad"},
+            { ESwitchableObjectID.POSTBOX_DOOR, "postbox_door"},
+        };
+
+    public static readonly string collidersObjectName = "colliders";
+    public static readonly string ground1ColliderObjectName = "ground1";
+    public static readonly string entrywayObjectName = "entryway";
 }

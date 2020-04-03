@@ -51,7 +51,7 @@ public class Inventory : MonoBehaviour
         Messenger<EInventoryItemID>.AddListener(Events.ADD_ITEM_TO_INVENTORY, OnItemAdding);
         Messenger.AddListener(Events.INVENTORY_BUTTON_PRESSED, OnInventorySwitchToNextItem);
 
-        foreach (KeyValuePair<EInventoryItemID, string> item in GameConstants.InventoryInstanceNameMap)
+        foreach (KeyValuePair<EInventoryItemID, string> item in GameConstants.inventoryItemToInstanceNameMap)
         {
             GameObject go = transform.Find(item.Value).gameObject;
             go.GetComponent<Renderer>().enabled = false;

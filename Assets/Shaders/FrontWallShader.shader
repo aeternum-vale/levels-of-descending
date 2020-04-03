@@ -105,7 +105,6 @@
 			float2 new_uv_1 = IN.uv_FloorNumberFontTex * new_uv_scale + new_uv_offset_1 + new_uv_font_offset_1;
 			float2 new_uv_2 = IN.uv_FloorNumberFontTex * new_uv_scale + new_uv_offset_2 + new_uv_font_offset_2;
 
-
 			bool is_first_rank_x = (IN.uv_MainTex.x >= _FloorNumberAreaX) && (IN.uv_MainTex.x < (_FloorNumberAreaX + floor_number_area_half_width ));
 			bool is_second_rank_x = (IN.uv_MainTex.x >= floor_number_area_x_2 + floor_number_area_half_width) && (IN.uv_MainTex.x <= (floor_number_area_x_2 + _FloorNumberAreaWidth));
 			bool is_in_area = ((is_first_rank_x || is_second_rank_x) && (IN.uv_MainTex.y >= _FloorNumberAreaY) && (IN.uv_MainTex.y <= (_FloorNumberAreaY + _FloorNumberAreaHeight)));
@@ -117,19 +116,14 @@
 					: (is_first_rank_x ? tex2D(_FloorNumberFontTex, new_uv_1).a : (is_second_rank_x ? tex2D(_FloorNumberFontTex, new_uv_2).a : 0)))
 				: 0;
 				
-
-
-			//fixed4 fn_alpha = (is_first_rank_x) && (IN.uv_MainTex.y >= _FloorNumberAreaY) && (IN.uv_MainTex.y <= (_FloorNumberAreaY + _FloorNumberAreaHeight)) ? (tex2D(_FloorNumberFontTex, new_uv_1).a): 0;
-
-
-			o.Albedo = (c.rgb * sec_c.rgb) * (1 - fn_alpha);
+			o.Albedo = (c.rgb * sec_c.rgb) - (fn_alpha / 5);
 			// Metallic and smoothness come from slider variables
 
 			o.Normal = UnpackNormal(tex2D(_DetailNormalMap, IN.uv_DetailNormalMap));
 			o.Normal *= float3(_DetailNormalMapScale, _DetailNormalMapScale, 1);
 
-			o.Metallic = _Metallic + fn_alpha;
-			o.Smoothness = _Glossiness ;
+			o.Metallic = _Metallic + fn_alpha / 3;
+			o.Smoothness = _Glossiness;
 
 			o.Emission = _EmissionColor;
 			o.Alpha = c.a;
