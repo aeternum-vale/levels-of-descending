@@ -192,7 +192,10 @@ public class Player : MonoBehaviour
         {
             if (prevIsStairPace == false)
             {
-                stairPaceXAdjustment = -(gameObject.transform.position.x + (Mathf.PI / 2) + (isStair1Pace ^ isGround1Last ? Mathf.PI : 0));
+                stairPaceXAdjustment = -(gameObject.transform.position.x + (!isStair1Pace ? Mathf.PI : 0));
+
+                Debug.Log("x=" + Mathf.Round((gameObject.transform.position.x + stairPaceXAdjustment)));
+                Debug.Log("sin(x)=" + Mathf.Round(Mathf.Sin((gameObject.transform.position.x + stairPaceXAdjustment))));
             }
             stairPaceYRealOffset = (Mathf.Sin((gameObject.transform.position.x + stairPaceXAdjustment) * stairPaceYFrequency) / 2) * stairPaceYAmplitude;
         }
