@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,12 +16,25 @@ public class Player : MonoBehaviour
     CharacterController charController;
 
     float startCameraY;
-    readonly float squattingAmount = 2f;
+    float realSquattingAmount;
+    readonly float squattingMaxAmount = 2f;
     readonly float squattingSpeed = 6f;
+
     readonly float maxDistanceToSelectableObject = .8f;
 
     SelectableObject selectedObject;
-    public GameObject LastFloorTouched { get; private set; }
+    public GameObject LastGround1Touched { get; private set; }
+
+    bool isStairCommonPace;
+    bool isStair1Pace;
+    bool prevIsStairPace;
+    float stairPaceYTargetOffset;
+    float stairPaceYRealOffset;
+    float stairPaceXAdjustment;
+    bool isGround1Last;
+    readonly float stairPaceYSpeed = 0.02f;
+    readonly float stairPaceYAmplitude = 0.2f;
+    readonly float stairPaceYFrequency = 20f;
 
     void Start()
     {
@@ -36,7 +50,9 @@ public class Player : MonoBehaviour
         {
             UpdateMouse();
             UpdateMovement();
+            UpdateStairPace();
             UpdateSquatting();
+            UpdateCameraY();
         }
         UpdateUseButton();
         UpdateInventoryButton();
@@ -107,13 +123,29 @@ public class Player : MonoBehaviour
 
     }
 
-
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName && LastFloorTouched != hit.collider.gameObject)
+        if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName && LastGround1Touched != hit.collider.gameObject)
         {
-            LastFloorTouched = hit.collider.gameObject;
+            LastGround1Touched = hit.collider.gameObject;
             Messenger.Broadcast(Events.FLOOR_TOUCHED);
+        }
+
+
+        prevIsStairPace = isStairCommonPace;
+
+        if (hit.collider.gameObject.name == GameConstants.stairs1ColliderObjectName || hit.collider.gameObject.name == GameConstants.stairs2ColliderObjectName)
+        {
+            isStairCommonPace = true;
+            isStair1Pace = (hit.collider.gameObject.name == GameConstants.stairs1ColliderObjectName);
+        }
+        else
+        {
+            if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName || hit.collider.gameObject.name == GameConstants.ground2ColliderObjectName)
+            {
+                isGround1Last = (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName);
+                isStairCommonPace = false;
+            }
         }
     }
 
@@ -137,24 +169,43 @@ public class Player : MonoBehaviour
         charController.Move(movement);
     }
 
-    void UpdateSquatting()
+    void UpdateStairPace()
     {
-        if (Input.GetButton("Squat"))
+        if (!isStairCommonPace)
         {
-            this.playerCamera.transform.localPosition += Vector3.down * this.squattingSpeed * Time.deltaTime;
+            stairPaceYTargetOffset = 0;
+
+            if (stairPaceYRealOffset != stairPaceYTargetOffset)
+            {
+                float diff = Mathf.Abs(stairPaceYRealOffset - stairPaceYTargetOffset);
+                if (diff <= stairPaceYSpeed)
+                {
+                    stairPaceYRealOffset = stairPaceYTargetOffset;
+                }
+                else
+                {
+                    stairPaceYRealOffset += stairPaceYSpeed * (stairPaceYRealOffset < stairPaceYTargetOffset ? 1 : -1) * Time.deltaTime;
+                }
+            }
         }
         else
         {
-            this.playerCamera.transform.localPosition += Vector3.up * this.squattingSpeed * Time.deltaTime;
+            if (prevIsStairPace == false)
+            {
+                stairPaceXAdjustment = -(gameObject.transform.position.x + (Mathf.PI / 2) + (isStair1Pace ^ isGround1Last ? Mathf.PI : 0));
+            }
+            stairPaceYRealOffset = (Mathf.Sin((gameObject.transform.position.x + stairPaceXAdjustment) * stairPaceYFrequency) / 2) * stairPaceYAmplitude;
         }
-
-        float cameraY = Mathf.Clamp(this.playerCamera.transform.localPosition.y, this.startCameraY - this.squattingAmount, this.startCameraY);
-
-        this.playerCamera.transform.localPosition = new Vector3(
-            this.playerCamera.transform.localPosition.x,
-            cameraY,
-            this.playerCamera.transform.localPosition.z);
-
     }
 
+    void UpdateSquatting()
+    {
+        realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * this.squattingSpeed * Time.deltaTime;
+        realSquattingAmount = Mathf.Clamp(realSquattingAmount, 0, squattingMaxAmount);
+    }
+
+    void UpdateCameraY()
+    {
+        this.playerCamera.transform.localPosition = new Vector3(0, startCameraY + stairPaceYRealOffset - realSquattingAmount, 0);
+    }
 }

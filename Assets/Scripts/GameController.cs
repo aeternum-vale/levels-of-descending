@@ -153,7 +153,7 @@ public class GameController : MonoBehaviour
     {
         for (int i = 0; i < floors.Length; i++)
         {
-            if (player.LastFloorTouched && player.LastFloorTouched == floorToGround1ColliderDict[floors[i]])
+            if (player.LastGround1Touched && player.LastGround1Touched == floorToGround1ColliderDict[floors[i]])
             {
                 continue;
             }
@@ -181,7 +181,7 @@ public class GameController : MonoBehaviour
     {
         for (int i = 0; i < floors.Length; i++)
         {
-            if (player.LastFloorTouched == floorToGround1ColliderDict[floors[i]])
+            if (player.LastGround1Touched == floorToGround1ColliderDict[floors[i]])
             {
                 return floors[(i + 1) % floorCount];
             }
@@ -193,7 +193,7 @@ public class GameController : MonoBehaviour
     {
         for (int i = 0; i < floors.Length; i++)
         {
-            if (player.LastFloorTouched == floorToGround1ColliderDict[floors[i]])
+            if (player.LastGround1Touched == floorToGround1ColliderDict[floors[i]])
             {
                 return floors[(i - 1 >= 0) ? (i - 1) : (floorCount - 1)];
             }

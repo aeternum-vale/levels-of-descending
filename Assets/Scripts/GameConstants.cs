@@ -27,7 +27,6 @@ public class Events
     public static string SWITCHABLE_OBJECT_OPENED = "SWITCHABLE_OBJECT_OPENED";
 };
 
-
 public class GameConstants
 {
     public static Dictionary<EInventoryItemID, string> inventoryItemToInstanceNameMap =
@@ -43,6 +42,10 @@ public class GameConstants
         };
 
     public static readonly string collidersObjectName = "colliders";
-    public static readonly string ground1ColliderObjectName = "ground1";
     public static readonly string entrywayObjectName = "entryway";
+
+    public static readonly string ground1ColliderObjectName = "ground1";
+    public static readonly string ground2ColliderObjectName = "ground2";
+    public static readonly string stairs1ColliderObjectName = "stairs1";
+    public static readonly string stairs2ColliderObjectName = "stairs2";
 }
