@@ -7,6 +7,7 @@ public class Player : MonoBehaviour
 {
     [SerializeField] PlayerCamera playerCamera;
     [SerializeField] public Inventory inventory;
+    [SerializeField] public bool isSquattingOn = true;
 
     Camera playerCameraComponent;
 
@@ -193,9 +194,6 @@ public class Player : MonoBehaviour
             if (prevIsStairPace == false)
             {
                 stairPaceXAdjustment = -(gameObject.transform.position.x + (!isStair1Pace ? Mathf.PI : 0));
-
-                Debug.Log("x=" + Mathf.Round((gameObject.transform.position.x + stairPaceXAdjustment)));
-                Debug.Log("sin(x)=" + Mathf.Round(Mathf.Sin((gameObject.transform.position.x + stairPaceXAdjustment))));
             }
             stairPaceYRealOffset = (Mathf.Sin((gameObject.transform.position.x + stairPaceXAdjustment) * stairPaceYFrequency) / 2) * stairPaceYAmplitude;
         }
@@ -203,8 +201,11 @@ public class Player : MonoBehaviour
 
     void UpdateSquatting()
     {
-        realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * this.squattingSpeed * Time.deltaTime;
-        realSquattingAmount = Mathf.Clamp(realSquattingAmount, 0, squattingMaxAmount);
+        if (isSquattingOn)
+        {
+            realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * this.squattingSpeed * Time.deltaTime;
+            realSquattingAmount = Mathf.Clamp(realSquattingAmount, 0, squattingMaxAmount);
+        }
     }
 
     void UpdateCameraY()
