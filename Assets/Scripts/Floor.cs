@@ -13,12 +13,17 @@ public class Floor : MonoBehaviour
     {
         frontWallMaterial = gameObject.transform.Find(GameConstants.entrywayObjectName).Find(frontWallName).gameObject.GetComponent<MeshRenderer>().material;
     }
-    public void RemoveObject(string name)
+    public void HideObject(string name)
     {
         transform.Find(name).gameObject.GetComponent<Renderer>().enabled = false;
     }
 
-    public void SetFloorNumber(int number)
+    public void ShowObject(string name)
+    {
+        transform.Find(name).gameObject.GetComponent<Renderer>().enabled = true;
+    }
+
+    public void SetFloorDrawnNumber(int number)
     {
         frontWallMaterial.SetFloat(frontWallNumberMatPropertyName, number);
     }

@@ -24,7 +24,8 @@ public class Player : MonoBehaviour
     readonly float maxDistanceToSelectableObject = .8f;
 
     SelectableObject selectedObject;
-    public GameObject LastGround1Touched { get; private set; }
+    public GameObject LastGround1ColliderTouched { get; private set; }
+    public GameObject PrevLastGround1ColliderTouched { get; private set; }
 
     bool isStairCommonPace;
     bool isStair1Pace;
@@ -126,12 +127,12 @@ public class Player : MonoBehaviour
 
     void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName && LastGround1Touched != hit.collider.gameObject)
+        if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName && LastGround1ColliderTouched != hit.collider.gameObject)
         {
-            LastGround1Touched = hit.collider.gameObject;
+            PrevLastGround1ColliderTouched = LastGround1ColliderTouched;
+            LastGround1ColliderTouched = hit.collider.gameObject;
             Messenger.Broadcast(Events.FLOOR_TOUCHED);
         }
-
 
         prevIsStairPace = isStairCommonPace;
 

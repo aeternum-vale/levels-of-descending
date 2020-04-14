@@ -3,7 +3,7 @@
 public enum EInventoryItemID
 {
     POSTBOX_KEY,
-    SCREWDRIVER
+    LETTER
 }
 
 public enum ESwitchableObjectID
@@ -17,6 +17,12 @@ public enum ECameraID
     PLAYER,
     INVENTORY
 }
+
+public enum EDoorType
+{
+    DRAGONFLY
+}
+
 
 public class Events
 {
@@ -32,7 +38,7 @@ public class GameConstants
     public static Dictionary<EInventoryItemID, string> inventoryItemToInstanceNameMap =
         new Dictionary<EInventoryItemID, string>() {
             { EInventoryItemID.POSTBOX_KEY, "key" },
-            { EInventoryItemID.SCREWDRIVER, "screwdriver" },
+            { EInventoryItemID.LETTER, "letter" }
         };
 
     public static Dictionary<ESwitchableObjectID, string> switchableObjectToInstanceNameMap =

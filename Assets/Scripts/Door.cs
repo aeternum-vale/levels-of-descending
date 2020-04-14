@@ -16,10 +16,12 @@ public abstract class Door : MonoBehaviour
     protected GameObject staticDetails;
     public GameObject StaticDetails { get; private set; }
 
-     static readonly string doorBaseName = "doorBase";
-     static readonly string doorhandleName = "doorhandle";
-     static readonly string staticDetailsName = "staticDetails";
-     static readonly string detailsName = "details";
+    static readonly string doorBaseName = "doorBase";
+    static readonly string doorhandleName = "doorhandle";
+    static readonly string staticDetailsName = "staticDetails";
+    static readonly string detailsName = "details";
+
+    public EDoorType Type { get; set; }
 
     void Awake()
     {

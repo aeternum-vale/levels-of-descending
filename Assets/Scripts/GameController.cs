@@ -15,7 +15,9 @@ public class GameController : MonoBehaviour
 
     int highestFloorIndex;
     int floorsHalf;
-    int fakeFloorCount = 7;
+    int realFloorNumber = 7;
+
+    int fakeFloorNumber = 7;
     int LowestFloorIndex => (highestFloorIndex + 1) % floorCount;
 
     static readonly float floorHeight = 3.99f;
@@ -26,11 +28,12 @@ public class GameController : MonoBehaviour
     public static readonly string leftDoorObjectName = "left_door_prefab";
     public static readonly string rightDoorObjectName = "right_door_prefab";
 
-    static Dictionary<Floor, GameObject> floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
+    Dictionary<Floor, GameObject> floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
+    Dictionary<EInventoryItemID, int> seenInventoryObjectsToFloorNumberDict = new Dictionary<EInventoryItemID, int>();
+
 
     void Start()
     {
-
         highestFloorIndex = floorCount - 1;
         floors = new Floor[floorCount];
 
@@ -41,7 +44,7 @@ public class GameController : MonoBehaviour
         }
 
         floorsHalf = (int)Mathf.Floor(floorCount / 2);
-        floors[floorsHalf].SetFloorNumber(fakeFloorCount--);
+        floors[floorsHalf].SetFloorDrawnNumber(fakeFloorNumber--);
 
         playerGameObject.transform.localPosition = new Vector3(
             playerGameObject.transform.localPosition.x,
@@ -108,9 +111,20 @@ public class GameController : MonoBehaviour
 
     void OnFloorTouched()
     {
-        fakeFloorCount++;
+        fakeFloorNumber++;
+
+        UpdateRealFloorNumber();
+
         RearrangeFloors();
         UpdateEnvironment();
+    }
+
+    void UpdateRealFloorNumber()
+    {
+        if (player.PrevLastGround1ColliderTouched)
+        {
+            realFloorNumber += (player.PrevLastGround1ColliderTouched.transform.position.y < player.LastGround1ColliderTouched.transform.position.y ? 1 : -1);
+        }
     }
 
     void RearrangeFloors()
@@ -147,41 +161,22 @@ public class GameController : MonoBehaviour
 
     void OnSwitchableObjectOpened(ESwitchableObjectID id)
     {
-    }
-
-    void UpdateEnvironment()
-    {
-        for (int i = 0; i < floors.Length; i++)
+        switch (id)
         {
-            if (player.LastGround1Touched && player.LastGround1Touched == floorToGround1ColliderDict[floors[i]])
-            {
-                continue;
-            }
-
-            if (inventory.AvailableItemsDict.ContainsKey(EInventoryItemID.POSTBOX_KEY))
-            {
-                floors[i].RemoveObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
-            }
-
-            SwitchableSelectableObject s = floors[i].transform.Find(GameConstants.switchableObjectToInstanceNameMap[ESwitchableObjectID.PAD]).gameObject.GetComponent<SwitchableSelectableObject>();
-            if (s.IsOpened)
-            {
-                s.Switch();
-            }
+            case ESwitchableObjectID.PAD:
+                if (!seenInventoryObjectsToFloorNumberDict.ContainsKey(EInventoryItemID.POSTBOX_KEY))
+                {
+                    seenInventoryObjectsToFloorNumberDict.Add(EInventoryItemID.POSTBOX_KEY, realFloorNumber);
+                }
+                break;
         }
-
-        Floor nextFloor = GetNextHigherFloor();
-        nextFloor.SetFloorNumber(fakeFloorCount + 1);
-
-        Floor prevFloor = GetNextLowerFloor();
-        prevFloor.SetFloorNumber(fakeFloorCount + 1);
     }
 
     private Floor GetNextHigherFloor()
     {
         for (int i = 0; i < floors.Length; i++)
         {
-            if (player.LastGround1Touched == floorToGround1ColliderDict[floors[i]])
+            if (player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]])
             {
                 return floors[(i + 1) % floorCount];
             }
@@ -193,7 +188,7 @@ public class GameController : MonoBehaviour
     {
         for (int i = 0; i < floors.Length; i++)
         {
-            if (player.LastGround1Touched == floorToGround1ColliderDict[floors[i]])
+            if (player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]])
             {
                 return floors[(i - 1 >= 0) ? (i - 1) : (floorCount - 1)];
             }
@@ -201,4 +196,41 @@ public class GameController : MonoBehaviour
         return null;
     }
 
+    void UpdateEnvironment()
+    {
+        for (int i = 0; i < floors.Length; i++)
+        {
+
+            foreach (EInventoryItemID id in (EInventoryItemID[])Enum.GetValues(typeof(EInventoryItemID)))
+            {
+                floors[i].ShowObject(GameConstants.inventoryItemToInstanceNameMap[id]);
+
+                if (inventory.Contains(id) ||
+                    (seenInventoryObjectsToFloorNumberDict.ContainsKey(id) && seenInventoryObjectsToFloorNumberDict[id] != realFloorNumber))
+                {
+                    floors[i].HideObject(GameConstants.inventoryItemToInstanceNameMap[id]);
+                }
+            }
+
+
+            if (player.LastGround1ColliderTouched && player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]]) //stop updating of the current floor
+            {
+                continue;
+            }
+
+            SwitchableSelectableObject s =
+                floors[i].transform.Find(GameConstants.switchableObjectToInstanceNameMap[ESwitchableObjectID.PAD]).gameObject.GetComponent<SwitchableSelectableObject>();
+
+            if (s.IsOpened)
+            {
+                s.Switch();
+            }
+        }
+
+        Floor nextFloor = GetNextHigherFloor();
+        nextFloor.SetFloorDrawnNumber(fakeFloorNumber + 1);
+
+        Floor prevFloor = GetNextLowerFloor();
+        prevFloor.SetFloorDrawnNumber(fakeFloorNumber + 1);
+    }
 }
