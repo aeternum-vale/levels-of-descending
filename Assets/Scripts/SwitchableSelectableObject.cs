@@ -19,7 +19,7 @@ public class SwitchableSelectableObject : SelectableObject
     public override void OnClick(EInventoryItemID? selectedInventoryItemId = null)
     {
         base.OnClick(selectedInventoryItemId);
-        Messenger<ESwitchableObjectID>.Broadcast(Events.SWITCHABLE_OBJECT_OPENED, id);
+        Messenger<ESwitchableObjectID>.Broadcast(Events.SWITCHABLE_OBJECT_WAS_OPENED, id);
         
         if (IsOpened || SwitchCondition(selectedInventoryItemId))
         {

@@ -131,7 +131,7 @@ public class Player : MonoBehaviour
         {
             PrevLastGround1ColliderTouched = LastGround1ColliderTouched;
             LastGround1ColliderTouched = hit.collider.gameObject;
-            Messenger.Broadcast(Events.FLOOR_TOUCHED);
+            Messenger.Broadcast(Events.FLOOR_WAS_TOUCHED);
         }
 
         prevIsStairPace = isStairCommonPace;

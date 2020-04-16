@@ -48,8 +48,8 @@ public class Inventory : MonoBehaviour
 
         backgroundImageComponent = transform.Find("Canvas").Find("Image").gameObject.GetComponent<Image>();
 
-        Messenger<EInventoryItemID>.AddListener(Events.ADD_ITEM_TO_INVENTORY, OnItemAdding);
-        Messenger.AddListener(Events.INVENTORY_BUTTON_PRESSED, OnInventorySwitchToNextItem);
+        Messenger<EInventoryItemID>.AddListener(Events.INVENTORY_ITEM_WAS_CLICKED, OnItemAdding);
+        Messenger.AddListener(Events.INVENTORY_BUTTON_WAS_PRESSED, OnInventorySwitchToNextItem);
 
         foreach (KeyValuePair<EInventoryItemID, string> item in GameConstants.inventoryItemToInstanceNameMap)
         {
@@ -69,7 +69,7 @@ public class Inventory : MonoBehaviour
         if (IsInventoryModeOn) return;
 
         AvailableItemsDict.Add(id, true);
-        Messenger.Broadcast(Events.INVENTORY_UPDATED);
+        Messenger.Broadcast(Events.INVENTORY_WAS_UPDATED);
     }
 
     void ShowInstance(GameObject instance)

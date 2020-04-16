@@ -18,13 +18,21 @@ public enum ECameraID
     INVENTORY
 }
 
+public enum EDoorAction
+{
+    NONE,
+    BELL,
+    HANDLE
+}
+
 public class Events
 {
-    public static string FLOOR_TOUCHED = "FLOOR_TOUCHED";
-    public static string ADD_ITEM_TO_INVENTORY = "ADD_OBJECT_TO_INVENTORY";
-    public static string INVENTORY_UPDATED = "INVENTORY_UPDATED";
-    public static string INVENTORY_BUTTON_PRESSED = "INVENTORY_BUTTON_PRESSED";
-    public static string SWITCHABLE_OBJECT_OPENED = "SWITCHABLE_OBJECT_OPENED";
+    public static string FLOOR_WAS_TOUCHED = "FLOOR_WAS_TOUCHED";
+    public static string INVENTORY_ITEM_WAS_CLICKED = "INVENTORY_ITEM_WAS_CLICKED";
+    public static string INVENTORY_WAS_UPDATED = "INVENTORY_WAS_UPDATED";
+    public static string INVENTORY_BUTTON_WAS_PRESSED = "INVENTORY_BUTTON_WAS_PRESSED";
+    public static string SWITCHABLE_OBJECT_WAS_OPENED = "SWITCHABLE_OBJECT_WAS_OPENED";
+    public static string INTERACTION_WITH_DOOR_HAPPENED = "INTERACTION_WITH_DOOR_HAPPENED";
 };
 
 public class GameConstants

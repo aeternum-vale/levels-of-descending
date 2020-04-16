@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -33,6 +34,7 @@ public class GameController : MonoBehaviour
     static readonly int dragonflyFloorFrequency = 10;
     static readonly int dragonflyFirstFloor = 10;
 
+    static readonly EDoorAction[] dragonflyCode = new EDoorAction[] { EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL };
 
     void Start()
     {
@@ -59,9 +61,10 @@ public class GameController : MonoBehaviour
     {
         player = playerGameObject.GetComponent<Player>();
 
-        Messenger.AddListener(Events.FLOOR_TOUCHED, OnFloorTouched);
-        Messenger.AddListener(Events.INVENTORY_UPDATED, OnInventoryUpdated);
-        Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_OPENED, OnSwitchableObjectOpened);
+        Messenger.AddListener(Events.FLOOR_WAS_TOUCHED, OnFloorWasTouched);
+        Messenger.AddListener(Events.INVENTORY_WAS_UPDATED, OnInventoryWasUpdated);
+        Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_WAS_OPENED, OnSwitchableObjectWasOpened);
+        Messenger<Door>.AddListener(Events.INTERACTION_WITH_DOOR_HAPPENED, OnInteractionWithDoorHappened);
     }
 
     void UpdateFloorDoors(Floor floor)
@@ -111,7 +114,7 @@ public class GameController : MonoBehaviour
         //updateFloorDoors (floor);
     }
 
-    void OnFloorTouched()
+    void OnFloorWasTouched()
     {
         fakeFloorNumber++;
 
@@ -156,13 +159,35 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void OnInventoryUpdated()
+    void OnInventoryWasUpdated()
     {
     }
 
-    void OnSwitchableObjectOpened(ESwitchableObjectID id)
+    void OnSwitchableObjectWasOpened(ESwitchableObjectID id)
     {
     }
+
+    void OnInteractionWithDoorHappened(Door door)
+    {
+        if (!door.IsDragonflyMarked)
+        {
+            return;
+        }
+
+        EDoorAction[] doorLastActions = door.LastActions;
+
+        if (dragonflyCode.Length != doorLastActions.Length)
+        {
+            throw new Exception("dragonfly code length is not equal to door last actions length");
+        }
+
+        if (dragonflyCode.SequenceEqual(doorLastActions))
+        {
+            Debug.Log("DRAGONFLY EVENT ACTIVATED");
+        }
+
+    }
+
 
     private Floor GetNextHigherFloor()
     {

@@ -5,7 +5,7 @@ public class AnimatedSelectableObject : SelectableObject
 {
     Animator anim;
 
-    void Start()
+    protected virtual void Start()
     {
         anim = GetComponent<Animator>();
     }

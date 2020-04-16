@@ -8,6 +8,6 @@ public class InventoryObject : SelectableObject
     public override void OnClick(EInventoryItemID? selectedInventoryObjectId = null)
     {
         GetComponent<Renderer>().enabled = false;
-        Messenger<EInventoryItemID>.Broadcast(Events.ADD_ITEM_TO_INVENTORY, objectId);
+        Messenger<EInventoryItemID>.Broadcast(Events.INVENTORY_ITEM_WAS_CLICKED, objectId);
     }
 }

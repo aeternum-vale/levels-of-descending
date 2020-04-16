@@ -26,7 +26,7 @@ public class SelectableObject : MonoBehaviour
     public virtual void OnClick(EInventoryItemID? selectedInventoryItemId = null)
     {
         string item = !(selectedInventoryItemId is null) ? selectedInventoryItemId.ToString() : "nothing";
-        Debug.Log($"using {item} on {gameObject.name}");
+        //Debug.Log($"using {item} on {gameObject.name}");
     }
 
     public virtual void ShowSelected()
