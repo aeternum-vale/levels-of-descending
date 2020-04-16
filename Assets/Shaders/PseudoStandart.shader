@@ -66,8 +66,13 @@
 
 			o.Albedo = c.rgb * sec_c.rgb;
 
-			o.Normal = UnpackNormal(tex2D(_DetailNormalMap, IN.uv_DetailNormalMap));
-			o.Normal *= float3(_DetailNormalMapScale, _DetailNormalMapScale, 1);
+			float3 normal_map = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
+			normal_map *= float3(_BumpScale, _BumpScale, 1);
+
+			float3 detail_normal_map = UnpackNormal(tex2D(_DetailNormalMap, IN.uv_DetailNormalMap));
+			detail_normal_map *= float3(_DetailNormalMapScale, _DetailNormalMapScale, 1);
+
+			o.Normal = normal_map + detail_normal_map;
 
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;

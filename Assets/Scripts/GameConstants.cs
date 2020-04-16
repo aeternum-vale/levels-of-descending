@@ -18,12 +18,6 @@ public enum ECameraID
     INVENTORY
 }
 
-public enum EDoorType
-{
-    DRAGONFLY
-}
-
-
 public class Events
 {
     public static string FLOOR_TOUCHED = "FLOOR_TOUCHED";

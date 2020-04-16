@@ -21,8 +21,6 @@ public abstract class Door : MonoBehaviour
     static readonly string staticDetailsName = "staticDetails";
     static readonly string detailsName = "details";
 
-    public EDoorType Type { get; set; }
-
     void Awake()
     {
         SetDoorBase();
@@ -81,6 +79,21 @@ public abstract class Door : MonoBehaviour
         transform.localScale = new Vector3(1, 1, -1);
         transform.position -= new Vector3(0, 0, 0.03f);
     }
+
+    public void MarkWithDragonfly()
+    {
+        GameObject nameplate = details.transform.Find("nameplate").gameObject;
+        nameplate.SetActive(true);
+        nameplate.GetComponent<MeshRenderer>().material.SetFloat("_IsTitleOn", 1f);
+    }
+
+    public void UnmarkWithDragonfly()
+    {
+        GameObject nameplate = details.transform.Find("nameplate").gameObject;
+        nameplate.SetActive(false);
+        nameplate.GetComponent<MeshRenderer>().material.SetFloat("_IsTitleOn", 0f);
+    }
+
 
     protected abstract void Randomize();
 }

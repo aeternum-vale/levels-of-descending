@@ -29,7 +29,9 @@ public class GameController : MonoBehaviour
     public static readonly string rightDoorObjectName = "right_door_prefab";
 
     Dictionary<Floor, GameObject> floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
-    Dictionary<EInventoryItemID, int> seenInventoryObjectsToFloorNumberDict = new Dictionary<EInventoryItemID, int>();
+
+    static readonly int dragonflyFloorFrequency = 10;
+    static readonly int dragonflyFirstFloor = 10;
 
 
     void Start()
@@ -156,20 +158,10 @@ public class GameController : MonoBehaviour
 
     void OnInventoryUpdated()
     {
-        UpdateEnvironment();
     }
 
     void OnSwitchableObjectOpened(ESwitchableObjectID id)
     {
-        switch (id)
-        {
-            case ESwitchableObjectID.PAD:
-                if (!seenInventoryObjectsToFloorNumberDict.ContainsKey(EInventoryItemID.POSTBOX_KEY))
-                {
-                    seenInventoryObjectsToFloorNumberDict.Add(EInventoryItemID.POSTBOX_KEY, realFloorNumber);
-                }
-                break;
-        }
     }
 
     private Floor GetNextHigherFloor()
@@ -198,24 +190,17 @@ public class GameController : MonoBehaviour
 
     void UpdateEnvironment()
     {
+
         for (int i = 0; i < floors.Length; i++)
         {
-
-            foreach (EInventoryItemID id in (EInventoryItemID[])Enum.GetValues(typeof(EInventoryItemID)))
-            {
-                floors[i].ShowObject(GameConstants.inventoryItemToInstanceNameMap[id]);
-
-                if (inventory.Contains(id) ||
-                    (seenInventoryObjectsToFloorNumberDict.ContainsKey(id) && seenInventoryObjectsToFloorNumberDict[id] != realFloorNumber))
-                {
-                    floors[i].HideObject(GameConstants.inventoryItemToInstanceNameMap[id]);
-                }
-            }
-
-
             if (player.LastGround1ColliderTouched && player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]]) //stop updating of the current floor
             {
                 continue;
+            }
+
+            foreach (EInventoryItemID id in (EInventoryItemID[])Enum.GetValues(typeof(EInventoryItemID)))
+            {
+                floors[i].HideObject(GameConstants.inventoryItemToInstanceNameMap[id]);
             }
 
             SwitchableSelectableObject s =
@@ -227,10 +212,34 @@ public class GameController : MonoBehaviour
             }
         }
 
-        Floor nextFloor = GetNextHigherFloor();
-        nextFloor.SetFloorDrawnNumber(fakeFloorNumber + 1);
+        int nextFakeFloorNumber = fakeFloorNumber + 1;
 
+        Floor nextFloor = GetNextHigherFloor();
         Floor prevFloor = GetNextLowerFloor();
-        prevFloor.SetFloorDrawnNumber(fakeFloorNumber + 1);
+
+        nextFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
+        prevFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
+
+        nextFloor.UnmarkWithDragonfly();
+        prevFloor.UnmarkWithDragonfly();
+
+        if ((nextFakeFloorNumber - dragonflyFirstFloor) % dragonflyFloorFrequency == 0)
+        {
+            nextFloor.MarkWithDragonfly();
+            prevFloor.MarkWithDragonfly();
+
+            if (!inventory.Contains(EInventoryItemID.POSTBOX_KEY))
+            {
+                nextFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
+                prevFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
+            }
+
+            if (!inventory.Contains(EInventoryItemID.LETTER))
+            {
+                nextFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
+                prevFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
+            }
+        }
+
     }
 }
