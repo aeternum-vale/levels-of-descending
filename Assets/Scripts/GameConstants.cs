@@ -32,7 +32,7 @@ public class Events
     public static string INVENTORY_WAS_UPDATED = "INVENTORY_WAS_UPDATED";
     public static string INVENTORY_BUTTON_WAS_PRESSED = "INVENTORY_BUTTON_WAS_PRESSED";
     public static string SWITCHABLE_OBJECT_WAS_OPENED = "SWITCHABLE_OBJECT_WAS_OPENED";
-    public static string INTERACTION_WITH_DOOR_HAPPENED = "INTERACTION_WITH_DOOR_HAPPENED";
+    public static string DRAGONFLY_CODE_ACTIVATED = "DRAGONFLY_CODE_ACTIVATED";
 };
 
 public class GameConstants
@@ -56,4 +56,6 @@ public class GameConstants
     public static readonly string ground2ColliderObjectName = "ground2";
     public static readonly string stairs1ColliderObjectName = "stairs1";
     public static readonly string stairs2ColliderObjectName = "stairs2";
+
+    public static readonly EDoorAction[] dragonflyCode = new EDoorAction[] { EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE };
 }

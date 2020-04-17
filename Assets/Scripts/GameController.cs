@@ -34,7 +34,6 @@ public class GameController : MonoBehaviour
     static readonly int dragonflyFloorFrequency = 10;
     static readonly int dragonflyFirstFloor = 10;
 
-    static readonly EDoorAction[] dragonflyCode = new EDoorAction[] { EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL };
 
     void Start()
     {
@@ -64,7 +63,7 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.FLOOR_WAS_TOUCHED, OnFloorWasTouched);
         Messenger.AddListener(Events.INVENTORY_WAS_UPDATED, OnInventoryWasUpdated);
         Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_WAS_OPENED, OnSwitchableObjectWasOpened);
-        Messenger<Door>.AddListener(Events.INTERACTION_WITH_DOOR_HAPPENED, OnInteractionWithDoorHappened);
+        Messenger<Door>.AddListener(Events.DRAGONFLY_CODE_ACTIVATED, OnDragonflyCodeActivated);
     }
 
     void UpdateFloorDoors(Floor floor)
@@ -167,27 +166,10 @@ public class GameController : MonoBehaviour
     {
     }
 
-    void OnInteractionWithDoorHappened(Door door)
+    void OnDragonflyCodeActivated(Door door)
     {
-        if (!door.IsDragonflyMarked)
-        {
-            return;
-        }
-
-        EDoorAction[] doorLastActions = door.LastActions;
-
-        if (dragonflyCode.Length != doorLastActions.Length)
-        {
-            throw new Exception("dragonfly code length is not equal to door last actions length");
-        }
-
-        if (dragonflyCode.SequenceEqual(doorLastActions))
-        {
-            Debug.Log("DRAGONFLY EVENT ACTIVATED");
-        }
-
+        Debug.Log("OnDragonflyCodeActivated");
     }
-
 
     private Floor GetNextHigherFloor()
     {

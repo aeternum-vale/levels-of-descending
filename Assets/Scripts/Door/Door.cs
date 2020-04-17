@@ -23,21 +23,8 @@ public abstract class Door : MonoBehaviour
     static readonly string nameplateName = "nameplate";
     static readonly string peepholeName = "peephole";
 
-    EDoorAction[] lastActions = new EDoorAction[4];
+    readonly EDoorAction[] lastActions = new EDoorAction[GameConstants.dragonflyCode.Length];
     int lastActionsCursor = 0;
-
-    public EDoorAction[] LastActions
-    {
-        get
-        {
-            EDoorAction[] result = new EDoorAction[lastActions.Length];
-            for (int i = 0; i < lastActions.Length; i++)
-            {
-                result[i] = lastActions[(lastActionsCursor + i) % lastActions.Length];
-            }
-            return result;
-        }
-    }
 
     void Awake()
     {
@@ -63,6 +50,7 @@ public abstract class Door : MonoBehaviour
     public void MarkWithDragonfly()
     {
         Nameplate.SetActive(true);
+        Peephole.SetActive(false);
         Nameplate.GetComponent<MeshRenderer>().material.SetFloat("_IsTitleOn", 1f);
         IsDragonflyMarked = true;
     }
@@ -70,6 +58,7 @@ public abstract class Door : MonoBehaviour
     public void UnmarkWithDragonfly()
     {
         Nameplate.SetActive(false);
+        Peephole.SetActive(true);
         Nameplate.GetComponent<MeshRenderer>().material.SetFloat("_IsTitleOn", 0f);
         IsDragonflyMarked = false;
     }
@@ -78,7 +67,23 @@ public abstract class Door : MonoBehaviour
     {
         lastActions[lastActionsCursor] = action;
         lastActionsCursor = (lastActionsCursor + 1) % lastActions.Length;
-        Messenger<Door>.Broadcast(Events.INTERACTION_WITH_DOOR_HAPPENED, this);
+
+        if (!IsDragonflyMarked)
+        {
+            return;
+        }
+
+        EDoorAction[] dragonflyCode = GameConstants.dragonflyCode;
+
+        for (int i = 0; i < dragonflyCode.Length; i++)
+        {
+            if (dragonflyCode[i] != lastActions[(lastActionsCursor + i) % dragonflyCode.Length])
+            {
+                return;
+            }
+        }
+
+        Messenger<Door>.Broadcast(Events.DRAGONFLY_CODE_ACTIVATED, this);
     }
 
     protected abstract void Randomize();
