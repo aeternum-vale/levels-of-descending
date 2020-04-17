@@ -3,7 +3,8 @@
 public enum EInventoryItemID
 {
     POSTBOX_KEY,
-    LETTER
+    LETTER,
+    SCALPEL
 }
 
 public enum ESwitchableObjectID
@@ -40,7 +41,9 @@ public class GameConstants
     public static Dictionary<EInventoryItemID, string> inventoryItemToInstanceNameMap =
         new Dictionary<EInventoryItemID, string>() {
             { EInventoryItemID.POSTBOX_KEY, "key" },
-            { EInventoryItemID.LETTER, "letter" }
+            { EInventoryItemID.LETTER, "letter" },
+            { EInventoryItemID.SCALPEL, "scalpel" },
+
         };
 
     public static Dictionary<ESwitchableObjectID, string> switchableObjectToInstanceNameMap =

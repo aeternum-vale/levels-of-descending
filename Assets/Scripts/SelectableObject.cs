@@ -7,15 +7,19 @@ public class SelectableObject : MonoBehaviour
 {
 
     protected Material selectableMaterial;
+    public bool IsEnabled { get; set; } = true;
 
-    void Awake()
+    protected virtual void Awake()
     {
         selectableMaterial = GetComponent<MeshRenderer>().material;
     }
 
     public virtual void OnOver()
     {
-        ShowSelected();
+        if (IsEnabled)
+        {
+            ShowSelected();
+        }
     }
 
     public virtual void OnOut()
@@ -25,7 +29,7 @@ public class SelectableObject : MonoBehaviour
 
     public virtual void OnClick(EInventoryItemID? selectedInventoryItemId = null)
     {
-        string item = !(selectedInventoryItemId is null) ? selectedInventoryItemId.ToString() : "nothing";
+        //string item = !(selectedInventoryItemId is null) ? selectedInventoryItemId.ToString() : "nothing";
         //Debug.Log($"using {item} on {gameObject.name}");
     }
 

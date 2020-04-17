@@ -11,12 +11,15 @@ public class Floor : MonoBehaviour
     Material postboxPartMaterialWithDragonFly;
     Door leftDoor;
     Door rightDoor;
+    Scalpel scalpel;
 
     private void Start()
     {
         postboxPartMaterialWithDragonFly = gameObject.transform.Find("postbox").Find("Cube.003").gameObject.GetComponent<MeshRenderer>().material;
         leftDoor = gameObject.transform.Find("left_door_prefab").gameObject.GetComponent<Door>();
         rightDoor = gameObject.transform.Find("right_door_prefab").gameObject.GetComponent<Door>();
+
+        scalpel = gameObject.transform.Find(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.SCALPEL]).gameObject.GetComponent<Scalpel>();
     }
 
     private void Awake()
@@ -49,5 +52,10 @@ public class Floor : MonoBehaviour
     {
         postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 0f);
         leftDoor.UnmarkWithDragonfly();
+    }
+
+    public void EmergeScalpel()
+    {
+        scalpel.Emerge();
     }
 }

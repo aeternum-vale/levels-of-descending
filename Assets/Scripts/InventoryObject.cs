@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class InventoryObject : SelectableObject
 {
@@ -7,7 +8,10 @@ public class InventoryObject : SelectableObject
 
     public override void OnClick(EInventoryItemID? selectedInventoryObjectId = null)
     {
-        GetComponent<Renderer>().enabled = false;
-        Messenger<EInventoryItemID>.Broadcast(Events.INVENTORY_ITEM_WAS_CLICKED, objectId);
+        if (IsEnabled)
+        {
+            GetComponent<Renderer>().enabled = false;
+            Messenger<EInventoryItemID>.Broadcast(Events.INVENTORY_ITEM_WAS_CLICKED, objectId);
+        }
     }
 }

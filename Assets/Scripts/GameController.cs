@@ -32,8 +32,9 @@ public class GameController : MonoBehaviour
     Dictionary<Floor, GameObject> floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
 
     static readonly int dragonflyFloorFrequency = 10;
-    static readonly int dragonflyFirstFloor = 10;
+    static readonly int dragonflyFirstFloor = 9;
 
+    delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
 
     void Start()
     {
@@ -168,28 +169,31 @@ public class GameController : MonoBehaviour
 
     void OnDragonflyCodeActivated(Door door)
     {
-        Debug.Log("OnDragonflyCodeActivated");
+        GetCurrentFloor().EmergeScalpel();
     }
 
     private Floor GetNextHigherFloor()
     {
-        for (int i = 0; i < floors.Length; i++)
-        {
-            if (player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]])
-            {
-                return floors[(i + 1) % floorCount];
-            }
-        }
-        return null;
+        return GetSpecificFloor((i, floorCount) => ((i + 1) % floorCount));
     }
 
     private Floor GetNextLowerFloor()
+    {
+        return GetSpecificFloor((i, floorCount) => ((i - 1 >= 0) ? i - 1 : floorCount - 1));
+    }
+
+    private Floor GetCurrentFloor()
+    {
+        return GetSpecificFloor((i, floorCount) => i);
+    }
+
+    private Floor GetSpecificFloor(OnReachedCurrentIndexCallback cb)
     {
         for (int i = 0; i < floors.Length; i++)
         {
             if (player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]])
             {
-                return floors[(i - 1 >= 0) ? (i - 1) : (floorCount - 1)];
+                return floors[cb(i, floorCount)];
             }
         }
         return null;
@@ -221,30 +225,30 @@ public class GameController : MonoBehaviour
 
         int nextFakeFloorNumber = fakeFloorNumber + 1;
 
-        Floor nextFloor = GetNextHigherFloor();
-        Floor prevFloor = GetNextLowerFloor();
+        Floor nextHighFloor = GetNextHigherFloor();
+        Floor nextLowFloor = GetNextLowerFloor();
 
-        nextFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
-        prevFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
+        nextHighFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
+        nextLowFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
 
-        nextFloor.UnmarkWithDragonfly();
-        prevFloor.UnmarkWithDragonfly();
+        nextHighFloor.UnmarkWithDragonfly();
+        nextLowFloor.UnmarkWithDragonfly();
 
         if ((nextFakeFloorNumber - dragonflyFirstFloor) % dragonflyFloorFrequency == 0)
         {
-            nextFloor.MarkWithDragonfly();
-            prevFloor.MarkWithDragonfly();
+            nextHighFloor.MarkWithDragonfly();
+            nextLowFloor.MarkWithDragonfly();
 
             if (!inventory.Contains(EInventoryItemID.POSTBOX_KEY))
             {
-                nextFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
-                prevFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
+                nextHighFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
+                nextLowFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
             }
 
             if (!inventory.Contains(EInventoryItemID.LETTER))
             {
-                nextFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
-                prevFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
+                nextHighFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
+                nextLowFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
             }
         }
 
