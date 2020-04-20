@@ -11,7 +11,7 @@ public class SwitchableSelectableObject : SelectableObject
 
     readonly string switchStateName = "Switch";
     readonly string directionParamName = "Direction";
-    void Start()
+    protected virtual void Start()
     {
         anim = GetComponent<Animator>();
     }
@@ -20,7 +20,7 @@ public class SwitchableSelectableObject : SelectableObject
     {
         base.OnClick(selectedInventoryItemId);
         Messenger<ESwitchableObjectID>.Broadcast(Events.SWITCHABLE_OBJECT_WAS_OPENED, id);
-        
+
         if (IsOpened || SwitchCondition(selectedInventoryItemId))
         {
             Switch();
