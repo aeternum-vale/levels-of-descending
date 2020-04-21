@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq.Expressions;
+using UnityEngine;
 
 public class ElectricPanelRightDoor : SwitchableSelectableObject
 {
@@ -29,4 +30,6 @@ public class ElectricPanelRightDoor : SwitchableSelectableObject
         doorSelectableMaterial.SetFloat("_IsSelected", 0f);
         doorLockSelectableMaterial.SetFloat("_IsSelected", 0f);
     }
+
+    protected override bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null) => false;
 }
