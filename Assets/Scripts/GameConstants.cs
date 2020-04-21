@@ -11,7 +11,8 @@ public enum ESwitchableObjectID
 {
     PAD,
     POSTBOX_DOOR,
-    E_PANEL
+    E_PANEL,
+    SIGN
 }
 
 public enum ECameraID

@@ -19,9 +19,11 @@ public class Player : MonoBehaviour
     float startCameraY;
     float realSquattingAmount;
     readonly float squattingMaxAmount = 2f;
-    readonly float squattingSpeed = 6f;
+    readonly float squattingSpeed = 3f;
 
-    readonly float maxDistanceToSelectableObject = .8f;
+    float maxDistanceToSelectableObject = .5f;
+    readonly float maxDistanceToSelectableObjectOnStanding = .5f;
+    readonly float maxDistanceToSelectableObjectOnSquatting = .8f;
 
     SelectableObject selectedObject;
     public GameObject LastGround1ColliderTouched { get; private set; }
@@ -206,6 +208,14 @@ public class Player : MonoBehaviour
         {
             realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * this.squattingSpeed * Time.deltaTime;
             realSquattingAmount = Mathf.Clamp(realSquattingAmount, 0, squattingMaxAmount);
+
+            if (realSquattingAmount == squattingMaxAmount)
+            {
+                maxDistanceToSelectableObject = maxDistanceToSelectableObjectOnSquatting;
+            } else
+            {
+                maxDistanceToSelectableObject = maxDistanceToSelectableObjectOnStanding;
+            }
         }
     }
 

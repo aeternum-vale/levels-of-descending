@@ -27,7 +27,7 @@ public class SwitchableSelectableObject : SelectableObject
         }
     }
 
-    public void Switch()
+    public virtual void Switch()
     {
         if (!isAnimationOn)
         {
