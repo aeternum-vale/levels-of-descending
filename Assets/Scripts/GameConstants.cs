@@ -43,7 +43,7 @@ public class GameConstants
 {
     public static Dictionary<EInventoryItemID, string> inventoryItemToInstanceNameMap =
         new Dictionary<EInventoryItemID, string>() {
-            { EInventoryItemID.POSTBOX_KEY, "key" },
+            { EInventoryItemID.POSTBOX_KEY, "postbox_key" },
             { EInventoryItemID.LETTER, "letter" },
             { EInventoryItemID.SCALPEL, "scalpel" },
 

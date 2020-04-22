@@ -4,7 +4,6 @@ using UnityEngine.Rendering;
 public class InventoryObject : SelectableObject
 {
     [SerializeField] protected EInventoryItemID objectId;
-    [SerializeField] protected GameObject mesh;
 
     public override void OnClick(EInventoryItemID? selectedInventoryObjectId = null)
     {
