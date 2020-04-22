@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,13 +14,19 @@ public class Floor : MonoBehaviour
     Door rightDoor;
     Scalpel scalpel;
 
+    public readonly Dictionary<ESwitchableObjectID, SwitchableObject> switchableInstancesDict = new Dictionary<ESwitchableObjectID, SwitchableObject>();
+
     private void Start()
     {
         postboxPartMaterialWithDragonFly = gameObject.transform.Find("postbox").Find("Cube.003").gameObject.GetComponent<MeshRenderer>().material;
         leftDoor = gameObject.transform.Find("left_door_prefab").gameObject.GetComponent<Door>();
         rightDoor = gameObject.transform.Find("right_door_prefab").gameObject.GetComponent<Door>();
-
         scalpel = gameObject.transform.Find(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.SCALPEL]).gameObject.GetComponent<Scalpel>();
+
+        foreach (ESwitchableObjectID id in (ESwitchableObjectID[])Enum.GetValues(typeof(ESwitchableObjectID)))
+        {
+            switchableInstancesDict.Add(id, transform.Find(GameConstants.switchableObjectToInstancePathMap[id]).gameObject.GetComponent<SwitchableObject>());
+        }
     }
 
     private void Awake()

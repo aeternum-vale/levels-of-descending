@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SignCovering : SwitchableSelectableObject
+public class SignCovering : SwitchableObject
 {
     GameObject coveringCut;
 
@@ -21,6 +21,11 @@ public class SignCovering : SwitchableSelectableObject
             IsOpened = true;
             gameObject.SetActive(false);
             coveringCut.SetActive(true);
+        } else
+        {
+            IsOpened = false;
+            gameObject.SetActive(true);
+            coveringCut.SetActive(false);
         }
     }
 

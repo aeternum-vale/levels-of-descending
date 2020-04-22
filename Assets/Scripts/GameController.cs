@@ -55,6 +55,7 @@ public class GameController : MonoBehaviour
             floors[floorsHalf].transform.localPosition.y,
             playerGameObject.transform.localPosition.z
         );
+
     }
 
     void Awake()
@@ -65,6 +66,33 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.INVENTORY_WAS_UPDATED, OnInventoryWasUpdated);
         Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_WAS_OPENED, OnSwitchableObjectWasOpened);
         Messenger<Door>.AddListener(Events.DRAGONFLY_CODE_ACTIVATED, OnDragonflyCodeActivated);
+    }
+
+    private Floor GetNextHigherFloor()
+    {
+        return GetSpecificFloor((i, floorCount) => ((i + 1) % floorCount));
+    }
+
+    private Floor GetNextLowerFloor()
+    {
+        return GetSpecificFloor((i, floorCount) => ((i - 1 >= 0) ? i - 1 : floorCount - 1));
+    }
+
+    private Floor GetCurrentFloor()
+    {
+        return GetSpecificFloor((i, floorCount) => i);
+    }
+
+    private Floor GetSpecificFloor(OnReachedCurrentIndexCallback cb)
+    {
+        for (int i = 0; i < floors.Length; i++)
+        {
+            if (player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]])
+            {
+                return floors[cb(i, floorCount)];
+            }
+        }
+        return null;
     }
 
     void UpdateFloorDoors(Floor floor)
@@ -169,35 +197,12 @@ public class GameController : MonoBehaviour
 
     void OnDragonflyCodeActivated(Door door)
     {
-        GetCurrentFloor().EmergeScalpel();
-    }
-
-    private Floor GetNextHigherFloor()
-    {
-        return GetSpecificFloor((i, floorCount) => ((i + 1) % floorCount));
-    }
-
-    private Floor GetNextLowerFloor()
-    {
-        return GetSpecificFloor((i, floorCount) => ((i - 1 >= 0) ? i - 1 : floorCount - 1));
-    }
-
-    private Floor GetCurrentFloor()
-    {
-        return GetSpecificFloor((i, floorCount) => i);
-    }
-
-    private Floor GetSpecificFloor(OnReachedCurrentIndexCallback cb)
-    {
-        for (int i = 0; i < floors.Length; i++)
+        if (!inventory.Contains(EInventoryItemID.SCALPEL))
         {
-            if (player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]])
-            {
-                return floors[cb(i, floorCount)];
-            }
+            GetCurrentFloor().EmergeScalpel();
         }
-        return null;
     }
+
 
     void UpdateEnvironment()
     {
@@ -209,17 +214,17 @@ public class GameController : MonoBehaviour
                 continue;
             }
 
-            foreach (EInventoryItemID id in (EInventoryItemID[])Enum.GetValues(typeof(EInventoryItemID)))
+            foreach (EInventoryItemID id in (EInventoryItemID[])Enum.GetValues(typeof(EInventoryItemID))) //TODO: add cache
             {
                 floors[i].HideObject(GameConstants.inventoryItemToInstanceNameMap[id]);
             }
 
-            SwitchableSelectableObject s =
-                floors[i].transform.Find(GameConstants.switchableObjectToInstanceNameMap[ESwitchableObjectID.PAD]).gameObject.GetComponent<SwitchableSelectableObject>();
-
-            if (s.IsOpened)
-            {
-                s.Switch();
+            foreach (var s in floors[i].switchableInstancesDict.Values)
+            { 
+                if (s.IsOpened)
+                {
+                    s.Switch();
+                }
             }
         }
 

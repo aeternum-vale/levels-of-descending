@@ -21,8 +21,8 @@ public class Player : MonoBehaviour
     readonly float squattingMaxAmount = 2f;
     readonly float squattingSpeed = 3f;
 
-    float maxDistanceToSelectableObject = .5f;
-    readonly float maxDistanceToSelectableObjectOnStanding = .5f;
+    float maxDistanceToSelectableObject = .45f;
+    readonly float maxDistanceToSelectableObjectOnStanding = .45f;
     readonly float maxDistanceToSelectableObjectOnSquatting = .8f;
 
     SelectableObject selectedObject;

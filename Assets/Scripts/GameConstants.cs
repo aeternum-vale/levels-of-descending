@@ -12,7 +12,8 @@ public enum ESwitchableObjectID
     PAD,
     POSTBOX_DOOR,
     E_PANEL,
-    SIGN
+    SIGN,
+    SIGN_COVERING
 }
 
 public enum ECameraID
@@ -48,10 +49,13 @@ public class GameConstants
 
         };
 
-    public static Dictionary<ESwitchableObjectID, string> switchableObjectToInstanceNameMap =
+    public static Dictionary<ESwitchableObjectID, string> switchableObjectToInstancePathMap =
         new Dictionary<ESwitchableObjectID, string>() {
             { ESwitchableObjectID.PAD, "pad"},
-            { ESwitchableObjectID.POSTBOX_DOOR, "postbox_door"},
+            { ESwitchableObjectID.POSTBOX_DOOR, "postbox/postbox_door"},
+            { ESwitchableObjectID.E_PANEL, "e-panel/right_door"},
+            { ESwitchableObjectID.SIGN, "bulletin_board_elevator/sign"},
+            { ESwitchableObjectID.SIGN_COVERING, "bulletin_board_elevator/covering"}
         };
 
     public static readonly string collidersObjectName = "colliders";

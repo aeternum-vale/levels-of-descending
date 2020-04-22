@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class SwitchableSelectableObject : SelectableObject
+public class SwitchableObject : SelectableObject
 {
 
     [SerializeField] ESwitchableObjectID id;

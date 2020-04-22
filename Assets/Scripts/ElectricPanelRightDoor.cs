@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using UnityEngine;
 
-public class ElectricPanelRightDoor : SwitchableSelectableObject
+public class ElectricPanelRightDoor : SwitchableObject
 {
     GameObject door;
     GameObject doorLock;
