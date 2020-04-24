@@ -46,7 +46,10 @@ public class SwitchableObject : SelectableObject
         }
     }
 
-    protected virtual bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null) => true;
+    protected virtual bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null)
+    {
+        return true;
+    }
 
     void OnAnimationEnd()
     {

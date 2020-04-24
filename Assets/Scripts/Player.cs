@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Player : MonoBehaviour
 {
@@ -98,7 +95,7 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, maxDistanceToSelectableObject))
         {
-            SelectableObject currentSelectedObject = (SelectableObject)hit.transform.GetComponent<SelectableObject>();
+            SelectableObject currentSelectedObject = hit.transform.GetComponent<SelectableObject>();
             if (currentSelectedObject)
             {
                 this.selectedObject = currentSelectedObject;
@@ -212,7 +209,8 @@ public class Player : MonoBehaviour
             if (realSquattingAmount == squattingMaxAmount)
             {
                 maxDistanceToSelectableObject = maxDistanceToSelectableObjectOnSquatting;
-            } else
+            }
+            else
             {
                 maxDistanceToSelectableObject = maxDistanceToSelectableObjectOnStanding;
             }

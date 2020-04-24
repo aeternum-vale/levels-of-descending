@@ -27,7 +27,11 @@ public class Inventory : MonoBehaviour
     readonly float transitionXOffset = 15f;
     static readonly string itemsContainerName = "items";
 
-    public bool Contains(EInventoryItemID id) => AvailableItemsDict.ContainsKey(id);
+    public bool Contains(EInventoryItemID id)
+    {
+        return AvailableItemsDict.ContainsKey(id);
+    }
+
     public EInventoryItemID CurrentItemID => listOfAvailableItems[currentItemIndex];
 
     public bool IsInventoryModeOn { get; private set; }

@@ -4,5 +4,8 @@
     public int FirstFloor { get; set; }
 
     public EInventoryItemID[] associatedInventoryItems;
-    public bool IsFloorMarked(int floorNumber) => (floorNumber - FirstFloor) % Frequency == 0;
+    public bool IsFloorMarked(int floorNumber)
+    {
+        return (floorNumber - FirstFloor) % Frequency == 0;
+    }
 }
