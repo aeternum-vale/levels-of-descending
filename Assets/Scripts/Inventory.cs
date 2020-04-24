@@ -16,8 +16,6 @@ public class Inventory : MonoBehaviour
     RenderTexture inventoryCameraTexture;
 
     public Dictionary<EInventoryItemID, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemID, bool>();
-    public bool IsInventoryModeOn { get; private set; }
-
     readonly Dictionary<EInventoryItemID, GameObject> instances = new Dictionary<EInventoryItemID, GameObject>();
     int currentItemIndex;
     List<EInventoryItemID> listOfAvailableItems;
@@ -27,6 +25,13 @@ public class Inventory : MonoBehaviour
     readonly float transitionStep = 0.03f;
     readonly float transitionStepTime = 0.001f;
     readonly float transitionXOffset = 15f;
+    static readonly string itemsContainerName = "items";
+
+    public bool Contains(EInventoryItemID id) => AvailableItemsDict.ContainsKey(id);
+    public EInventoryItemID CurrentItemID => listOfAvailableItems[currentItemIndex];
+
+    public bool IsInventoryModeOn { get; private set; }
+
     public bool CanActivateInventoryMode
     {
         get
@@ -35,10 +40,6 @@ public class Inventory : MonoBehaviour
             return (listOfAvailableItems.Count != 0);
         }
     }
-
-    public EInventoryItemID CurrentItemID => listOfAvailableItems[currentItemIndex];
-
-    public bool Contains(EInventoryItemID id) => AvailableItemsDict.ContainsKey(id);
 
     void Awake()
     {
@@ -53,8 +54,8 @@ public class Inventory : MonoBehaviour
 
         foreach (KeyValuePair<EInventoryItemID, string> item in GameConstants.inventoryItemToInstanceNameMap)
         {
-            GameObject go = transform.Find(item.Value).gameObject;
-            go.GetComponent<Renderer>().enabled = false;
+            GameObject go = transform.Find($"{itemsContainerName}/{item.Value}").gameObject;
+            HideInstance(go);
             instances.Add(item.Key, go);
         }
     }
@@ -74,27 +75,25 @@ public class Inventory : MonoBehaviour
 
     void ShowInstance(GameObject instance)
     {
-        instance.GetComponent<Renderer>().enabled = true;
+        instance.transform.GetChild(0).gameObject.SetActive(true);
     }
 
     void HideInstance(GameObject instance)
     {
-        instance.GetComponent<Renderer>().enabled = false;
         StopInstanceAnimation(instance);
+        instance.transform.GetChild(0).gameObject.SetActive(false);
     }
 
     void StopInstanceAnimation(GameObject instance)
     {
         instance.GetComponent<Animator>().Play("inventoryItemRotation", -1, 0f);
         instance.GetComponent<Animator>().speed = 0f;
-
     }
 
     void StartInstanceAnimation(GameObject instance)
     {
         instance.GetComponent<Animator>().speed = 1f;
     }
-
 
     void HideAllInstances()
     {
