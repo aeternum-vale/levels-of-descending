@@ -34,6 +34,9 @@ public class GameController : MonoBehaviour
     static readonly int dragonflyFloorFrequency = 10;
     static readonly int dragonflyFirstFloor = 9;
 
+    static readonly int lostPetSignFloorFrequency = 5;
+    static readonly int lostPetSignFirstFloor = 11;
+
     delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
 
     void Start()
@@ -220,7 +223,7 @@ public class GameController : MonoBehaviour
             }
 
             foreach (var s in floors[i].switchableInstancesDict.Values)
-            { 
+            {
                 if (s.IsOpened)
                 {
                     s.Switch();
@@ -236,26 +239,28 @@ public class GameController : MonoBehaviour
         nextHighFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
         nextLowFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
 
-        nextHighFloor.UnmarkWithDragonfly();
-        nextLowFloor.UnmarkWithDragonfly();
+        nextHighFloor.ResetAllMarks();
+        nextLowFloor.ResetAllMarks();
 
-        if ((nextFakeFloorNumber - dragonflyFirstFloor) % dragonflyFloorFrequency == 0)
+        foreach (var floorMarkKeyValuePair in GameConstants.floorMarksDict)
         {
-            nextHighFloor.MarkWithDragonfly();
-            nextLowFloor.MarkWithDragonfly();
+            EFloorMarkID id = floorMarkKeyValuePair.Key;
+            FloorMark floorMarkValue = floorMarkKeyValuePair.Value;
 
-            if (!inventory.Contains(EInventoryItemID.POSTBOX_KEY))
+            if (floorMarkValue.IsFloorMarked(nextFakeFloorNumber))
             {
-                nextHighFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
-                nextLowFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.POSTBOX_KEY]);
-            }
+                nextHighFloor.SetMark(id);
+                nextLowFloor.SetMark(id);
 
-            if (!inventory.Contains(EInventoryItemID.LETTER))
-            {
-                nextHighFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
-                nextLowFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.LETTER]);
+                foreach (var inventoryItem in floorMarkValue.associatedInventoryItems)
+                {
+                    if (!inventory.Contains(inventoryItem))
+                    {
+                        nextHighFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[inventoryItem]);
+                        nextLowFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[inventoryItem]);
+                    }
+                }
             }
         }
-
     }
 }

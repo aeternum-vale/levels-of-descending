@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Floor : MonoBehaviour
 {
-    static readonly string frontWallName  = "front_wall";
-    static readonly string frontWallNumberMatPropertyName  = "_FloorNumber";
+    static readonly string frontWallName = "front_wall";
+    static readonly string frontWallNumberMatPropertyName = "_FloorNumber";
 
     Material frontWallMaterial;
     Material postboxPartMaterialWithDragonFly;
@@ -15,6 +16,10 @@ public class Floor : MonoBehaviour
     Scalpel scalpel;
 
     public readonly Dictionary<ESwitchableObjectID, SwitchableObject> switchableInstancesDict = new Dictionary<ESwitchableObjectID, SwitchableObject>();
+    readonly Dictionary<EFloorMarkID, bool> markStatesDict = new Dictionary<EFloorMarkID, bool>() {
+        { EFloorMarkID.DRAGONFLY, false },
+        { EFloorMarkID.LOST_PET_SIGN, false },
+    };
 
     private void Start()
     {
@@ -49,20 +54,42 @@ public class Floor : MonoBehaviour
         frontWallMaterial.SetFloat(frontWallNumberMatPropertyName, number);
     }
 
-    public void MarkWithDragonfly()
-    {
-        postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 1f);
-        leftDoor.MarkWithDragonfly();
-    }
-
-    public void UnmarkWithDragonfly()
-    {
-        postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 0f);
-        leftDoor.UnmarkWithDragonfly();
-    }
-
     public void EmergeScalpel()
     {
         scalpel.Emerge();
+    }
+
+    public void SetMark(EFloorMarkID id)
+    {
+        markStatesDict[id] = true;
+
+        switch (id)
+        {
+            case EFloorMarkID.DRAGONFLY:
+                postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 1f);
+                leftDoor.MarkWithDragonfly();
+                break;
+        }
+    }
+
+    public void ResetMark(EFloorMarkID id)
+    {
+        markStatesDict[id] = false;
+
+        switch (id)
+        {
+            case EFloorMarkID.DRAGONFLY:
+                postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 0f);
+                leftDoor.UnmarkWithDragonfly();
+                break;
+        }
+    }
+
+    public void ResetAllMarks()
+    {
+        foreach (var key in markStatesDict.Keys.ToList())
+        {
+            ResetMark(key);
+        }
     }
 }

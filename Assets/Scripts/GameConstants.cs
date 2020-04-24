@@ -4,7 +4,8 @@ public enum EInventoryItemID
 {
     POSTBOX_KEY,
     LETTER,
-    SCALPEL
+    SCALPEL,
+    E_PANEL_KEY
 }
 
 public enum ESwitchableObjectID
@@ -29,6 +30,12 @@ public enum EDoorAction
     HANDLE
 }
 
+public enum EFloorMarkID
+{
+    DRAGONFLY,
+    LOST_PET_SIGN
+}
+
 public class Events
 {
     public static string FLOOR_WAS_TOUCHED = "FLOOR_WAS_TOUCHED";
@@ -46,6 +53,7 @@ public class GameConstants
             { EInventoryItemID.POSTBOX_KEY, "postbox_key" },
             { EInventoryItemID.LETTER, "letter" },
             { EInventoryItemID.SCALPEL, "scalpel" },
+            { EInventoryItemID.E_PANEL_KEY, "e-panel_key" },
 
         };
 
@@ -67,4 +75,9 @@ public class GameConstants
     public static readonly string stairs2ColliderObjectName = "stairs2";
 
     public static readonly EDoorAction[] dragonflyCode = new EDoorAction[] { EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE };
+
+    public static readonly Dictionary<EFloorMarkID, FloorMark> floorMarksDict = new Dictionary<EFloorMarkID, FloorMark> {
+       { EFloorMarkID.DRAGONFLY,     new FloorMark() {FirstFloor = 9,  Frequency = 10, associatedInventoryItems = new EInventoryItemID[]{ EInventoryItemID.POSTBOX_KEY, EInventoryItemID.LETTER } } },
+       { EFloorMarkID.LOST_PET_SIGN, new FloorMark() {FirstFloor = 11, Frequency = 5,  associatedInventoryItems = new EInventoryItemID[]{ EInventoryItemID.E_PANEL_KEY} } },
+    };
 }
