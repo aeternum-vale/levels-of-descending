@@ -82,8 +82,6 @@
 			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
 			fixed4 sec_c = tex2D(_DetailAlbedoMap, IN.uv_DetailAlbedoMap);
 
-
-
 			float bitmap_font_col_count = 4;
 			float bitmap_font_row_count = 4;
 			float floor_number_rank1 = trunc(_FloorNumber / 10);

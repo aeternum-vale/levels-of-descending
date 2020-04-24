@@ -227,6 +227,8 @@ public class GameController : MonoBehaviour
                     s.Switch();
                 }
             }
+
+            floors[i].SetRandomSign();
         }
 
         int nextFakeFloorNumber = fakeFloorNumber + 1;

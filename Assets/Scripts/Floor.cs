@@ -7,12 +7,16 @@ public class Floor : MonoBehaviour
 {
     static readonly string frontWallName = "front_wall";
     static readonly string frontWallNumberMatPropertyName = "_FloorNumber";
+    static readonly string signPath = "bulletin_board_elevator/sign";
+
 
     Material frontWallMaterial;
     Material postboxPartMaterialWithDragonFly;
     Door leftDoor;
     Door rightDoor;
     Scalpel scalpel;
+
+    Material signMaterial;
 
     public readonly Dictionary<ESwitchableObjectID, SwitchableObject> switchableInstancesDict = new Dictionary<ESwitchableObjectID, SwitchableObject>();
     readonly Dictionary<EFloorMarkID, bool> markStatesDict = new Dictionary<EFloorMarkID, bool>() {
@@ -36,6 +40,7 @@ public class Floor : MonoBehaviour
     private void Awake()
     {
         frontWallMaterial = gameObject.transform.Find(GameConstants.entrywayObjectName).Find(frontWallName).gameObject.GetComponent<MeshRenderer>().material;
+        signMaterial = gameObject.transform.Find(signPath).gameObject.GetComponent<MeshRenderer>().material;
     }
 
     public void HideObject(string name)
@@ -68,6 +73,10 @@ public class Floor : MonoBehaviour
                 postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 1f);
                 leftDoor.MarkWithDragonfly();
                 break;
+
+            case EFloorMarkID.LOST_PET_SIGN:
+                signMaterial.SetFloat("_ActiveTextureNumber", 1f);
+                break;
         }
     }
 
@@ -81,6 +90,9 @@ public class Floor : MonoBehaviour
                 postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 0f);
                 leftDoor.UnmarkWithDragonfly();
                 break;
+            case EFloorMarkID.LOST_PET_SIGN:
+                SetRandomSign();
+                break;
         }
     }
 
@@ -90,5 +102,10 @@ public class Floor : MonoBehaviour
         {
             ResetMark(key);
         }
+    }
+
+    public void SetRandomSign()
+    {
+        signMaterial.SetFloat("_ActiveTextureNumber", UnityEngine.Random.Range(2, 5));
     }
 }
