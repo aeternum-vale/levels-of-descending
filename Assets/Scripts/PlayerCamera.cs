@@ -54,12 +54,7 @@ public class PlayerCamera : MonoBehaviour
 
     public Texture2D GetBackgroundTexture()
     {
-        cameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32, 10);
-        cameraComponent.Render();
-
-        Texture2D t2d = new Texture2D(Screen.width, Screen.height, TextureFormat.ARGB32, false);
-        Graphics.CopyTexture(cameraComponent.targetTexture, t2d);
-        return t2d;
+        return CameraUtils.GetCameraTexture(cameraComponent, Screen.width, Screen.height);
     }
 
     public void ActivateInventoryMode()

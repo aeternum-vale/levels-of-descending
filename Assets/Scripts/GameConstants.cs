@@ -14,7 +14,8 @@ public enum ESwitchableObjectID
     POSTBOX_DOOR,
     E_PANEL,
     SIGN,
-    SIGN_COVERING
+    SIGN_COVERING,
+    //GARBAGE_CHUTE_DOOR
 }
 
 public enum ECameraID
@@ -63,7 +64,8 @@ public class GameConstants
             { ESwitchableObjectID.POSTBOX_DOOR, "postbox/postbox_door"},
             { ESwitchableObjectID.E_PANEL, "e-panel/right_door"},
             { ESwitchableObjectID.SIGN, "bulletin_board_elevator/sign"},
-            { ESwitchableObjectID.SIGN_COVERING, "bulletin_board_elevator/covering"}
+            { ESwitchableObjectID.SIGN_COVERING, "bulletin_board_elevator/covering"},
+            //{ ESwitchableObjectID.GARBAGE_CHUTE_DOOR, "garbage_chute/door"},
         };
 
     public static readonly string collidersObjectName = "colliders";

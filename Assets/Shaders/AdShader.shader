@@ -1,14 +1,12 @@
 ﻿// Upgrade NOTE: upgraded instancing buffer 'Props' to new syntax.
 
-Shader "Custom/SignShader" {
+Shader "Custom/AdShader" {
 	Properties{
+		_MainTex("Main Texture", 2D) = "white" {}
+		_PaperTex("Paper Texture", 2D) = "white" {}
+		_MainTextureIntensityMap("MainTextureIntensityMap", 2D) = "white" {}
 
-		_MainTex1("Albedo (RGB)", 2D) = "white" {}
-		_MainTex2("Albedo (RGB)", 2D) = "white" {}
-		_MainTex3("Albedo (RGB)", 2D) = "white" {}
-		_MainTex4("Albedo (RGB)", 2D) = "white" {}
-
-		_ActiveTextureNumber("Active Texture", Range(1, 4)) = 1
+		_MainTextureIntensityPower("MainTextureIntensityPower", Range(-5,5)) = 1
 
 		_RimColor("Rim Color", Color) = (0.26,0.19,0.16,0.0)
 		_RimPower("Rim Power", Range(0.5,8.0)) = 3.0
@@ -26,49 +24,33 @@ Shader "Custom/SignShader" {
 			#pragma target 3.0
 
 			struct Input {
-				float2 uv_MainTex1;
-				float2 uv_MainTex2;
-				float2 uv_MainTex3;
-				float2 uv_MainTex4;
-
+				float2 uv_MainTex;
+				float2 uv_PaperTex;
+				float2 uv_MainTextureIntensityMap;
 				float3 viewDir;
 			};
 
-			sampler2D _MainTex1;
-			sampler2D _MainTex2;
-			sampler2D _MainTex3;
-			sampler2D _MainTex4;
-
-			half _ActiveTextureNumber;
+			sampler2D _MainTex;
+			sampler2D _PaperTex;
+			sampler2D _MainTextureIntensityMap;
 
 			float4 _RimColor;
 			float _RimPower;
+			float _MainTextureIntensityPower;
 			int _IsSelected;
 
 			UNITY_INSTANCING_BUFFER_START(Props)
 			UNITY_INSTANCING_BUFFER_END(Props)
 
 			void surf(Input IN, inout SurfaceOutputStandard o) {
-				int tex_number = trunc(_ActiveTextureNumber);
-				fixed4 c;
 
-				switch (tex_number) {
-					case 1:
-						c = tex2D(_MainTex1, IN.uv_MainTex1);
-						break;
-					case 2:
-						c = tex2D(_MainTex2, IN.uv_MainTex1);
-						break;
-					case 3:
-						c = tex2D(_MainTex3, IN.uv_MainTex1);
-						break;
-					case 4:
-						c = tex2D(_MainTex4, IN.uv_MainTex1);
-						break;
-				}
+				fixed4 main_color = tex2D(_MainTex, IN.uv_MainTex);
+				fixed4 main_color_intensity_map_value = tex2D(_MainTextureIntensityMap, IN.uv_MainTextureIntensityMap);
+				fixed4 paper_color = tex2D(_PaperTex, IN.uv_PaperTex);
 
+				fixed intensity = (main_color_intensity_map_value.r - 0.5) * _MainTextureIntensityPower;
 
-				o.Albedo = c.rgb;
+				o.Albedo = (main_color + (1.0 - main_color.r) * intensity) * paper_color;
 
 				if (_IsSelected) {
 					half rim = 1.0 - saturate(dot(normalize(IN.viewDir), o.Normal));
@@ -77,5 +59,5 @@ Shader "Custom/SignShader" {
 			}
 			ENDCG
 		}
-			FallBack "Diffuse"
+		FallBack "Diffuse"
 }

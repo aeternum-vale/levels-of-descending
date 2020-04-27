@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
+using System.Drawing;
 public class GameController : MonoBehaviour
 {
     [SerializeField] Inventory inventory;
     [SerializeField] GameObject floorPrefab;
     [SerializeField] GameObject playerGameObject;
     [SerializeField] DoorFactory doorFactory;
+
+    [SerializeField] AdGenerator adGenerator;
 
     Player player;
     Floor[] floors;
@@ -57,10 +59,13 @@ public class GameController : MonoBehaviour
             playerGameObject.transform.localPosition.z
         );
 
+        //adGenerator = transform.parent.Find("AdGenerator").gameObject.GetComponent<AdGenerator>();
     }
 
     void Awake()
     {
+        
+
         player = playerGameObject.GetComponent<Player>();
 
         Messenger.AddListener(Events.FLOOR_WAS_TOUCHED, OnFloorWasTouched);
@@ -228,7 +233,7 @@ public class GameController : MonoBehaviour
                 }
             }
 
-            floors[i].SetRandomSign();
+            floors[i].SetFrontWallAd(adGenerator.GetRandomAdTexture());
         }
 
         int nextFakeFloorNumber = fakeFloorNumber + 1;
@@ -262,5 +267,9 @@ public class GameController : MonoBehaviour
                 }
             }
         }
+    }
+
+    void CreateTexture()
+    {
     }
 }
