@@ -15,7 +15,13 @@ public class Inventory : MonoBehaviour
     Texture2D backgroundTexture;
     RenderTexture inventoryCameraTexture;
 
-    public Dictionary<EInventoryItemID, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemID, bool>();
+    public Dictionary<EInventoryItemID, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemID, bool>() {
+        { EInventoryItemID.E_PANEL_KEY, true },
+        { EInventoryItemID.LETTER, true },
+        { EInventoryItemID.POSTBOX_KEY, true },
+        { EInventoryItemID.SCALPEL, true },
+        { EInventoryItemID.SCREWDRIVER, true }
+    };
     readonly Dictionary<EInventoryItemID, GameObject> instances = new Dictionary<EInventoryItemID, GameObject>();
     int currentItemIndex;
     List<EInventoryItemID> listOfAvailableItems;

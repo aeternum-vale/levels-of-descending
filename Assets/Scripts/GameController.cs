@@ -68,7 +68,7 @@ public class GameController : MonoBehaviour
 
         Messenger.AddListener(Events.FLOOR_WAS_TOUCHED, OnFloorWasTouched);
         Messenger.AddListener(Events.INVENTORY_WAS_UPDATED, OnInventoryWasUpdated);
-        Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_WAS_CLICKED, OnSwitchableObjectWasOpened);
+        Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_WAS_OPENED, OnSwitchableObjectWasOpened);
         Messenger<Door>.AddListener(Events.DRAGONFLY_CODE_ACTIVATED, OnDragonflyCodeActivated);
     }
 
@@ -197,6 +197,7 @@ public class GameController : MonoBehaviour
 
     void OnSwitchableObjectWasOpened(ESwitchableObjectID id)
     {
+
     }
 
     void OnDragonflyCodeActivated(Door door)
