@@ -2,7 +2,6 @@
 
 public class Scalpel : InventoryObject
 {
-
     Animator anim;
     protected override void Awake()
     {
@@ -21,5 +20,4 @@ public class Scalpel : InventoryObject
     {
         IsEnabled = true;
     }
-
 }

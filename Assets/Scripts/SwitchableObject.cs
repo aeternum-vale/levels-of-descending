@@ -5,8 +5,13 @@ public class SwitchableObject : SelectableObject
 {
 
     [SerializeField] ESwitchableObjectID id;
+    [SerializeField] bool isDisposable;
+    [SerializeField] EInventoryItemID necessaryInventoryItem;
+    [SerializeField] bool hasValueOfNecessaryInventoryItem;
+
     Animator anim;
     public bool IsOpened { get; set; }
+    public bool IsSealed { get; set; }
     bool isAnimationOn;
 
     readonly string switchStateName = "Switch";
@@ -19,7 +24,12 @@ public class SwitchableObject : SelectableObject
     public override void OnClick(EInventoryItemID? selectedInventoryItemId = null)
     {
         base.OnClick(selectedInventoryItemId);
-        Messenger<ESwitchableObjectID>.Broadcast(Events.SWITCHABLE_OBJECT_WAS_OPENED, id);
+        Messenger<ESwitchableObjectID>.Broadcast(Events.SWITCHABLE_OBJECT_WAS_CLICKED, id);
+
+        if (IsSealed)
+        {
+            return;
+        }
 
         if (IsOpened || SwitchCondition(selectedInventoryItemId))
         {
@@ -34,6 +44,12 @@ public class SwitchableObject : SelectableObject
             if (!IsOpened)
             {
                 IsOpened = true;
+
+                if (isDisposable)
+                {
+                    IsSealed = true;
+                }
+
                 anim.SetFloat(directionParamName, 1f);
                 anim.Play(switchStateName, -1, 0f);
             }
@@ -48,7 +64,13 @@ public class SwitchableObject : SelectableObject
 
     protected virtual bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null)
     {
-        return true;
+        if (hasValueOfNecessaryInventoryItem)
+        {
+            return (selectedInventoryItemId == necessaryInventoryItem);
+        } else
+        {
+            return true;
+        }
     }
 
     void OnAnimationEnd()

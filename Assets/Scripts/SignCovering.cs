@@ -9,10 +9,6 @@ public class SignCovering : SwitchableObject
         base.Start();
         coveringCut = transform.parent.Find("covering_cut").gameObject;
     }
-    protected override bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null)
-    {
-        return (selectedInventoryItemId == EInventoryItemID.SCALPEL);
-    }
 
     public override void Switch()
     {
