@@ -14,9 +14,10 @@ public enum ESwitchableObjectID
     PAD,
     POSTBOX_DOOR,
     E_PANEL,
-    SIGN,
-    SIGN_COVERING,
-    GARBAGE_CHUTE_DOOR
+    AD,
+    AD_COVERING,
+    GARBAGE_CHUTE_DOOR,
+    GARBAGE_CHUTE_DOOR_HINGE
 }
 
 public enum ECameraID
@@ -44,7 +45,7 @@ public class Events
     public static string INVENTORY_ITEM_WAS_CLICKED = "INVENTORY_ITEM_WAS_CLICKED";
     public static string INVENTORY_WAS_UPDATED = "INVENTORY_WAS_UPDATED";
     public static string INVENTORY_BUTTON_WAS_PRESSED = "INVENTORY_BUTTON_WAS_PRESSED";
-    public static string SWITCHABLE_OBJECT_WAS_OPENED = "SWITCHABLE_OBJECT_WAS_OPENED";
+    public static string SWITCHABLE_OBJECT_WAS_CLICKED = "SWITCHABLE_OBJECT_WAS_OPENED";
     public static string DRAGONFLY_CODE_ACTIVATED = "DRAGONFLY_CODE_ACTIVATED";
 };
 
@@ -65,9 +66,10 @@ public class GameConstants
             { ESwitchableObjectID.PAD, "pad"},
             { ESwitchableObjectID.POSTBOX_DOOR, "postbox/postbox_door"},
             { ESwitchableObjectID.E_PANEL, "e-panel/right_door"},
-            { ESwitchableObjectID.SIGN, "bulletin_board_elevator/sign"},
-            { ESwitchableObjectID.SIGN_COVERING, "bulletin_board_elevator/covering"},
+            { ESwitchableObjectID.AD, "bulletin_board_elevator/ad"},
+            { ESwitchableObjectID.AD_COVERING, "bulletin_board_elevator/covering"},
             { ESwitchableObjectID.GARBAGE_CHUTE_DOOR, "garbage_chute/door"},
+            { ESwitchableObjectID.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/hinge"},
         };
 
     public static readonly string collidersObjectName = "colliders";

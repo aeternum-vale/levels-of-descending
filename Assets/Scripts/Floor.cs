@@ -7,8 +7,6 @@ public class Floor : MonoBehaviour
 {
     static readonly string frontWallName = "front_wall";
     static readonly string frontWallNumberMatPropertyName = "_FloorNumber";
-    static readonly string signPath = "bulletin_board_elevator/sign";
-
 
     Material frontWallMaterial;
     Material postboxPartMaterialWithDragonFly;
@@ -40,7 +38,8 @@ public class Floor : MonoBehaviour
     private void Awake()
     {
         frontWallMaterial = gameObject.transform.Find(GameConstants.entrywayObjectName).Find(frontWallName).gameObject.GetComponent<MeshRenderer>().material;
-        adMaterial = gameObject.transform.Find(signPath).gameObject.GetComponent<MeshRenderer>().material;
+        string adPath = GameConstants.switchableObjectToInstancePathMap[ESwitchableObjectID.AD];
+        adMaterial = gameObject.transform.Find(adPath).gameObject.GetComponent<MeshRenderer>().material;
     }
 
     public void HideObject(string name)
