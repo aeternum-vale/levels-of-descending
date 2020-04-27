@@ -64,8 +64,6 @@ public class GameController : MonoBehaviour
 
     void Awake()
     {
-        
-
         player = playerGameObject.GetComponent<Player>();
 
         Messenger.AddListener(Events.FLOOR_WAS_TOUCHED, OnFloorWasTouched);

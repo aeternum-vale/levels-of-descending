@@ -60,7 +60,7 @@ public class AdGenerator : MonoBehaviour
     static readonly int numbersMaxCount = 5;
 
     static readonly int newLineSpacesMaxCount = 2;
-    static readonly float bgColorMinValue = .8f;
+    static readonly float bgColorMinValue = .9f;
 
     void Start()
     {

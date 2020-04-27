@@ -5,7 +5,8 @@ public enum EInventoryItemID
     POSTBOX_KEY,
     LETTER,
     SCALPEL,
-    E_PANEL_KEY
+    E_PANEL_KEY,
+    SCREWDRIVER
 }
 
 public enum ESwitchableObjectID
@@ -15,7 +16,7 @@ public enum ESwitchableObjectID
     E_PANEL,
     SIGN,
     SIGN_COVERING,
-    //GARBAGE_CHUTE_DOOR
+    GARBAGE_CHUTE_DOOR
 }
 
 public enum ECameraID
@@ -55,6 +56,7 @@ public class GameConstants
             { EInventoryItemID.LETTER, "letter" },
             { EInventoryItemID.SCALPEL, "scalpel" },
             { EInventoryItemID.E_PANEL_KEY, "e-panel_key" },
+            { EInventoryItemID.SCREWDRIVER, "screwdriver" },
 
         };
 
@@ -65,7 +67,7 @@ public class GameConstants
             { ESwitchableObjectID.E_PANEL, "e-panel/right_door"},
             { ESwitchableObjectID.SIGN, "bulletin_board_elevator/sign"},
             { ESwitchableObjectID.SIGN_COVERING, "bulletin_board_elevator/covering"},
-            //{ ESwitchableObjectID.GARBAGE_CHUTE_DOOR, "garbage_chute/door"},
+            { ESwitchableObjectID.GARBAGE_CHUTE_DOOR, "garbage_chute/door"},
         };
 
     public static readonly string collidersObjectName = "colliders";
@@ -80,6 +82,6 @@ public class GameConstants
 
     public static readonly Dictionary<EFloorMarkID, FloorMark> floorMarksDict = new Dictionary<EFloorMarkID, FloorMark> {
        { EFloorMarkID.DRAGONFLY,     new FloorMark() {FirstFloor = 9,  Frequency = 10, associatedInventoryItems = new EInventoryItemID[]{ EInventoryItemID.POSTBOX_KEY, EInventoryItemID.LETTER } } },
-       { EFloorMarkID.LOST_PET_SIGN, new FloorMark() {FirstFloor = 11, Frequency = 5,  associatedInventoryItems = new EInventoryItemID[]{ EInventoryItemID.E_PANEL_KEY} } },
+       { EFloorMarkID.LOST_PET_SIGN, new FloorMark() {FirstFloor = 11, Frequency = 5,  associatedInventoryItems = new EInventoryItemID[]{ EInventoryItemID.E_PANEL_KEY, EInventoryItemID.SCREWDRIVER} } },
     };
 }
