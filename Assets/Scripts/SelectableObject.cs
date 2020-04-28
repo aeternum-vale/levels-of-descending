@@ -9,7 +9,7 @@ public class SelectableObject : MonoBehaviour
 
     protected Material selectableMaterial;
     protected Material[] childrenSelectableMaterials;
-    public bool IsEnabled { get; set; } = true;
+    public bool IsGlowingEnabled { get; set; } = true;
 
     protected virtual void Awake()
     {
@@ -25,9 +25,9 @@ public class SelectableObject : MonoBehaviour
 
     public virtual void OnOver()
     {
-        if (IsEnabled)
+        if (IsGlowingEnabled)
         {
-            ShowSelected();
+            ShowGlowing();
         }
     }
 
@@ -42,7 +42,7 @@ public class SelectableObject : MonoBehaviour
         //Debug.Log($"using {item} on {gameObject.name}");
     }
 
-    public virtual void ShowSelected()
+    public virtual void ShowGlowing()
     {
         if (transform.childCount == 0)
         {

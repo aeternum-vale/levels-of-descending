@@ -6,7 +6,7 @@ public class Scalpel : InventoryObject
     protected override void Awake()
     {
         base.Awake();
-        IsEnabled = false;
+        IsGlowingEnabled = false;
         anim = GetComponent<Animator>();
     }
 
@@ -18,6 +18,6 @@ public class Scalpel : InventoryObject
 
     void OnEmergeAnimationEnd()
     {
-        IsEnabled = true;
+        IsGlowingEnabled = true;
     }
 }

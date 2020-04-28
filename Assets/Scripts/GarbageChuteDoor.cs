@@ -17,6 +17,15 @@ public class GarbageChuteDoor : SwitchableObject
         animationStateName = removalStateName;
     }
 
+    protected override void Open()
+    {
+        base.Open();
+
+        if (isUnhinged)
+        {
+            IsGlowingEnabled = false;
+        }
+    }
 
     protected override void OnAnimationEnd()
     {

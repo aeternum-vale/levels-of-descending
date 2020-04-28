@@ -6,7 +6,7 @@ public class InventoryObject : SelectableObject
 
     public override void OnClick(EInventoryItemID? selectedInventoryObjectId = null)
     {
-        if (IsEnabled)
+        if (IsGlowingEnabled)
         {
             GetComponent<Renderer>().enabled = false;
             Messenger<EInventoryItemID>.Broadcast(Events.INVENTORY_ITEM_WAS_CLICKED, objectId);
