@@ -28,7 +28,7 @@ public class Inventory : MonoBehaviour
     float currentTransitionOpacity = 1f;
     bool isTransition;
     bool isTransitionOut = true;
-    readonly float transitionStep = 0.03f;
+    readonly float transitionStep = 0.1f;
     readonly float transitionStepTime = 0.001f;
     readonly float transitionXOffset = 15f;
     static readonly string itemsContainerName = "items";
@@ -191,7 +191,7 @@ public class Inventory : MonoBehaviour
             currentTransitionOpacity >= 0 && currentTransitionOpacity <= 1f;
             currentTransitionOpacity += (isOut ? -1 : 1) * transitionStep)
         {
-            yield return new WaitForSeconds(transitionStepTime);
+            yield return new WaitForFixedUpdate();
         }
         yield return null;
     }
