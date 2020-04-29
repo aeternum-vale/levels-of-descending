@@ -2,14 +2,29 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-[RequireComponent(typeof(MeshRenderer))]
 
 public class SelectableObject : MonoBehaviour
 {
+    [SerializeField] float maxDistanceToSelect = .45f;
+    [SerializeField] bool hasValueOfMaxDistanceToSelect;
 
     protected Material selectableMaterial;
     protected Material[] childrenSelectableMaterials;
     public bool IsGlowingEnabled { get; set; } = true;
+
+    public float? MaxDistanceToSelect
+    {
+        get
+        {
+            if (hasValueOfMaxDistanceToSelect)
+            {
+                return maxDistanceToSelect;
+            } else
+            {
+                return null;
+            }
+        }
+    }
 
     protected virtual void Awake()
     {

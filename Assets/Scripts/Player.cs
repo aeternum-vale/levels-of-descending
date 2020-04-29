@@ -93,13 +93,24 @@ public class Player : MonoBehaviour
         Vector3 point = new Vector3(playerCameraComponent.pixelWidth / 2, playerCameraComponent.pixelHeight / 2, 0);
         Ray ray = playerCameraComponent.ScreenPointToRay(point);
         RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, maxDistanceToSelectableObject))
+        if (Physics.Raycast(ray, out hit))
         {
             SelectableObject currentSelectedObject = hit.transform.GetComponent<SelectableObject>();
+
             if (currentSelectedObject)
             {
-                this.selectedObject = currentSelectedObject;
-                this.selectedObject.OnOver();
+                float distance = maxDistanceToSelectableObject;
+                if (currentSelectedObject.MaxDistanceToSelect != null)
+                {
+                    distance = (float)currentSelectedObject.MaxDistanceToSelect;
+                }
+
+                if (hit.distance <= distance)
+                {
+                    this.selectedObject = currentSelectedObject;
+                    this.selectedObject.OnOver();
+
+                }
             }
         }
     }
