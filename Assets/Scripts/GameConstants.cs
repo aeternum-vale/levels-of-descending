@@ -6,7 +6,9 @@ public enum EInventoryItemID
     LETTER,
     SCALPEL,
     E_PANEL_KEY,
-    SCREWDRIVER
+    SCREWDRIVER,
+    ELEVATOR_BUTTON,
+    ELEVATOR_BUTTON_PANEL
 }
 
 public enum ESwitchableObjectID
@@ -58,6 +60,8 @@ public class GameConstants
             { EInventoryItemID.SCALPEL, "scalpel" },
             { EInventoryItemID.E_PANEL_KEY, "e-panel_key" },
             { EInventoryItemID.SCREWDRIVER, "screwdriver" },
+            { EInventoryItemID.ELEVATOR_BUTTON, "elevator_button" },
+            { EInventoryItemID.ELEVATOR_BUTTON_PANEL, "elevator_button_panel" },
 
         };
 
