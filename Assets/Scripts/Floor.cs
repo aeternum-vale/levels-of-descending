@@ -13,6 +13,7 @@ public class Floor : MonoBehaviour
     Door leftDoor;
     Door rightDoor;
     Scalpel scalpel;
+    InventoryObject elevatorButtonPanel;
 
     Material adMaterial;
 
@@ -27,7 +28,9 @@ public class Floor : MonoBehaviour
         postboxPartMaterialWithDragonFly = gameObject.transform.Find("postbox").Find("Cube.003").gameObject.GetComponent<MeshRenderer>().material;
         leftDoor = gameObject.transform.Find("left_door_prefab").gameObject.GetComponent<Door>();
         rightDoor = gameObject.transform.Find("right_door_prefab").gameObject.GetComponent<Door>();
+
         scalpel = gameObject.transform.Find(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.SCALPEL]).gameObject.GetComponent<Scalpel>();
+        elevatorButtonPanel = gameObject.transform.Find(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.ELEVATOR_BUTTON_PANEL]).gameObject.GetComponent<InventoryObject>();
 
         foreach (ESwitchableObjectID id in (ESwitchableObjectID[])Enum.GetValues(typeof(ESwitchableObjectID)))
         {
@@ -104,5 +107,10 @@ public class Floor : MonoBehaviour
     public void SetFrontWallAd(Texture2D texture)
     {
         adMaterial.SetTexture("_MainTex", texture);
+    }
+
+    public void MakeElevatorButtonPanelGrabable()
+    {
+        elevatorButtonPanel.IsGrabable = true;
     }
 }

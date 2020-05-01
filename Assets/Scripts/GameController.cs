@@ -197,7 +197,12 @@ public class GameController : MonoBehaviour
 
     void OnSwitchableObjectWasOpened(ESwitchableObjectID id)
     {
-
+        if (id == ESwitchableObjectID.GARBAGE_CHUTE_DOOR_HINGE)
+        {
+            Floor currentFloor = GetCurrentFloor();
+            ((GarbageChuteDoor)currentFloor.switchableInstancesDict[ESwitchableObjectID.GARBAGE_CHUTE_DOOR]).Unhinge();
+            currentFloor.MakeElevatorButtonPanelGrabable();
+        }
     }
 
     void OnDragonflyCodeActivated(Door door)
@@ -207,7 +212,6 @@ public class GameController : MonoBehaviour
             GetCurrentFloor().EmergeScalpel();
         }
     }
-
 
     void UpdateEnvironment()
     {

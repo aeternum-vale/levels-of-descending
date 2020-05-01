@@ -9,6 +9,7 @@ public class GarbageChuteDoor : SwitchableObject
     protected override void Start()
     {
         base.Start();
+
         rigidDoor = transform.parent.Find("rigid_garbage_chute_door").gameObject;
     }
     public void Unhinge()
