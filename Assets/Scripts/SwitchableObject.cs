@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class SwitchableObject : SelectableObject
 {
-
+ 
     [SerializeField] ESwitchableObjectID id;
     [SerializeField] protected bool isDisposable;
     [SerializeField] EInventoryItemID necessaryInventoryItem;

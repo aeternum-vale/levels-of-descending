@@ -21,7 +21,8 @@ public class Inventory : MonoBehaviour
         //{ EInventoryItemID.POSTBOX_KEY, true },
         //{ EInventoryItemID.SCALPEL, true },
         { EInventoryItemID.SCREWDRIVER, true },
-        //{ EInventoryItemID.ELEVATOR_BUTTON_PANEL, true }
+        { EInventoryItemID.INSULATING_TAPE, true },
+        { EInventoryItemID.ELEVATOR_BUTTON_PANEL, true }
     };
     readonly Dictionary<EInventoryItemID, GameObject> instances = new Dictionary<EInventoryItemID, GameObject>();
     int currentItemIndex;

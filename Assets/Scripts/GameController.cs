@@ -193,6 +193,7 @@ public class GameController : MonoBehaviour
 
     void OnInventoryWasUpdated()
     {
+
     }
 
     void OnSwitchableObjectWasOpened(ESwitchableObjectID id)
@@ -270,9 +271,5 @@ public class GameController : MonoBehaviour
                 }
             }
         }
-    }
-
-    void CreateTexture()
-    {
     }
 }

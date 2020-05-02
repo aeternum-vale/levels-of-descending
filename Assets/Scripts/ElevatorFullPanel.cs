@@ -1,43 +1,45 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-public class ElevatorFullPanel : SelectableObject
+public class ElevatorFullPanel : MultiStateObject
 {
-    enum EState
+    enum EElevatorFullPanelState
     {
-        START,
+        START = 0,
         UNCONNECTED,
         CONNECTED,
         BUTTON_ABSENT,
-        FINALIZED
+        FINALIZED,
     }
 
-    readonly Dictionary<EState, string> stateNameDict = new Dictionary<EState, string>()
+    Dictionary<EElevatorFullPanelState, string> selectablePartPath = new Dictionary<EElevatorFullPanelState, string>()
     {
-        {EState.START, "start" },
-        {EState.UNCONNECTED, "unconnected" },
-        {EState.CONNECTED, "connected" },
-        {EState.BUTTON_ABSENT, "button_absent" },
-        {EState.FINALIZED, "finalized" }
+        {EElevatorFullPanelState.UNCONNECTED,  "wires" },
+        {EElevatorFullPanelState.CONNECTED,  "panel" },
+        {EElevatorFullPanelState.FINALIZED, "button" },
     };
 
-    readonly Dictionary<EState, EInventoryItemID> anticipatedInventoryItemDict = new Dictionary<EState, EInventoryItemID>()
+    protected override void Awake()
     {
-        {EState.START, EInventoryItemID.ELEVATOR_BUTTON_PANEL },
-        {EState.UNCONNECTED, EInventoryItemID.INSULATING_TAPE },
-        {EState.BUTTON_ABSENT, EInventoryItemID.ELEVATOR_BUTTON },
-    };
+        base.Awake();
 
-    Dictionary<EState, string> selectablePartPath = new Dictionary<EState, string>()
-    {
-        {EState.UNCONNECTED,  "wires" },
-        {EState.CONNECTED,  "panel" },
-        {EState.FINALIZED, "button" },
-    };
+        stateCount = (byte)((EElevatorFullPanelState[])Enum.GetValues(typeof(EElevatorFullPanelState))).Length;
 
-    public override void OnClick(EInventoryItemID? selectedInventoryItemId = null)
-    {
+        anticipatedInventoryItemDict = new Dictionary<byte, EInventoryItemID>()
+        {
+            {(byte)EElevatorFullPanelState.START, EInventoryItemID.ELEVATOR_BUTTON_PANEL },
+            {(byte)EElevatorFullPanelState.UNCONNECTED, EInventoryItemID.INSULATING_TAPE },
+            {(byte)EElevatorFullPanelState.BUTTON_ABSENT, EInventoryItemID.ELEVATOR_BUTTON },
+        };
 
+        stateNameDict = new Dictionary<byte, string>()
+        {
+            { (byte)EElevatorFullPanelState.START, "start" },
+            { (byte)EElevatorFullPanelState.UNCONNECTED, "unconnected" },
+            { (byte)EElevatorFullPanelState.CONNECTED, "connected" },
+            { (byte)EElevatorFullPanelState.BUTTON_ABSENT, "button_absent" },
+            { (byte)EElevatorFullPanelState.FINALIZED, "finalized" }
+        };
     }
-
 
 }

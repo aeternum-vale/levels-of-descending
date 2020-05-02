@@ -8,7 +8,8 @@ public enum EInventoryItemID
     E_PANEL_KEY,
     SCREWDRIVER,
     ELEVATOR_BUTTON,
-    ELEVATOR_BUTTON_PANEL
+    ELEVATOR_BUTTON_PANEL,
+    INSULATING_TAPE
 }
 
 public enum ESwitchableObjectID
@@ -62,6 +63,7 @@ public class GameConstants
             { EInventoryItemID.SCREWDRIVER, "screwdriver" },
             { EInventoryItemID.ELEVATOR_BUTTON, "elevator_button" },
             { EInventoryItemID.ELEVATOR_BUTTON_PANEL, "elevator_button_panel" },
+            { EInventoryItemID.INSULATING_TAPE, "insulating_tape" },
 
         };
 
