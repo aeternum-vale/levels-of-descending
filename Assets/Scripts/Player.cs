@@ -19,8 +19,8 @@ public class Player : MonoBehaviour
     readonly float squattingSpeed = 3f;
 
     float maxDistanceToSelectableObject = .45f;
-    readonly float maxDistanceToSelectableObjectOnStanding = .45f;
-    readonly float maxDistanceToSelectableObjectOnSquatting = .8f;
+    static readonly float maxDistanceToSelectableObjectOnStanding = .45f;
+    static readonly float maxDistanceToSelectableObjectOnSquatting = .8f;
 
     SelectableObject selectedObject;
     public GameObject LastGround1ColliderTouched { get; private set; }
@@ -33,9 +33,9 @@ public class Player : MonoBehaviour
     float stairPaceYRealOffset;
     float stairPaceXAdjustment;
     bool isGround1Last;
-    readonly float stairPaceYSpeed = 0.02f;
-    readonly float stairPaceYAmplitude = 0.2f;
-    readonly float stairPaceYFrequency = 20f;
+    static readonly float stairPaceYSpeed = 0.02f;
+    static readonly float stairPaceYAmplitude = 0.2f;
+    static readonly float stairPaceYFrequency = 20f;
 
     void Start()
     {
@@ -95,7 +95,15 @@ public class Player : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            SelectableObject currentSelectedObject = hit.transform.GetComponent<SelectableObject>();
+
+            Transform currentTransform = hit.transform;
+            SelectableObject currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
+
+            while (currentSelectedObject == null && currentTransform.parent != null)
+            {
+                currentTransform = currentTransform.parent;
+                currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
+            }
 
             if (currentSelectedObject)
             {
@@ -108,8 +116,7 @@ public class Player : MonoBehaviour
                 if (hit.distance <= distance)
                 {
                     this.selectedObject = currentSelectedObject;
-                    this.selectedObject.OnOver();
-
+                    this.selectedObject.OnOver(hit.transform.gameObject);
                 }
             }
         }

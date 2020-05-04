@@ -20,13 +20,13 @@ public class InventoryObject : SelectableObject
         }
     }
 
-    public override void OnOver()
+    public override void OnOver(GameObject colliderCarrier)
     {
         if (!isGrabable)
         {
             return;
         }
 
-        base.OnOver();
+        base.OnOver(colliderCarrier);
     }
 }

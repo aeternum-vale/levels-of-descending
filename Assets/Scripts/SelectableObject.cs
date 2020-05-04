@@ -1,15 +1,15 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
-[RequireComponent(typeof(Collider))]
 
 public class SelectableObject : MonoBehaviour
 {
     [SerializeField] float maxDistanceToSelect = .45f;
     [SerializeField] bool hasValueOfMaxDistanceToSelect;
 
-    protected Material selectableMaterial;
-    protected Material[] childrenSelectableMaterials;
+    Dictionary<GameObject, Material> materialsCache = new Dictionary<GameObject, Material>();
+
     public bool IsGlowingEnabled { get; set; } = true;
 
     public float? MaxDistanceToSelect
@@ -28,21 +28,14 @@ public class SelectableObject : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (transform.childCount == 0)
-        {
-            selectableMaterial = GetComponent<MeshRenderer>().material;
-        }
-        else
-        {
-            childrenSelectableMaterials = GetComponentsInChildren<MeshRenderer>().Select(m => m.material).ToArray();
-        }
+
     }
 
-    public virtual void OnOver()
+    public virtual void OnOver(GameObject colliderCarrier)
     {
         if (IsGlowingEnabled)
         {
-            ShowGlowing();
+            ShowGlowing(colliderCarrier);
         }
     }
 
@@ -57,33 +50,50 @@ public class SelectableObject : MonoBehaviour
         //Debug.Log($"using {item} on {gameObject.name}");
     }
 
-    public virtual void ShowGlowing()
+    public virtual void ShowGlowing(GameObject colliderCarrier)
     {
-        if (transform.childCount == 0)
-        {
-            selectableMaterial.SetFloat("_IsSelected", 1f);
-        }
-        else
-        {
-            foreach (var mat in childrenSelectableMaterials)
-            {
-                mat.SetFloat("_IsSelected", 1f);
-            }
-        }
+        ApplyStateToMaterialRecursively(colliderCarrier, ApplySelectedStateToMaterial);
     }
 
     public virtual void ShowNormal()
     {
-        if (transform.childCount == 0)
+        ApplyStateToMaterialRecursively(gameObject, ApplyNormalStateToMaterial);
+    }
+
+    void ApplyStateToMaterialRecursively(GameObject root, Action<Material> applyStateAction)
+    {
+        if (root.transform.childCount == 0)
         {
-            selectableMaterial.SetFloat("_IsSelected", 0f);
-        }
-        else
+            applyStateAction(GetGameObjectMaterial(root));
+        } else
         {
-            foreach (var mat in childrenSelectableMaterials)
+            for (int i = 0; i < root.transform.childCount; i++)
             {
-                mat.SetFloat("_IsSelected", 0f);
+                ApplyStateToMaterialRecursively(root.transform.GetChild(i).gameObject, applyStateAction);
             }
         }
+    }
+
+    Material GetGameObjectMaterial(GameObject go)
+    {
+        if (materialsCache.ContainsKey(go))
+        {
+            return materialsCache[go];
+        } else
+        {
+            Material mat = go.GetComponent<MeshRenderer>().material;
+            materialsCache.Add(go, mat);
+            return mat;
+        }
+    }
+
+    void ApplySelectedStateToMaterial(Material mat)
+    {
+        mat.SetFloat("_IsSelected", 1f);
+    }
+
+    void ApplyNormalStateToMaterial(Material mat)
+    {
+        mat.SetFloat("_IsSelected", 0f);
     }
 }
