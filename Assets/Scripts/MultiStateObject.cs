@@ -9,8 +9,7 @@ public class MultiStateObject : SelectableObject
     [SerializeField] protected bool isDisposable;
 
     public bool IsSealed { get; set; }
-    protected string animationStateName;
-    Animator anim;
+    protected Animator anim;
     protected bool isAnimationOn;
 
     protected Dictionary<byte, EInventoryItemID> anticipatedInventoryItemDict = new Dictionary<byte, EInventoryItemID>();
@@ -40,7 +39,7 @@ public class MultiStateObject : SelectableObject
         if (!anticipatedInventoryItemDict.ContainsKey(currentState) ||
             (anticipatedInventoryItemDict[currentState] == selectedInventoryItemId))
         {
-            ApplyState((byte)(currentState + 1 % stateCount));
+            ApplyState((byte)((currentState + 1) % stateCount));
         }
     }
 
@@ -53,6 +52,11 @@ public class MultiStateObject : SelectableObject
         }
 
         currentState = state;
-        anim.Play(stateNameDict[state], -1, 0f);
+        PlayAnimation(stateNameDict[state]);
+    }
+
+    protected virtual void PlayAnimation(string name)
+    {
+        anim.Play(name, -1, 0f);
     }
 }

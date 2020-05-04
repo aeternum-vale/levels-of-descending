@@ -28,9 +28,9 @@ public class ElevatorFullPanel : MultiStateObject
 
         anticipatedInventoryItemDict = new Dictionary<byte, EInventoryItemID>()
         {
-            {(byte)EElevatorFullPanelState.START, EInventoryItemID.ELEVATOR_BUTTON_PANEL },
-            {(byte)EElevatorFullPanelState.UNCONNECTED, EInventoryItemID.INSULATING_TAPE },
-            {(byte)EElevatorFullPanelState.CLOSING, EInventoryItemID.ELEVATOR_BUTTON },
+            { (byte)EElevatorFullPanelState.START, EInventoryItemID.ELEVATOR_BUTTON_PANEL },
+            { (byte)EElevatorFullPanelState.UNCONNECTED, EInventoryItemID.INSULATING_TAPE },
+            { (byte)EElevatorFullPanelState.CLOSING, EInventoryItemID.ELEVATOR_BUTTON },
         };
 
         stateNameDict = new Dictionary<byte, string>()

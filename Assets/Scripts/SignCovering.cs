@@ -10,20 +10,18 @@ public class SignCovering : SwitchableObject
         coveringCut = transform.parent.Find("covering_cut").gameObject;
     }
 
-    public override void Switch()
+    protected override void OnOpen()
     {
-        if (!IsOpened)
-        {
-            IsOpened = true;
-            gameObject.SetActive(false);
-            coveringCut.SetActive(true);
-        }
-        else
-        {
-            IsOpened = false;
-            gameObject.SetActive(true);
-            coveringCut.SetActive(false);
-        }
+        IsOpened = true;
+        gameObject.SetActive(false);
+        coveringCut.SetActive(true);
+    }
+
+    protected override void OnClose()
+    {
+        IsOpened = false;
+        gameObject.SetActive(true);
+        coveringCut.SetActive(false);
     }
 
 }

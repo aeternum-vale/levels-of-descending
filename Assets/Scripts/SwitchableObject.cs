@@ -1,99 +1,87 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
-public class SwitchableObject : SelectableObject
+public class SwitchableObject : MultiStateObject
 {
- 
     [SerializeField] ESwitchableObjectID id;
-    [SerializeField] protected bool isDisposable;
     [SerializeField] EInventoryItemID necessaryInventoryItem;
     [SerializeField] bool hasValueOfNecessaryInventoryItem;
 
-    Animator anim;
     public bool IsOpened { get; set; }
-    public bool IsSealed { get; set; }
-    bool isAnimationOn;
 
     static readonly string directionParamName = "Direction";
     static readonly string switchStateName = "Switch";
 
-    protected string animationStateName = switchStateName;
-
-    protected virtual void Start()
+    protected override void Awake()
     {
-        anim = GetComponent<Animator>();
-    }
+        base.Awake();
+        stateCount = 2;
 
-    public override void OnClick(EInventoryItemID? selectedInventoryItemId = null)
-    {
-        base.OnClick(selectedInventoryItemId);
-
-        if (IsSealed)
+        if (hasValueOfNecessaryInventoryItem)
         {
-            return;
+            anticipatedInventoryItemDict.Add(1, necessaryInventoryItem);
         }
 
-        if (IsOpened || SwitchCondition(selectedInventoryItemId))
-        {
-            Switch();
-        }
+        stateNameDict.Add(1, switchStateName);
+        stateNameDict.Add(0, switchStateName);
     }
+
+    protected override void ApplyState(byte state)
+    {
+
+        if (state == 1)
+        {
+            if (!OpenCondition()) return;
+
+            OnOpen();
+        }
+        else
+        {
+            OnClose();
+        }
+
+        base.ApplyState(state);
+    }
+
 
     public virtual void Switch()
     {
-        if (!isAnimationOn)
+        if (currentState == 0)
         {
-            if (!IsOpened)
-            {
-                Open();
-            }
-            else
-            {
-                Close();
-            }
+            ApplyState(1);
+        } else
+        {
+            ApplyState(0);
         }
     }
 
-    protected virtual void Open()
+    protected virtual void OnOpen()
     {
         anim.SetFloat(directionParamName, 1f);
-        anim.Play(animationStateName, -1, 0f);
-
         IsOpened = true;
         Messenger<ESwitchableObjectID>.Broadcast(Events.SWITCHABLE_OBJECT_WAS_OPENED, id);
-
-        if (isDisposable)
-        {
-            IsSealed = true;
-            IsGlowingEnabled = false;
-        }
     }
 
-    protected virtual void Close()
+    protected virtual void OnClose()
     {
         IsOpened = false;
         anim.SetFloat(directionParamName, -1f);
-        anim.Play(animationStateName, -1, 1f);
     }
 
-    protected virtual bool SwitchCondition(EInventoryItemID? selectedInventoryItemId = null)
+    protected virtual bool OpenCondition()
     {
-        if (hasValueOfNecessaryInventoryItem)
+        return true;
+    }
+
+    protected override void PlayAnimation(string name)
+    {
+        if (currentState == 0)
         {
-            return (selectedInventoryItemId == necessaryInventoryItem);
+            anim.Play(name, -1, 1f);
         } else
         {
-            return true;
+            base.PlayAnimation(name);
         }
     }
 
-    protected virtual void OnAnimationEnd()
-    {
-        isAnimationOn = !isAnimationOn;
-    }
-
-    protected virtual void OnAnimationStart()
-    {
-        isAnimationOn = !isAnimationOn;
-    }
 }

@@ -15,12 +15,12 @@ public class GarbageChuteDoor : SwitchableObject
     public void Unhinge()
     {
         isUnhinged = true;
-        animationStateName = removalStateName;
+        //animationStateName = removalStateName;
     }
 
-    protected override void Open()
+    protected override void OnOpen()
     {
-        base.Open();
+        base.OnOpen();
 
         if (isUnhinged)
         {
