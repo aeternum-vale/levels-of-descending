@@ -13,14 +13,11 @@ namespace SelectableObjectsModule
         public bool IsSealed { get; set; }
 
         protected byte CurrentStateId;
-        protected bool IsAnimationOn;
+        private bool _isAnimationOn;
 
         protected List<GraphState> States;
         protected Dictionary<byte, List<GraphTransition>> StateTransitions;
-        private static readonly int Direction = Animator.StringToHash(DirectionParamName);
-
-        private const string DirectionParamName = "Direction";
-
+        private static readonly int Direction = Animator.StringToHash("Direction");
         public event EventHandler<MultiStateObjectEventArgs> OnStateReached;
 
         protected virtual void Start()
@@ -33,7 +30,7 @@ namespace SelectableObjectsModule
             base.OnClick(selectedInventoryItemId, colliderCarrier);
 
             if (IsSealed) return;
-            if (IsAnimationOn) return;
+            if (_isAnimationOn) return;
 
             foreach (var transition in StateTransitions[CurrentStateId])
                 if ((transition.Condition == null || transition.Condition())
@@ -76,12 +73,12 @@ namespace SelectableObjectsModule
 
         protected virtual void OnAnimationEnd()
         {
-            IsAnimationOn = !IsAnimationOn;
+            _isAnimationOn = !_isAnimationOn;
         }
 
         protected virtual void OnAnimationStart()
         {
-            IsAnimationOn = !IsAnimationOn;
+            _isAnimationOn = !_isAnimationOn;
         }
     }
 }

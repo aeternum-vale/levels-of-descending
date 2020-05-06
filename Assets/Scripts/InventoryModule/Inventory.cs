@@ -17,16 +17,7 @@ namespace InventoryModule
         private Texture2D _backgroundTexture;
         private RenderTexture _inventoryCameraTexture;
 
-        public Dictionary<EInventoryItemId, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemId, bool>()
-        {
-            //{ EInventoryItemID.E_PANEL_KEY, true },
-            //{ EInventoryItemID.LETTER, true },
-            //{ EInventoryItemID.POSTBOX_KEY, true },
-            //{ EInventoryItemID.SCALPEL, true },
-            //{ EInventoryItemID.SCREWDRIVER, true },
-            //{ EInventoryItemID.INSULATING_TAPE, true },
-            //{ EInventoryItemID.ELEVATOR_BUTTON_PANEL, true }
-        };
+        public Dictionary<EInventoryItemId, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemId, bool>();
 
         private readonly Dictionary<EInventoryItemId, GameObject>
             _instances = new Dictionary<EInventoryItemId, GameObject>();
@@ -36,9 +27,9 @@ namespace InventoryModule
         private float _currentTransitionOpacity = 1f;
         private bool _isTransition;
         private bool _isTransitionOut = true;
-        private readonly float _transitionStep = 0.1f;
-        private readonly float _transitionXOffset = 15f;
-        private static readonly string ItemsContainerName = "items";
+        private const float TransitionStep = 0.1f;
+        private const float TransitionXOffset = 15f;
+        private const string ItemsContainerName = "items";
 
         public bool Contains(EInventoryItemId id)
         {
@@ -91,7 +82,7 @@ namespace InventoryModule
             Messenger.Broadcast(Events.inventoryWasUpdated);
         }
 
-        private void ShowInstance(GameObject instance)
+        private static void ShowInstance(GameObject instance)
         {
             instance.transform.GetChild(0).gameObject.SetActive(true);
         }
@@ -102,13 +93,13 @@ namespace InventoryModule
             instance.transform.GetChild(0).gameObject.SetActive(false);
         }
 
-        private void StopInstanceAnimation(GameObject instance)
+        private static void StopInstanceAnimation(GameObject instance)
         {
             instance.GetComponent<Animator>().Play("inventoryItemRotation", -1, 0f);
             instance.GetComponent<Animator>().speed = 0f;
         }
 
-        private void StartInstanceAnimation(GameObject instance)
+        private static void StartInstanceAnimation(GameObject instance)
         {
             instance.GetComponent<Animator>().speed = 1f;
         }
@@ -125,7 +116,7 @@ namespace InventoryModule
                 IsInventoryModeOn = true;
                 _currentItemIndex = 0;
 
-                this._backgroundTexture = backgroundTexture;
+                _backgroundTexture = backgroundTexture;
                 _backgroundImageComponent.sprite = Sprite.Create(backgroundTexture,
                     new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
 
@@ -193,7 +184,7 @@ namespace InventoryModule
         {
             for (_currentTransitionOpacity = isOut ? 1f : 0f;
                 _currentTransitionOpacity >= 0 && _currentTransitionOpacity <= 1f;
-                _currentTransitionOpacity += (isOut ? -1 : 1) * _transitionStep)
+                _currentTransitionOpacity += (isOut ? -1 : 1) * TransitionStep)
                 yield return new WaitForFixedUpdate();
             yield return null;
         }
@@ -209,7 +200,7 @@ namespace InventoryModule
                 0, 0, 0,
                 new Color(.5f, .5f, .5f, 1f));
 
-            Graphics.DrawTexture(new Rect((1 - _currentTransitionOpacity) * _transitionXOffset * (_isTransitionOut ? 1 : -1),
+            Graphics.DrawTexture(new Rect((1 - _currentTransitionOpacity) * TransitionXOffset * (_isTransitionOut ? 1 : -1),
                     0, Screen.width, Screen.height), _inventoryCameraTexture, new Rect(0, 1, 1, -1), 0, 0, 0, 0,
                 new Color(.5f, .5f, .5f, _currentTransitionOpacity));
 

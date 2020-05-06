@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Globalization;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
-using Math = System.Math;
 using Random = UnityEngine.Random;
 
 namespace AdGeneratorModule
@@ -16,8 +17,7 @@ namespace AdGeneratorModule
         private Text _header;
         private Image _bg;
 
-        private string[] _politePhrases = new string[]
-        {
+        private readonly string[] _politePhrases = {
             "it is very kind of you to",
             "may we take this opportunity of thanking you for",
             "please accept our sincere deep appreciation for",
@@ -44,8 +44,7 @@ namespace AdGeneratorModule
             "to our great regret we must inform you that"
         };
 
-        private string[] _politeHeaders = new string[]
-        {
+        private readonly string[] _politeHeaders = {
             "dear tenants",
             "dear everyone",
             "pay little attention",
@@ -82,7 +81,7 @@ namespace AdGeneratorModule
             return CameraUtils.GetCameraTexture(_cameraComponent, 1024, 1024);
         }
 
-        private string Mul(string str, int times)
+        private static string Mul(string str, int times)
         {
             var sb = new StringBuilder();
 
@@ -91,14 +90,13 @@ namespace AdGeneratorModule
             return sb.ToString();
         }
 
-        private void AppendRandomNumbersToStringBuilder(ref StringBuilder sb)
+        private static void AppendRandomNumbersToStringBuilder(ref StringBuilder sb)
         {
-            if (Random.Range(0, 1f) < NumbersProbability)
-            {
-                var numbersStr = Random.Range(0, 1f).ToString();
-                sb.Append(numbersStr.Substring(2, Math.Min(NumbersMaxCount, numbersStr.Length - 3)));
-                sb.Append('\n');
-            }
+            if (!(Random.Range(0, 1f) < NumbersProbability)) return;
+            
+            var numbersStr = Random.Range(0, 1f).ToString(CultureInfo.InvariantCulture);
+            sb.Append(numbersStr.Substring(2, Math.Min(NumbersMaxCount, numbersStr.Length - 3)));
+            sb.Append('\n');
         }
 
         private void GenerateRandomAd()

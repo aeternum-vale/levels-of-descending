@@ -20,8 +20,7 @@ namespace SelectableObjectsModule
             {
                 if (hasValueOfMaxDistanceToSelect)
                     return maxDistanceToSelect;
-                else
-                    return null;
+                return null;
             }
         }
 
@@ -70,20 +69,18 @@ namespace SelectableObjectsModule
             {
                 return _materialsCache[go];
             }
-            else
-            {
-                var mat = go.GetComponent<MeshRenderer>().material;
-                _materialsCache.Add(go, mat);
-                return mat;
-            }
+
+            var mat = go.GetComponent<MeshRenderer>().material;
+            _materialsCache.Add(go, mat);
+            return mat;
         }
 
-        private void ApplySelectedStateToMaterial(Material mat)
+        private static void ApplySelectedStateToMaterial(Material mat)
         {
             mat.SetFloat(IsSelected, 1f);
         }
 
-        private void ApplyNormalStateToMaterial(Material mat)
+        private static void ApplyNormalStateToMaterial(Material mat)
         {
             mat.SetFloat(IsSelected, 0f);
         }

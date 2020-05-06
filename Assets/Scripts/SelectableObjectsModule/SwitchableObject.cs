@@ -13,24 +13,24 @@ namespace SelectableObjectsModule
 
         public bool IsOpened { get; set; }
 
-        private static readonly string SwitchStateName = "Switch";
+        private const string SwitchStateName = "Switch";
 
         protected override void Awake()
         {
             base.Awake();
 
-            States = new List<GraphState>()
+            States = new List<GraphState>
             {
-                new GraphState() {Name = SwitchStateName, OnReached = OnClose}, //0 - close
-                new GraphState() {Name = SwitchStateName, OnReached = OnOpen}   //1 - open
+                new GraphState {Name = SwitchStateName, OnReached = OnClose}, //0 - close
+                new GraphState {Name = SwitchStateName, OnReached = OnOpen}   //1 - open
             };
 
-            StateTransitions = new Dictionary<byte, List<GraphTransition>>()
+            StateTransitions = new Dictionary<byte, List<GraphTransition>>
             {
                 {
-                    (byte) ESwitchableObjectStateId.CLOSE, new List<GraphTransition>()
+                    (byte) ESwitchableObjectStateId.CLOSE, new List<GraphTransition>
                     {
-                        new GraphTransition()
+                        new GraphTransition
                         {
                             NextStateId = (byte) ESwitchableObjectStateId.OPEN,
                             SelectedInventoryItemId = hasValueOfNecessaryInventoryItem
@@ -42,9 +42,9 @@ namespace SelectableObjectsModule
                 },
 
                 {
-                    (byte) ESwitchableObjectStateId.OPEN, new List<GraphTransition>()
+                    (byte) ESwitchableObjectStateId.OPEN, new List<GraphTransition>
                     {
-                        new GraphTransition()
+                        new GraphTransition
                         {
                             NextStateId = (byte) ESwitchableObjectStateId.CLOSE,
                             IsReverse = true

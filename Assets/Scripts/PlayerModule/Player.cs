@@ -90,7 +90,7 @@ namespace PlayerModule
         {
             var delta = Input.GetAxis("Mouse X") * _mouseSensitivity;
             var transformValue = transform;
-            
+
             var rotationY = transformValue.localEulerAngles.y + delta;
             transformValue.localEulerAngles = new Vector3(0, rotationY, 0);
 
@@ -102,32 +102,29 @@ namespace PlayerModule
 
             var point = new Vector3(_playerCameraComponent.pixelWidth / 2, _playerCameraComponent.pixelHeight / 2, 0);
             var ray = _playerCameraComponent.ScreenPointToRay(point);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+
+            if (!Physics.Raycast(ray, out var hit)) return;
+            
+            var currentTransform = hit.transform;
+            var currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
+
+            while (currentSelectedObject == null && currentTransform.parent != null)
             {
-                var currentTransform = hit.transform;
-                var currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
-
-                while (currentSelectedObject == null && currentTransform.parent != null)
-                {
-                    currentTransform = currentTransform.parent;
-                    currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
-                }
-
-                if (currentSelectedObject)
-                {
-                    var distance = _maxDistanceToSelectableObject;
-                    if (currentSelectedObject.MaxDistanceToSelect != null)
-                        distance = (float) currentSelectedObject.MaxDistanceToSelect;
-
-                    if (hit.distance <= distance)
-                    {
-                        _selectedObject = currentSelectedObject;
-                        _colliderCarrier = hit.transform.gameObject;
-                        _selectedObject.OnOver(_colliderCarrier);
-                    }
-                }
+                currentTransform = currentTransform.parent;
+                currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
             }
+
+            if (!currentSelectedObject) return;
+            
+            var distance = _maxDistanceToSelectableObject;
+            if (currentSelectedObject.MaxDistanceToSelect != null)
+                distance = (float) currentSelectedObject.MaxDistanceToSelect;
+
+            if (!(hit.distance <= distance)) return;
+            
+            _selectedObject = currentSelectedObject;
+            _colliderCarrier = hit.transform.gameObject;
+            _selectedObject.OnOver(_colliderCarrier);
         }
 
         private void UpdateUseButton()
@@ -201,15 +198,15 @@ namespace PlayerModule
             {
                 _stairPaceYTargetOffset = 0;
 
-                if (_stairPaceYRealOffset != _stairPaceYTargetOffset)
-                {
-                    var diff = Mathf.Abs(_stairPaceYRealOffset - _stairPaceYTargetOffset);
-                    if (diff <= StairPaceYSpeed)
-                        _stairPaceYRealOffset = _stairPaceYTargetOffset;
-                    else
-                        _stairPaceYRealOffset += StairPaceYSpeed * (_stairPaceYRealOffset < _stairPaceYTargetOffset ? 1 : -1) *
-                                                 Time.deltaTime;
-                }
+                if (_stairPaceYRealOffset == _stairPaceYTargetOffset) return;
+                
+                var diff = Mathf.Abs(_stairPaceYRealOffset - _stairPaceYTargetOffset);
+                if (diff <= StairPaceYSpeed)
+                    _stairPaceYRealOffset = _stairPaceYTargetOffset;
+                else
+                    _stairPaceYRealOffset +=
+                        StairPaceYSpeed * (_stairPaceYRealOffset < _stairPaceYTargetOffset ? 1 : -1) *
+                        Time.deltaTime;
             }
             else
             {
@@ -223,16 +220,14 @@ namespace PlayerModule
 
         private void UpdateSquatting()
         {
-            if (isSquattingOn)
-            {
-                _realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * _squattingSpeed * Time.deltaTime;
-                _realSquattingAmount = Mathf.Clamp(_realSquattingAmount, 0, _squattingMaxAmount);
+            if (!isSquattingOn) return;
+            
+            _realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * _squattingSpeed * Time.deltaTime;
+            _realSquattingAmount = Mathf.Clamp(_realSquattingAmount, 0, _squattingMaxAmount);
 
-                if (_realSquattingAmount == _squattingMaxAmount)
-                    _maxDistanceToSelectableObject = MaxDistanceToSelectableObjectOnSquatting;
-                else
-                    _maxDistanceToSelectableObject = MaxDistanceToSelectableObjectOnStanding;
-            }
+            _maxDistanceToSelectableObject = (_realSquattingAmount == _squattingMaxAmount)
+                ? MaxDistanceToSelectableObjectOnSquatting
+                : MaxDistanceToSelectableObjectOnStanding;
         }
 
         private void UpdateCameraY()

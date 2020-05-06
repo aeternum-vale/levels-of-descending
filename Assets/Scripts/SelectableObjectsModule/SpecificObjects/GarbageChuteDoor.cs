@@ -19,11 +19,10 @@ namespace SelectableObjectsModule.SpecificObjects
         {
             base.Awake();
 
-            States.Add(new GraphState() {Name = RemovingStateName, OnReached = OnRemove});
+            States.Add(new GraphState {Name = RemovingStateName, OnReached = OnRemove});
             StateTransitions[(byte) ESwitchableObjectStateId.CLOSE][0].Condition = () => !_isUnhinged;
 
-            StateTransitions[(byte) ESwitchableObjectStateId.CLOSE].Add(new GraphTransition()
-                {NextStateId = RemovingStateId, Condition = () => _isUnhinged});
+            StateTransitions[(byte) ESwitchableObjectStateId.CLOSE].Add(new GraphTransition {NextStateId = RemovingStateId, Condition = () => _isUnhinged});
         }
 
         public void Unhinge()

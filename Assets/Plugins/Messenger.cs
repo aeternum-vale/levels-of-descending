@@ -90,7 +90,7 @@ namespace Plugins
                 if (d == null)
                     throw new ListenerException(string.Format(
                         "Attempting to remove listener with for event type {0} but current listener is null.", eventType));
-                else if (d.GetType() != listenerBeingRemoved.GetType())
+                if (d.GetType() != listenerBeingRemoved.GetType())
                     throw new ListenerException(string.Format(
                         "Attempting to remove listener with inconsistent signature for event type {0}. Current listeners have type {1} and listener being removed has type {2}",
                         eventType, d.GetType().Name, listenerBeingRemoved.GetType().Name));
@@ -184,7 +184,7 @@ namespace Plugins
             MessengerInternal.OnBroadcasting(eventType, mode);
             var invocationList = MessengerInternal.GetInvocationList<Func<TReturn>>(eventType);
 
-            foreach (var result in invocationList.Select(del => del.Invoke()).Cast<TReturn>()) returnCall.Invoke(result);
+            foreach (var result in invocationList.Select(del => del.Invoke())) returnCall.Invoke(result);
         }
     }
 
@@ -235,7 +235,7 @@ namespace Plugins
             MessengerInternal.OnBroadcasting(eventType, mode);
             var invocationList = MessengerInternal.GetInvocationList<Func<T, TReturn>>(eventType);
 
-            foreach (var result in invocationList.Select(del => del.Invoke(arg1)).Cast<TReturn>())
+            foreach (var result in invocationList.Select(del => del.Invoke(arg1)))
                 returnCall.Invoke(result);
         }
     }
@@ -289,7 +289,7 @@ namespace Plugins
             MessengerInternal.OnBroadcasting(eventType, mode);
             var invocationList = MessengerInternal.GetInvocationList<Func<T, TU, TReturn>>(eventType);
 
-            foreach (var result in invocationList.Select(del => del.Invoke(arg1, arg2)).Cast<TReturn>())
+            foreach (var result in invocationList.Select(del => del.Invoke(arg1, arg2)))
                 returnCall.Invoke(result);
         }
     }
@@ -343,7 +343,7 @@ namespace Plugins
             MessengerInternal.OnBroadcasting(eventType, mode);
             var invocationList = MessengerInternal.GetInvocationList<Func<T, TU, TV, TReturn>>(eventType);
 
-            foreach (var result in invocationList.Select(del => del.Invoke(arg1, arg2, arg3)).Cast<TReturn>())
+            foreach (var result in invocationList.Select(del => del.Invoke(arg1, arg2, arg3)))
                 returnCall.Invoke(result);
         }
     }

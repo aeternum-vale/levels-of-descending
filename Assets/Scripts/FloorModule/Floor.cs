@@ -11,8 +11,8 @@ namespace FloorModule
 {
     public class Floor : MonoBehaviour
     {
-        private static readonly string FrontWallName = "front_wall";
-        private static readonly string FrontWallNumberMatPropertyName = "_FloorNumber";
+        private const string FrontWallName = "front_wall";
+        private const string FrontWallNumberMatPropertyName = "_FloorNumber";
 
         private Material _frontWallMaterial;
         private Material _postboxPartMaterialWithDragonFly;
@@ -25,11 +25,15 @@ namespace FloorModule
         public readonly Dictionary<ESwitchableObjectId, SwitchableObject> SwitchableInstancesDict =
             new Dictionary<ESwitchableObjectId, SwitchableObject>();
 
-        private readonly Dictionary<EFloorMarkId, bool> _markStatesDict = new Dictionary<EFloorMarkId, bool>()
+        private readonly Dictionary<EFloorMarkId, bool> _markStatesDict = new Dictionary<EFloorMarkId, bool>
         {
             {EFloorMarkId.DRAGONFLY, false},
             {EFloorMarkId.LOST_PET_SIGN, false}
         };
+
+        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
+        private static readonly int ActiveTextureNumber = Shader.PropertyToID("_ActiveTextureNumber");
 
         private void Start()
         {
@@ -52,14 +56,14 @@ namespace FloorModule
                 .material;
         }
 
-        public void HideObject(string name)
+        public void HideObject(string objectName)
         {
-            transform.Find(name).gameObject.SetActive(false);
+            transform.Find(objectName).gameObject.SetActive(false);
         }
 
-        public void ShowObject(string name)
+        public void ShowObject(string objectName)
         {
-            transform.Find(name).gameObject.SetActive(true);
+            transform.Find(objectName).gameObject.SetActive(true);
         }
 
         public void SetFloorDrawnNumber(int number)
@@ -79,12 +83,12 @@ namespace FloorModule
             switch (id)
             {
                 case EFloorMarkId.DRAGONFLY:
-                    _postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 1f);
+                    _postboxPartMaterialWithDragonFly.SetFloat(IsTitleOn, 1f);
                     _leftDoor.MarkWithDragonfly();
                     break;
 
                 case EFloorMarkId.LOST_PET_SIGN:
-                    _adMaterial.SetFloat("_ActiveTextureNumber", 1f);
+                    _adMaterial.SetFloat(ActiveTextureNumber, 1f);
                     break;
             }
         }
@@ -96,7 +100,7 @@ namespace FloorModule
             switch (id)
             {
                 case EFloorMarkId.DRAGONFLY:
-                    _postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 0f);
+                    _postboxPartMaterialWithDragonFly.SetFloat(IsTitleOn, 0f);
                     _leftDoor.UnmarkWithDragonfly();
                     break;
             }
@@ -109,7 +113,7 @@ namespace FloorModule
 
         public void SetFrontWallAd(Texture2D texture)
         {
-            _adMaterial.SetTexture("_MainTex", texture);
+            _adMaterial.SetTexture(MainTex, texture);
         }
     }
 }

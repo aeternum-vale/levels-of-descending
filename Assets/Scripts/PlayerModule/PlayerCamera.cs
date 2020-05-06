@@ -22,23 +22,21 @@ namespace PlayerModule
 
         private void Update()
         {
-            if (!IsInventoryModeOn)
-            {
-                _rotationX -= Input.GetAxis("Mouse Y") * MouseSensitivity;
-                _rotationX = Mathf.Clamp(_rotationX, _mouseVerticalMin, _mouseVerticalMax);
-                transform.localEulerAngles = new Vector3(_rotationX, 0, 0);
-            }
+            if (IsInventoryModeOn) return;
+            
+            _rotationX -= Input.GetAxis("Mouse Y") * MouseSensitivity;
+            _rotationX = Mathf.Clamp(_rotationX, _mouseVerticalMin, _mouseVerticalMax);
+            transform.localEulerAngles = new Vector3(_rotationX, 0, 0);
         }
 
         private void OnGUI()
         {
-            if (!IsInventoryModeOn)
-            {
-                var size = 8;
-                float posX = _cameraComponent.pixelWidth / 2 - size / 2;
-                float posY = _cameraComponent.pixelHeight / 2 - size;
-                GUI.Label(new Rect(posX, posY, 80, 80), "◦");
-            }
+            if (IsInventoryModeOn) return;
+            
+            const int size = 8;
+            float posX = _cameraComponent.pixelWidth / 2 - size / 2;
+            float posY = _cameraComponent.pixelHeight / 2 - size;
+            GUI.Label(new Rect(posX, posY, 80, 80), "◦");
         }
 
         private void OnRenderImage(RenderTexture src, RenderTexture dest)

@@ -17,11 +17,10 @@ namespace InventoryModule
 
         public override void OnClick(EInventoryItemId? selectedInventoryObjectId, GameObject colliderCarrier)
         {
-            if (isGrabable)
-            {
-                gameObject.SetActive(false);
-                Messenger<EInventoryItemId>.Broadcast(Events.inventoryItemWasClicked, objectId);
-            }
+            if (!isGrabable) return;
+            
+            gameObject.SetActive(false);
+            Messenger<EInventoryItemId>.Broadcast(Events.inventoryItemWasClicked, objectId);
         }
 
         public override void OnOver(GameObject colliderCarrier)

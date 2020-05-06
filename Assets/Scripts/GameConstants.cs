@@ -45,7 +45,7 @@ public enum ESwitchableObjectStateId
     OPEN
 }
 
-public class Events
+public static class Events
 {
     public static readonly string floorWasTouched = "FLOOR_WAS_TOUCHED";
     public static readonly string inventoryItemWasClicked = "INVENTORY_ITEM_WAS_CLICKED";
@@ -53,12 +53,12 @@ public class Events
     public static readonly string inventoryButtonWasPressed = "INVENTORY_BUTTON_WAS_PRESSED";
     public static readonly string switchableObjectWasOpened = "SWITCHABLE_OBJECT_WAS_OPENED";
     public static readonly string dragonflyCodeActivated = "DRAGONFLY_CODE_ACTIVATED";
-};
+}
 
 public static class GameConstants
 {
     public static readonly Dictionary<EInventoryItemId, string> inventoryItemToInstancePathMap =
-        new Dictionary<EInventoryItemId, string>()
+        new Dictionary<EInventoryItemId, string>
         {
             {EInventoryItemId.POSTBOX_KEY, "postbox_key"},
             {EInventoryItemId.LETTER, "letter"},
@@ -71,7 +71,7 @@ public static class GameConstants
         };
 
     public static readonly Dictionary<ESwitchableObjectId, string> switchableObjectToInstancePathMap =
-        new Dictionary<ESwitchableObjectId, string>()
+        new Dictionary<ESwitchableObjectId, string>
         {
             {ESwitchableObjectId.PAD, "pad"},
             {ESwitchableObjectId.POSTBOX_DOOR, "postbox/postbox_door"},
@@ -90,26 +90,25 @@ public static class GameConstants
     public static readonly string stairs1ColliderObjectName = "stairs1";
     public static readonly string stairs2ColliderObjectName = "stairs2";
 
-    public static readonly EDoorAction[] dragonflyCode = new EDoorAction[]
-        {EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE};
+    public static readonly EDoorAction[] dragonflyCode = {EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE};
 
     public static readonly Dictionary<EFloorMarkId, FloorMark> floorMarksDict = new Dictionary<EFloorMarkId, FloorMark>
     {
         {
             EFloorMarkId.DRAGONFLY,
-            new FloorMark()
+            new FloorMark
             {
                 FirstFloor = 9, Frequency = 10,
-                AssociatedInventoryItems = new EInventoryItemId[]
+                AssociatedInventoryItems = new[]
                     {EInventoryItemId.POSTBOX_KEY, EInventoryItemId.LETTER}
             }
         },
         {
             EFloorMarkId.LOST_PET_SIGN,
-            new FloorMark()
+            new FloorMark
             {
                 FirstFloor = 11, Frequency = 5,
-                AssociatedInventoryItems = new EInventoryItemId[]
+                AssociatedInventoryItems = new[]
                     {EInventoryItemId.E_PANEL_KEY, EInventoryItemId.SCREWDRIVER}
             }
         }

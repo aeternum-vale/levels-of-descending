@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using AdGeneratorModule;
 using DoorModule;
 using FloorModule;
 using InventoryModule;
 using PlayerModule;
 using Plugins;
+using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
@@ -71,7 +71,7 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        _player = playerGameObject.GetComponent<PlayerModule.Player>();
+        _player = playerGameObject.GetComponent<Player>();
 
         Messenger.AddListener(Events.floorWasTouched, OnFloorWasTouched);
         Messenger.AddListener(Events.inventoryWasUpdated, OnInventoryWasUpdated);

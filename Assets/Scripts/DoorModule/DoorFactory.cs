@@ -21,7 +21,7 @@ namespace DoorModule
             // 	case 1:
             // 		return getRandomWoodDoor ();
             // 	case 2:
-            // 		return getRandomMetallDoor ();
+            // 		return getRandomMetalDoor ();
             // 	default:
             // 		return getRandomLeatherDoor ();
             // }
