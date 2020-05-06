@@ -129,18 +129,18 @@ namespace PlayerModule
 
         private void UpdateUseButton()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (!Input.GetMouseButtonDown(0)) return;
+            
+            EInventoryItemId? selectedInventoryItem = null;
+
+            if (inventory.IsInventoryModeOn)
             {
-                EInventoryItemId? selectedInventoryItem = null;
-
-                if (inventory.IsInventoryModeOn)
-                {
-                    selectedInventoryItem = inventory.CurrentItemId;
-                    DeactivateInventoryMode();
-                }
-
-                if (_selectedObject) _selectedObject.OnClick(selectedInventoryItem, _colliderCarrier);
+                selectedInventoryItem = inventory.CurrentItemId;
+                DeactivateInventoryMode();
             }
+
+            if (_selectedObject) 
+                _selectedObject.OnClick(selectedInventoryItem, _colliderCarrier);
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
