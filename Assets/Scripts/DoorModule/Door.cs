@@ -17,16 +17,18 @@ namespace DoorModule
         public bool IsDragonflyMarked { get; private set; }
 
         private const string DoorBaseName = "doorBase";
-        private static readonly string HandleName = "doorhandle";
-        private static readonly string BellButtonName = "door_bell_button";
-        private static readonly string StaticDetailsName = "staticDetails";
-        private static readonly string DetailsName = "details";
-        private static readonly string NameplateName = "nameplate";
-        private static readonly string PeepholeName = "peephole";
+        private const string HandleName = "doorhandle";
+        private const string BellButtonName = "door_bell_button";
+        private const string StaticDetailsName = "staticDetails";
+        private const string DetailsName = "details";
+        private const string NameplateName = "nameplate";
+        private const string PeepholeName = "peephole";
 
         private readonly EDoorAction[] _lastActions = new EDoorAction[GameConstants.dragonflyCode.Length];
         private int _lastActionsCursor = 0;
+        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
 
+        private DoorPushableDetail[] _pushableDetails;
         private void Awake()
         {
             DoorBase = transform.Find(DoorBaseName).gameObject;
@@ -38,21 +40,33 @@ namespace DoorModule
             StaticDetails = transform.Find(StaticDetailsName).gameObject;
             BellButton = StaticDetails.transform.Find(BellButtonName).gameObject;
 
+            _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
+
+            foreach (var pushableDetail in _pushableDetails)
+            {
+                pushableDetail.OnStateReached += OnPushableDetailStateReached;
+            }
+
             Randomize();
         }
 
+        private void OnPushableDetailStateReached(object sender, MultiStateObjectEventArgs e)
+        {
+            Interact(((DoorPushableDetail) sender).action);
+        }
 
         public void Invert()
         {
-            transform.localScale = new Vector3(1, 1, -1);
-            transform.position -= new Vector3(0, 0, 0.03f);
+            var transformValue = transform;
+            transformValue.localScale = new Vector3(1, 1, -1);
+            transformValue.position -= new Vector3(0, 0, 0.03f);
         }
 
         public void MarkWithDragonfly()
         {
             Nameplate.SetActive(true);
             Peephole.SetActive(false);
-            Nameplate.GetComponent<MeshRenderer>().material.SetFloat("_IsTitleOn", 1f);
+            Nameplate.GetComponent<MeshRenderer>().material.SetFloat(IsTitleOn, 1f);
             IsDragonflyMarked = true;
         }
 
@@ -60,11 +74,11 @@ namespace DoorModule
         {
             Nameplate.SetActive(false);
             Peephole.SetActive(true);
-            Nameplate.GetComponent<MeshRenderer>().material.SetFloat("_IsTitleOn", 0f);
+            Nameplate.GetComponent<MeshRenderer>().material.SetFloat(IsTitleOn, 0f);
             IsDragonflyMarked = false;
         }
 
-        public void Interact(EDoorAction action)
+        private void Interact(EDoorAction action)
         {
             _lastActions[_lastActionsCursor] = action;
             _lastActionsCursor = (_lastActionsCursor + 1) % _lastActions.Length;
