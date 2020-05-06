@@ -22,7 +22,7 @@ namespace SelectableObjectsModule
             States = new List<GraphState>()
             {
                 new GraphState() {Name = SwitchStateName, OnReached = OnClose}, //0 - close
-                new GraphState() {Name = SwitchStateName, OnReached = OnOpen} //1 - open
+                new GraphState() {Name = SwitchStateName, OnReached = OnOpen}   //1 - open
             };
 
             StateTransitions = new Dictionary<byte, List<GraphTransition>>()

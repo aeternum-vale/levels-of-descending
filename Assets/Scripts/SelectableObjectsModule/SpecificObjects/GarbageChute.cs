@@ -22,11 +22,9 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnGarbageChuteStateReached(object sender, MultiStateObjectEventArgs e)
         {
-            if (e.StateId == (byte) ESwitchableObjectStateId.OPEN)
-            {
-                _garbageChuteDoor.Unhinge();
-                _elevatorButtonPanel.IsGrabable = true;
-            }
+            if (e.StateId != (byte) ESwitchableObjectStateId.OPEN) return;
+            _garbageChuteDoor.Unhinge();
+            _elevatorButtonPanel.IsGrabable = true;
         }
     }
 }

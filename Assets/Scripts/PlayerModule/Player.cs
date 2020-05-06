@@ -89,8 +89,10 @@ namespace PlayerModule
         private void UpdateMouse()
         {
             var delta = Input.GetAxis("Mouse X") * _mouseSensitivity;
-            var rotationY = transform.localEulerAngles.y + delta;
-            transform.localEulerAngles = new Vector3(0, rotationY, 0);
+            var transformValue = transform;
+            
+            var rotationY = transformValue.localEulerAngles.y + delta;
+            transformValue.localEulerAngles = new Vector3(0, rotationY, 0);
 
             if (_selectedObject)
             {

@@ -5,9 +5,9 @@ namespace SelectableObjectsModule.SpecificObjects
     public class GarbageChuteDoor : SwitchableObject
     {
         private bool _isUnhinged;
-        private static readonly string RemovingStateName = "Removing";
         private GameObject _rigidDoor;
-        private byte _removingStateId = 2;
+        private const string RemovingStateName = "Removing";
+        private const byte RemovingStateId = 2;
 
         protected override void Start()
         {
@@ -23,7 +23,7 @@ namespace SelectableObjectsModule.SpecificObjects
             StateTransitions[(byte) ESwitchableObjectStateId.CLOSE][0].Condition = () => !_isUnhinged;
 
             StateTransitions[(byte) ESwitchableObjectStateId.CLOSE].Add(new GraphTransition()
-                {NextStateId = _removingStateId, Condition = () => _isUnhinged});
+                {NextStateId = RemovingStateId, Condition = () => _isUnhinged});
         }
 
         public void Unhinge()

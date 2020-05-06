@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using System.Drawing;
 using AdGeneratorModule;
 using DoorModule;
 using FloorModule;
@@ -37,6 +37,7 @@ public class GameController : MonoBehaviour
     private const string RightDoorObjectName = "right_door_prefab";
 
     private readonly Dictionary<Floor, GameObject> _floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
+
     private delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
 
     private void Start()
@@ -56,13 +57,13 @@ public class GameController : MonoBehaviour
         _floors[_floorsHalf].SetFloorDrawnNumber(_fakeFloorNumber--);
 
         var localPosition = playerGameObject.transform.localPosition;
-        
+
         localPosition = new Vector3(
             localPosition.x,
             _floors[_floorsHalf].transform.localPosition.y,
             localPosition.z
         );
-        
+
         playerGameObject.transform.localPosition = localPosition;
 
         //adGenerator = transform.parent.Find("AdGenerator").gameObject.GetComponent<AdGenerator>();
@@ -169,7 +170,7 @@ public class GameController : MonoBehaviour
     private void RearrangeFloors()
     {
         var localPosition = playerGameObject.transform.localPosition;
-        
+
         var distToHighestFloor = Mathf.Abs(localPosition.y -
                                            _floors[_highestFloorIndex].transform.localPosition.y);
         var distToLowestFloor =
@@ -211,21 +212,20 @@ public class GameController : MonoBehaviour
 
     private void UpdateEnvironment()
     {
-        for (var i = 0; i < _floors.Length; i++)
+        foreach (var f in _floors)
         {
             if (_player.LastGround1ColliderTouched &&
-                _player.LastGround1ColliderTouched == _floorToGround1ColliderDict[_floors[i]]
+                _player.LastGround1ColliderTouched == _floorToGround1ColliderDict[f]
             ) //stop updating of the current floor
                 continue;
 
             foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId))) //TODO: add cache
-                _floors[i].HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
+                f.HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
 
-            foreach (var s in _floors[i].SwitchableInstancesDict.Values)
-                if (s.IsOpened)
-                    s.Switch();
+            foreach (var s in f.SwitchableInstancesDict.Values.Where(s => s.IsOpened))
+                s.Switch();
 
-            _floors[i].SetFrontWallAd(adGenerator.GetRandomAdTexture());
+            f.SetFrontWallAd(adGenerator.GetRandomAdTexture());
         }
 
         var nextFakeFloorNumber = _fakeFloorNumber + 1;
@@ -244,18 +244,17 @@ public class GameController : MonoBehaviour
             var id = floorMarkKeyValuePair.Key;
             var floorMarkValue = floorMarkKeyValuePair.Value;
 
-            if (floorMarkValue.IsFloorMarked(nextFakeFloorNumber))
-            {
-                nextHighFloor.SetMark(id);
-                nextLowFloor.SetMark(id);
+            if (!floorMarkValue.IsFloorMarked(nextFakeFloorNumber)) continue;
 
-                foreach (var inventoryItem in floorMarkValue.AssociatedInventoryItems)
-                    if (!inventory.Contains(inventoryItem))
-                    {
-                        nextHighFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
-                        nextLowFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
-                    }
-            }
+            nextHighFloor.SetMark(id);
+            nextLowFloor.SetMark(id);
+
+            foreach (var inventoryItem in floorMarkValue.AssociatedInventoryItems)
+                if (!inventory.Contains(inventoryItem))
+                {
+                    nextHighFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
+                    nextLowFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
+                }
         }
     }
 }

@@ -17,6 +17,7 @@ namespace SelectableObjectsModule
 
         protected List<GraphState> States;
         protected Dictionary<byte, List<GraphTransition>> StateTransitions;
+        private static readonly int Direction = Animator.StringToHash(DirectionParamName);
 
         private const string DirectionParamName = "Direction";
 
@@ -59,17 +60,17 @@ namespace SelectableObjectsModule
             IsGlowingEnabled = false;
         }
 
-        protected virtual void PlayAnimation(string name, bool isReverse)
+        protected virtual void PlayAnimation(string animationName, bool isReverse)
         {
             if (isReverse)
             {
-                _animator.SetFloat(DirectionParamName, -1f);
-                _animator.Play(name, -1, 1f);
+                _animator.SetFloat(Direction, -1f);
+                _animator.Play(animationName, -1, 1f);
             }
             else
             {
-                _animator.SetFloat(DirectionParamName, 1f);
-                _animator.Play(name, -1, 0f);
+                _animator.SetFloat(Direction, 1f);
+                _animator.Play(animationName, -1, 0f);
             }
         }
 

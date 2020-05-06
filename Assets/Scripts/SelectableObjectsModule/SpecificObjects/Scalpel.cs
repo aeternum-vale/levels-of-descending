@@ -6,6 +6,7 @@ namespace SelectableObjectsModule.SpecificObjects
     public class Scalpel : InventoryObject
     {
         private Animator _anim;
+        private static readonly int Active = Animator.StringToHash("Active");
 
         protected override void Awake()
         {
@@ -17,7 +18,7 @@ namespace SelectableObjectsModule.SpecificObjects
         public void Emerge()
         {
             gameObject.SetActive(true);
-            _anim.SetTrigger("Active");
+            _anim.SetTrigger(Active);
         }
 
         private void OnEmergeAnimationEnd()
