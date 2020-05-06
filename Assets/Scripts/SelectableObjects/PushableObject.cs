@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Animator))]
 public class PushableObject : MultiStateObject
 {
     static readonly string animationName = "push";
@@ -27,8 +26,5 @@ public class PushableObject : MultiStateObject
         };
     }
 
-    protected virtual void OnPush()
-    {
-
-    }
+    protected virtual void OnPush() { }
 }
