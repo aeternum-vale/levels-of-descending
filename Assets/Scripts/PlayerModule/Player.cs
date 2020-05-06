@@ -68,21 +68,19 @@ namespace PlayerModule
 
         private void UpdateInventoryButton()
         {
-            if (Input.GetButtonDown("Inventory"))
+            if (!Input.GetButtonDown("Inventory")) return;
+            
+            if (!inventory.IsInventoryModeOn)
             {
-                if (!inventory.IsInventoryModeOn)
-                {
-                    if (inventory.CanActivateInventoryMode)
-                    {
-                        playerCamera.IsInventoryModeOn = true;
-                        inventory.ActivateInventoryMode(playerCamera.GetBackgroundTexture());
-                        playerCamera.ActivateInventoryMode();
-                    }
-                }
-                else
-                {
-                    inventory.OnInventorySwitchToNextItem();
-                }
+                if (!inventory.CanActivateInventoryMode) return;
+                
+                playerCamera.IsInventoryModeOn = true;
+                inventory.ActivateInventoryMode(playerCamera.GetBackgroundTexture());
+                playerCamera.ActivateInventoryMode();
+            }
+            else
+            {
+                inventory.OnInventorySwitchToNextItem();
             }
         }
 
