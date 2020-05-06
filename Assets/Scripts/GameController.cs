@@ -2,78 +2,90 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Drawing;
+using AdGeneratorModule;
+using DoorModule;
+using FloorModule;
+using InventoryModule;
+using PlayerModule;
+using Plugins;
+
 public class GameController : MonoBehaviour
 {
-    [SerializeField] Inventory inventory;
-    [SerializeField] GameObject floorPrefab;
-    [SerializeField] GameObject playerGameObject;
-    [SerializeField] DoorFactory doorFactory;
+    [SerializeField] private Inventory inventory;
+    [SerializeField] private GameObject floorPrefab;
+    [SerializeField] private GameObject playerGameObject;
+    [SerializeField] private DoorFactory doorFactory;
 
-    [SerializeField] AdGenerator adGenerator;
+    [SerializeField] private AdGenerator adGenerator;
 
-    Player player;
-    Floor[] floors;
+    private Player _player;
+    private Floor[] _floors;
 
-    int highestFloorIndex;
-    int floorsHalf;
-    int realFloorNumber = 7;
+    private int _highestFloorIndex;
+    private int _floorsHalf;
+    private int _realFloorNumber = 7;
 
-    int fakeFloorNumber = 7;
-    int LowestFloorIndex => (highestFloorIndex + 1) % floorCount;
+    private int _fakeFloorNumber = 7;
+    private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
-    static readonly float floorHeight = 3.99f;
-    static readonly int floorCount = 7;
-    public static readonly string entrywayObjectName = "entryway";
-    public static readonly string leftDoorBaseObjectName = "door_left";
-    public static readonly string rightDoorBaseObjectName = "door_right";
-    public static readonly string leftDoorObjectName = "left_door_prefab";
-    public static readonly string rightDoorObjectName = "right_door_prefab";
+    private const float FloorHeight = 3.99f;
+    private const int FloorCount = 7;
+    private const string EntrywayObjectName = "entryway";
+    private const string LeftDoorBaseObjectName = "door_left";
+    private const string RightDoorBaseObjectName = "door_right";
+    private const string LeftDoorObjectName = "left_door_prefab";
+    private const string RightDoorObjectName = "right_door_prefab";
 
-    Dictionary<Floor, GameObject> floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
+    private readonly Dictionary<Floor, GameObject> _floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
+    private delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
 
-    delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
-
-    void Start()
+    private void Start()
     {
-        highestFloorIndex = floorCount - 1;
-        floors = new Floor[floorCount];
+        _highestFloorIndex = FloorCount - 1;
+        _floors = new Floor[FloorCount];
 
-        for (int i = 0; i < floorCount; i++)
+        for (var i = 0; i < FloorCount; i++)
         {
-            floors[i] = GenerateRandomFloor(floorPrefab.transform.position + new Vector3(0, floorHeight * i, 0));
-            floorToGround1ColliderDict.Add(floors[i], floors[i].transform.Find(GameConstants.collidersObjectName).Find(GameConstants.ground1ColliderObjectName).gameObject);
+            _floors[i] = GenerateRandomFloor(floorPrefab.transform.position + new Vector3(0, FloorHeight * i, 0));
+            _floorToGround1ColliderDict.Add(_floors[i],
+                _floors[i].transform.Find(GameConstants.collidersObjectName)
+                    .Find(GameConstants.ground1ColliderObjectName).gameObject);
         }
 
-        floorsHalf = (int)Mathf.Floor(floorCount / 2);
-        floors[floorsHalf].SetFloorDrawnNumber(fakeFloorNumber--);
+        _floorsHalf = (int) Mathf.Floor(FloorCount / 2);
+        _floors[_floorsHalf].SetFloorDrawnNumber(_fakeFloorNumber--);
 
-        playerGameObject.transform.localPosition = new Vector3(
-            playerGameObject.transform.localPosition.x,
-            floors[floorsHalf].transform.localPosition.y,
-            playerGameObject.transform.localPosition.z
+        var localPosition = playerGameObject.transform.localPosition;
+        
+        localPosition = new Vector3(
+            localPosition.x,
+            _floors[_floorsHalf].transform.localPosition.y,
+            localPosition.z
         );
+        
+        playerGameObject.transform.localPosition = localPosition;
 
         //adGenerator = transform.parent.Find("AdGenerator").gameObject.GetComponent<AdGenerator>();
     }
 
-    void Awake()
+    private void Awake()
     {
-        player = playerGameObject.GetComponent<Player>();
+        _player = playerGameObject.GetComponent<PlayerModule.Player>();
 
-        Messenger.AddListener(Events.FLOOR_WAS_TOUCHED, OnFloorWasTouched);
-        Messenger.AddListener(Events.INVENTORY_WAS_UPDATED, OnInventoryWasUpdated);
-        Messenger<ESwitchableObjectID>.AddListener(Events.SWITCHABLE_OBJECT_WAS_OPENED, OnSwitchableObjectWasOpened);
-        Messenger<Door>.AddListener(Events.DRAGONFLY_CODE_ACTIVATED, OnDragonflyCodeActivated);
+        Messenger.AddListener(Events.floorWasTouched, OnFloorWasTouched);
+        Messenger.AddListener(Events.inventoryWasUpdated, OnInventoryWasUpdated);
+        Messenger<ESwitchableObjectId>.AddListener(Events.switchableObjectWasOpened, OnSwitchableObjectWasOpened);
+        Messenger<Door>.AddListener(Events.dragonflyCodeActivated, OnDragonflyCodeActivated);
     }
 
     private Floor GetNextHigherFloor()
     {
-        return GetSpecificFloor((i, floorCount) => ((i + 1) % floorCount));
+        return GetSpecificFloor((i, floorCount) => (i + 1) % FloorCount);
     }
 
     private Floor GetNextLowerFloor()
     {
-        return GetSpecificFloor((i, floorCount) => ((i - 1 >= 0) ? i - 1 : floorCount - 1));
+        return GetSpecificFloor((i, floorCount) => i - 1 >= 0 ? i - 1 : FloorCount - 1);
     }
 
     private Floor GetCurrentFloor()
@@ -83,17 +95,13 @@ public class GameController : MonoBehaviour
 
     private Floor GetSpecificFloor(OnReachedCurrentIndexCallback cb)
     {
-        for (int i = 0; i < floors.Length; i++)
-        {
-            if (player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]])
-            {
-                return floors[cb(i, floorCount)];
-            }
-        }
+        for (var i = 0; i < _floors.Length; i++)
+            if (_player.LastGround1ColliderTouched == _floorToGround1ColliderDict[_floors[i]])
+                return _floors[cb(i, FloorCount)];
         return null;
     }
 
-    void UpdateFloorDoors(Floor floor)
+    private void UpdateFloorDoors(Floor floor)
     {
         // Transform oldLeftDoorTransform = floor.transform.Find (leftDoorObjectName);
         // Transform oldRightDoorTransform = floor.transform.Find (rightDoorObjectName);
@@ -106,43 +114,42 @@ public class GameController : MonoBehaviour
         // 	Destroy (oldRightDoorTransform.gameObject);
         // }
 
-        Transform entrywayTransform = floor.transform.Find(entrywayObjectName);
-        Transform floorLeftDoorBaseTransform = entrywayTransform.Find(leftDoorBaseObjectName);
-        Transform floorRightDoorBaseTransform = entrywayTransform.Find(rightDoorBaseObjectName);
+        var entrywayTransform = floor.transform.Find(EntrywayObjectName);
+        var floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
+        var floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
 
-        Door leftDoor = doorFactory.GenerateRandomDoor();
-        Door rightDoor = doorFactory.GenerateRandomDoor();
+        var leftDoor = doorFactory.GenerateRandomDoor();
+        var rightDoor = doorFactory.GenerateRandomDoor();
 
         leftDoor.transform.position = floorLeftDoorBaseTransform.position;
 
         rightDoor.transform.position = floorRightDoorBaseTransform.position;
         rightDoor.Invert();
 
-        leftDoor.name = leftDoorObjectName;
+        leftDoor.name = LeftDoorObjectName;
 
-        rightDoor.name = rightDoorObjectName;
+        rightDoor.name = RightDoorObjectName;
 
         leftDoor.transform.SetParent(floor.transform);
         rightDoor.transform.SetParent(floor.transform);
-
     }
 
-    Floor GenerateRandomFloor(Vector3 position)
+    private Floor GenerateRandomFloor(Vector3 position)
     {
-        Floor floor = Instantiate(floorPrefab).GetComponent<Floor>();
+        var floor = Instantiate(floorPrefab).GetComponent<Floor>();
         floor.transform.position = position;
         UpdateFloorDoors(floor);
         return floor;
     }
 
-    void RandomizeFloor(Floor floor)
+    private void RandomizeFloor(Floor floor)
     {
         //updateFloorDoors (floor);
     }
 
-    void OnFloorWasTouched()
+    private void OnFloorWasTouched()
     {
-        fakeFloorNumber++;
+        _fakeFloorNumber++;
 
         UpdateRealFloorNumber();
 
@@ -150,89 +157,81 @@ public class GameController : MonoBehaviour
         UpdateEnvironment();
     }
 
-    void UpdateRealFloorNumber()
+    private void UpdateRealFloorNumber()
     {
-        if (player.PrevLastGround1ColliderTouched)
-        {
-            realFloorNumber += (player.PrevLastGround1ColliderTouched.transform.position.y < player.LastGround1ColliderTouched.transform.position.y ? 1 : -1);
-        }
+        if (_player.PrevLastGround1ColliderTouched)
+            _realFloorNumber += _player.PrevLastGround1ColliderTouched.transform.position.y <
+                                _player.LastGround1ColliderTouched.transform.position.y
+                ? 1
+                : -1;
     }
 
-    void RearrangeFloors()
+    private void RearrangeFloors()
     {
-        float distToHighestFloor = Mathf.Abs(playerGameObject.transform.localPosition.y - floors[highestFloorIndex].transform.localPosition.y);
-        float distToLowestFloor = Mathf.Abs(playerGameObject.transform.localPosition.y - floors[LowestFloorIndex].transform.localPosition.y) + floorHeight;
-        float threshold = floorsHalf * floorHeight;
+        var localPosition = playerGameObject.transform.localPosition;
+        
+        var distToHighestFloor = Mathf.Abs(localPosition.y -
+                                           _floors[_highestFloorIndex].transform.localPosition.y);
+        var distToLowestFloor =
+            Mathf.Abs(localPosition.y -
+                      _floors[LowestFloorIndex].transform.localPosition.y) +
+            FloorHeight;
+        var threshold = _floorsHalf * FloorHeight;
 
         if (distToHighestFloor < threshold)
         {
+            _floors[LowestFloorIndex].transform.localPosition =
+                _floors[_highestFloorIndex].transform.localPosition + new Vector3(0, FloorHeight, 0);
+            RandomizeFloor(_floors[LowestFloorIndex]);
 
-            floors[LowestFloorIndex].transform.localPosition =
-                floors[highestFloorIndex].transform.localPosition + new Vector3(0, floorHeight, 0);
-            RandomizeFloor(floors[LowestFloorIndex]);
-
-            highestFloorIndex = LowestFloorIndex;
-
+            _highestFloorIndex = LowestFloorIndex;
         }
         else if (distToLowestFloor < threshold)
         {
+            _floors[_highestFloorIndex].transform.localPosition =
+                _floors[LowestFloorIndex].transform.localPosition + new Vector3(0, -FloorHeight, 0);
+            RandomizeFloor(_floors[LowestFloorIndex]);
 
-            floors[highestFloorIndex].transform.localPosition =
-                floors[LowestFloorIndex].transform.localPosition + new Vector3(0, -floorHeight, 0);
-            RandomizeFloor(floors[LowestFloorIndex]);
-
-            highestFloorIndex = highestFloorIndex == 0 ? floorCount - 1 : highestFloorIndex - 1;
+            _highestFloorIndex = _highestFloorIndex == 0 ? FloorCount - 1 : _highestFloorIndex - 1;
         }
     }
 
-    void OnInventoryWasUpdated()
+    private void OnInventoryWasUpdated()
     {
-
     }
 
-    void OnSwitchableObjectWasOpened(ESwitchableObjectID id)
+    private void OnSwitchableObjectWasOpened(ESwitchableObjectId id)
     {
-
     }
 
-    void OnDragonflyCodeActivated(Door door)
+    private void OnDragonflyCodeActivated(Door door)
     {
-        if (!inventory.Contains(EInventoryItemID.SCALPEL))
+        if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
+    }
+
+    private void UpdateEnvironment()
+    {
+        for (var i = 0; i < _floors.Length; i++)
         {
-            GetCurrentFloor().EmergeScalpel();
-        }
-    }
-
-    void UpdateEnvironment()
-    {
-
-        for (int i = 0; i < floors.Length; i++)
-        {
-            if (player.LastGround1ColliderTouched && player.LastGround1ColliderTouched == floorToGround1ColliderDict[floors[i]]) //stop updating of the current floor
-            {
+            if (_player.LastGround1ColliderTouched &&
+                _player.LastGround1ColliderTouched == _floorToGround1ColliderDict[_floors[i]]
+            ) //stop updating of the current floor
                 continue;
-            }
 
-            foreach (EInventoryItemID id in (EInventoryItemID[])Enum.GetValues(typeof(EInventoryItemID))) //TODO: add cache
-            {
-                floors[i].HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
-            }
+            foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId))) //TODO: add cache
+                _floors[i].HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
 
-            foreach (var s in floors[i].switchableInstancesDict.Values)
-            {
+            foreach (var s in _floors[i].SwitchableInstancesDict.Values)
                 if (s.IsOpened)
-                {
                     s.Switch();
-                }
-            }
 
-            floors[i].SetFrontWallAd(adGenerator.GetRandomAdTexture());
+            _floors[i].SetFrontWallAd(adGenerator.GetRandomAdTexture());
         }
 
-        int nextFakeFloorNumber = fakeFloorNumber + 1;
+        var nextFakeFloorNumber = _fakeFloorNumber + 1;
 
-        Floor nextHighFloor = GetNextHigherFloor();
-        Floor nextLowFloor = GetNextLowerFloor();
+        var nextHighFloor = GetNextHigherFloor();
+        var nextLowFloor = GetNextLowerFloor();
 
         nextHighFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
         nextLowFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
@@ -242,22 +241,20 @@ public class GameController : MonoBehaviour
 
         foreach (var floorMarkKeyValuePair in GameConstants.floorMarksDict)
         {
-            EFloorMarkID id = floorMarkKeyValuePair.Key;
-            FloorMark floorMarkValue = floorMarkKeyValuePair.Value;
+            var id = floorMarkKeyValuePair.Key;
+            var floorMarkValue = floorMarkKeyValuePair.Value;
 
             if (floorMarkValue.IsFloorMarked(nextFakeFloorNumber))
             {
                 nextHighFloor.SetMark(id);
                 nextLowFloor.SetMark(id);
 
-                foreach (var inventoryItem in floorMarkValue.associatedInventoryItems)
-                {
+                foreach (var inventoryItem in floorMarkValue.AssociatedInventoryItems)
                     if (!inventory.Contains(inventoryItem))
                     {
                         nextHighFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
                         nextLowFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
                     }
-                }
             }
         }
     }
