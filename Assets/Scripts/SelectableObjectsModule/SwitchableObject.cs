@@ -22,33 +22,28 @@ namespace SelectableObjectsModule
             States = new List<GraphState>
             {
                 new GraphState {Name = SwitchStateName, OnReached = OnClose}, //0 - close
-                new GraphState {Name = SwitchStateName, OnReached = OnOpen}   //1 - open
+                new GraphState {Name = SwitchStateName, OnReached = OnOpen} //1 - open
             };
 
             StateTransitions = new Dictionary<byte, List<GraphTransition>>
             {
+                [(byte) ESwitchableObjectStateId.CLOSE] = new List<GraphTransition>
                 {
-                    (byte) ESwitchableObjectStateId.CLOSE, new List<GraphTransition>
+                    new GraphTransition
                     {
-                        new GraphTransition
-                        {
-                            NextStateId = (byte) ESwitchableObjectStateId.OPEN,
-                            SelectedInventoryItemId = hasValueOfNecessaryInventoryItem
-                                ? necessaryInventoryItem
-                                : (EInventoryItemId?) null,
-                            Condition = OpenCondition
-                        }
+                        NextStateId = (byte) ESwitchableObjectStateId.OPEN,
+                        SelectedInventoryItemId = hasValueOfNecessaryInventoryItem
+                            ? necessaryInventoryItem
+                            : (EInventoryItemId?) null,
+                        Condition = OpenCondition
                     }
                 },
-
+                [(byte) ESwitchableObjectStateId.OPEN] = new List<GraphTransition>
                 {
-                    (byte) ESwitchableObjectStateId.OPEN, new List<GraphTransition>
+                    new GraphTransition
                     {
-                        new GraphTransition
-                        {
-                            NextStateId = (byte) ESwitchableObjectStateId.CLOSE,
-                            IsReverse = true
-                        }
+                        NextStateId = (byte) ESwitchableObjectStateId.CLOSE,
+                        IsReverse = true
                     }
                 }
             };

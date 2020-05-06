@@ -29,7 +29,7 @@ public class GameController : MonoBehaviour
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
     private const float FloorHeight = 3.99f;
-    private const int FloorCount = 7;
+    private const int FloorCount = 6;
     private const string EntrywayObjectName = "entryway";
     private const string LeftDoorBaseObjectName = "door_left";
     private const string RightDoorBaseObjectName = "door_right";

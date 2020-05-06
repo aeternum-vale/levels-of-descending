@@ -10,22 +10,11 @@ namespace SelectableObjectsModule
         {
             base.Awake();
 
-            States = new List<GraphState>
-            {
-                new GraphState {Name = AnimationName, OnReached = OnPush}
-            };
+            States = new List<GraphState> {new GraphState {Name = AnimationName, OnReached = OnPush}};
 
             StateTransitions = new Dictionary<byte, List<GraphTransition>>
             {
-                {
-                    0, new List<GraphTransition>
-                    {
-                        new GraphTransition
-                        {
-                            NextStateId = 0
-                        }
-                    }
-                }
+                [0] = new List<GraphTransition> {new GraphTransition {NextStateId = 0}}
             };
         }
 
