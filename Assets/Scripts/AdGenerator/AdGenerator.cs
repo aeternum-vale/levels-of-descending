@@ -68,9 +68,9 @@ public class AdGenerator : MonoBehaviour
         cameraComponent = cameraGameObject.GetComponent<Camera>();
         canvas = transform.Find("Canvas").gameObject;
 
-        message = canvas.transform.Find("message").gameObject.GetComponent<Text>();
-        header = canvas.transform.Find("header").gameObject.GetComponent<Text>();
-        bg = canvas.transform.Find("bg").gameObject.GetComponent<Image>();
+        message = canvas.transform.Find("message").GetComponent<Text>();
+        header = canvas.transform.Find("header").GetComponent<Text>();
+        bg = canvas.transform.Find("bg").GetComponent<Image>();
     }
 
     public Texture2D GetRandomAdTexture()

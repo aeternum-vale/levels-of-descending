@@ -44,7 +44,7 @@ public class SelectableObject : MonoBehaviour
         ShowNormal();
     }
 
-    public virtual void OnClick(EInventoryItemID? selectedInventoryItemId = null)
+    public virtual void OnClick(EInventoryItemID? selectedInventoryItemId, GameObject colliderCarrier)
     {
         //string item = !(selectedInventoryItemId is null) ? selectedInventoryItemId.ToString() : "nothing";
         //Debug.Log($"using {item} on {gameObject.name}");

@@ -11,7 +11,7 @@ public class InventoryObject : SelectableObject
         set { isGrabable = value; }
     }
 
-    public override void OnClick(EInventoryItemID? selectedInventoryObjectId = null)
+    public override void OnClick(EInventoryItemID? selectedInventoryObjectId, GameObject colliderCarrier)
     {
         if (isGrabable)
         {
@@ -28,5 +28,14 @@ public class InventoryObject : SelectableObject
         }
 
         base.OnOver(colliderCarrier);
+    }
+
+    public static string GetPath(EInventoryItemID id)
+    {
+        return GameConstants.inventoryItemToInstancePathMap[id];
+    }
+    public static string GetName(EInventoryItemID id)
+    {
+        return GameUtils.GetNameByPath(GameConstants.inventoryItemToInstancePathMap[id]);
     }
 }

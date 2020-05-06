@@ -31,12 +31,6 @@ public class GameController : MonoBehaviour
 
     Dictionary<Floor, GameObject> floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
 
-    static readonly int dragonflyFloorFrequency = 10;
-    static readonly int dragonflyFirstFloor = 9;
-
-    static readonly int lostPetSignFloorFrequency = 5;
-    static readonly int lostPetSignFirstFloor = 11;
-
     delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
 
     void Start()
@@ -198,12 +192,7 @@ public class GameController : MonoBehaviour
 
     void OnSwitchableObjectWasOpened(ESwitchableObjectID id)
     {
-        if (id == ESwitchableObjectID.GARBAGE_CHUTE_DOOR_HINGE)
-        {
-            Floor currentFloor = GetCurrentFloor();
-            ((GarbageChuteDoor)currentFloor.switchableInstancesDict[ESwitchableObjectID.GARBAGE_CHUTE_DOOR]).Unhinge();
-            currentFloor.MakeElevatorButtonPanelGrabable();
-        }
+
     }
 
     void OnDragonflyCodeActivated(Door door)
@@ -226,7 +215,7 @@ public class GameController : MonoBehaviour
 
             foreach (EInventoryItemID id in (EInventoryItemID[])Enum.GetValues(typeof(EInventoryItemID))) //TODO: add cache
             {
-                floors[i].HideObject(GameConstants.inventoryItemToInstanceNameMap[id]);
+                floors[i].HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
             }
 
             foreach (var s in floors[i].switchableInstancesDict.Values)
@@ -265,8 +254,8 @@ public class GameController : MonoBehaviour
                 {
                     if (!inventory.Contains(inventoryItem))
                     {
-                        nextHighFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[inventoryItem]);
-                        nextLowFloor.ShowObject(GameConstants.inventoryItemToInstanceNameMap[inventoryItem]);
+                        nextHighFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
+                        nextLowFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
                     }
                 }
             }

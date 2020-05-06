@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public enum EInventoryItemID
 {
@@ -42,6 +44,12 @@ public enum EFloorMarkID
     LOST_PET_SIGN
 }
 
+public enum ESwitchableObjectStateId
+{
+    CLOSE = 0,
+    OPEN
+}
+
 public class Events
 {
     public static string FLOOR_WAS_TOUCHED = "FLOOR_WAS_TOUCHED";
@@ -52,9 +60,9 @@ public class Events
     public static string DRAGONFLY_CODE_ACTIVATED = "DRAGONFLY_CODE_ACTIVATED";
 };
 
-public class GameConstants
+public static class GameConstants
 {
-    public static Dictionary<EInventoryItemID, string> inventoryItemToInstanceNameMap =
+    public static Dictionary<EInventoryItemID, string> inventoryItemToInstancePathMap =
         new Dictionary<EInventoryItemID, string>() {
             { EInventoryItemID.POSTBOX_KEY, "postbox_key" },
             { EInventoryItemID.LETTER, "letter" },
@@ -62,9 +70,8 @@ public class GameConstants
             { EInventoryItemID.E_PANEL_KEY, "e-panel_key" },
             { EInventoryItemID.SCREWDRIVER, "screwdriver" },
             { EInventoryItemID.ELEVATOR_BUTTON, "elevator_button" },
-            { EInventoryItemID.ELEVATOR_BUTTON_PANEL, "elevator_button_panel" },
+            { EInventoryItemID.ELEVATOR_BUTTON_PANEL, "garbage_chute/elevator_button_panel" },
             { EInventoryItemID.INSULATING_TAPE, "insulating_tape" },
-
         };
 
     public static Dictionary<ESwitchableObjectID, string> switchableObjectToInstancePathMap =
@@ -92,4 +99,51 @@ public class GameConstants
        { EFloorMarkID.DRAGONFLY,     new FloorMark() {FirstFloor = 9,  Frequency = 10, associatedInventoryItems = new EInventoryItemID[]{ EInventoryItemID.POSTBOX_KEY, EInventoryItemID.LETTER } } },
        { EFloorMarkID.LOST_PET_SIGN, new FloorMark() {FirstFloor = 11, Frequency = 5,  associatedInventoryItems = new EInventoryItemID[]{ EInventoryItemID.E_PANEL_KEY, EInventoryItemID.SCREWDRIVER} } },
     };
+}
+
+public static class GameUtils
+{
+    public static string GetNameByPath(string path)
+    {
+        int lastIndexOfSlash = path.LastIndexOf('/');
+        return (lastIndexOfSlash == -1) ? path : path.Substring(lastIndexOfSlash + 1);
+    }
+}
+
+public struct GraphState
+{
+    public string name;
+    public Action onReached;
+}
+
+public class GraphTransition
+{
+    public byte nextStateId;
+    public EInventoryItemID? selectedInventoryItemId;
+    public Func<bool> condition;
+    public bool isReverse;
+}
+
+public class MultiStateObjectEventArgs : EventArgs
+{
+    public readonly byte stateId;
+
+    public MultiStateObjectEventArgs(byte stateId)
+    {
+        this.stateId = stateId;
+    }
+}
+
+public static class CameraUtils
+{
+    public static Texture2D GetCameraTexture(Camera cameraComponent, int width, int height)
+    {
+        cameraComponent.targetTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32, 10);
+        cameraComponent.Render();
+
+        Texture2D t2d = new Texture2D(width, height, TextureFormat.ARGB32, false);
+        Graphics.CopyTexture(cameraComponent.targetTexture, t2d);
+
+        return t2d;
+    }
 }

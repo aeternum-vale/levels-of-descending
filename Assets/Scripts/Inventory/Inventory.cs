@@ -7,9 +7,8 @@ using UnityEngine.UI;
 
 public class Inventory : MonoBehaviour
 {
-    GameObject inventoryCameraGameObject;
     InventoryCamera inventoryCamera;
-    Camera inventoryCameraComponent;
+    Camera inventoryCameraCameraComponent;
 
     Image backgroundImageComponent;
     Texture2D backgroundTexture;
@@ -20,9 +19,9 @@ public class Inventory : MonoBehaviour
         //{ EInventoryItemID.LETTER, true },
         //{ EInventoryItemID.POSTBOX_KEY, true },
         //{ EInventoryItemID.SCALPEL, true },
-        { EInventoryItemID.SCREWDRIVER, true },
-        { EInventoryItemID.INSULATING_TAPE, true },
-        { EInventoryItemID.ELEVATOR_BUTTON_PANEL, true }
+        //{ EInventoryItemID.SCREWDRIVER, true },
+        //{ EInventoryItemID.INSULATING_TAPE, true },
+        //{ EInventoryItemID.ELEVATOR_BUTTON_PANEL, true }
     };
     readonly Dictionary<EInventoryItemID, GameObject> instances = new Dictionary<EInventoryItemID, GameObject>();
     int currentItemIndex;
@@ -31,7 +30,6 @@ public class Inventory : MonoBehaviour
     bool isTransition;
     bool isTransitionOut = true;
     readonly float transitionStep = 0.1f;
-    readonly float transitionStepTime = 0.001f;
     readonly float transitionXOffset = 15f;
     static readonly string itemsContainerName = "items";
 
@@ -55,18 +53,18 @@ public class Inventory : MonoBehaviour
 
     void Awake()
     {
-        inventoryCameraGameObject = transform.Find("InventoryCamera").gameObject;
-        inventoryCameraComponent = inventoryCameraGameObject.GetComponent<Camera>();
-        inventoryCamera = inventoryCameraGameObject.GetComponent<InventoryCamera>();
+        inventoryCamera = transform.GetComponentInChildren<InventoryCamera>();
+        inventoryCameraCameraComponent = inventoryCamera.GetComponent<Camera>();
 
-        backgroundImageComponent = transform.Find("Canvas").Find("Image").gameObject.GetComponent<Image>();
+        backgroundImageComponent = transform.Find("Canvas").Find("Image").GetComponent<Image>();
 
         Messenger<EInventoryItemID>.AddListener(Events.INVENTORY_ITEM_WAS_CLICKED, OnItemAdding);
         Messenger.AddListener(Events.INVENTORY_BUTTON_WAS_PRESSED, OnInventorySwitchToNextItem);
 
-        foreach (KeyValuePair<EInventoryItemID, string> item in GameConstants.inventoryItemToInstanceNameMap)
+        foreach (KeyValuePair<EInventoryItemID, string> item in GameConstants.inventoryItemToInstancePathMap)
         {
-            GameObject go = transform.Find($"{itemsContainerName}/{item.Value}").gameObject;
+            var itemName = GameUtils.GetNameByPath(item.Value);
+            GameObject go = transform.Find($"{itemsContainerName}/{itemName}").gameObject;
             HideInstance(go);
             instances.Add(item.Key, go);
         }
@@ -132,7 +130,7 @@ public class Inventory : MonoBehaviour
             GameObject currentInstance = instances[listOfAvailableItems[currentItemIndex]];
             ShowInstance(currentInstance);
             StartInstanceAnimation(currentInstance);
-            inventoryCameraGameObject.SetActive(true);
+            inventoryCamera.gameObject.SetActive(true);
 
         }
         else
@@ -143,7 +141,7 @@ public class Inventory : MonoBehaviour
     {
         IsInventoryModeOn = false;
         inventoryCamera.IsInventoryModeOn = false;
-        inventoryCameraGameObject.SetActive(false);
+        inventoryCamera.gameObject.SetActive(false);
     }
 
     IEnumerator SwitchToNextItem()
@@ -151,10 +149,10 @@ public class Inventory : MonoBehaviour
         isTransition = true;
 
         backgroundImageComponent.enabled = false;
-        inventoryCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
-        inventoryCameraComponent.Render();
-        inventoryCameraTexture = inventoryCameraComponent.targetTexture;
-        inventoryCameraComponent.targetTexture = null;
+        inventoryCameraCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
+        inventoryCameraCameraComponent.Render();
+        inventoryCameraTexture = inventoryCameraCameraComponent.targetTexture;
+        inventoryCameraCameraComponent.targetTexture = null;
         HideAllInstances();
 
         isTransitionOut = true;
@@ -165,16 +163,16 @@ public class Inventory : MonoBehaviour
 
         ShowInstance(currentInstance);
 
-        inventoryCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
-        inventoryCameraComponent.Render();
-        inventoryCameraTexture = inventoryCameraComponent.targetTexture;
-        inventoryCameraComponent.targetTexture = null;
+        inventoryCameraCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
+        inventoryCameraCameraComponent.Render();
+        inventoryCameraTexture = inventoryCameraCameraComponent.targetTexture;
+        inventoryCameraCameraComponent.targetTexture = null;
 
         isTransitionOut = false;
         yield return StartCoroutine(FadeCurrentItem(false));
 
         isTransition = false;
-        inventoryCameraComponent.targetTexture = null;
+        inventoryCameraCameraComponent.targetTexture = null;
         backgroundImageComponent.enabled = true;
         StartInstanceAnimation(currentInstance);
     }

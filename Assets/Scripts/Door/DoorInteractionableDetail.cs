@@ -10,9 +10,9 @@ public class DoorInteractionableDetail : AnimatedSelectableObject
         base.Start();
         parentDoor = transform.parent.parent.gameObject.GetComponent<Door>();
     }
-    public override void OnClick(EInventoryItemID? selectedInventoryItemId = null)
+    public override void OnClick(EInventoryItemID? selectedInventoryItemId, GameObject colliderCarrier)
     {
-        base.OnClick(selectedInventoryItemId);
+        base.OnClick(selectedInventoryItemId, colliderCarrier);
         parentDoor.Interact(action);
     }
 }

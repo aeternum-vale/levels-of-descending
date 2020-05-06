@@ -13,7 +13,6 @@ public class Floor : MonoBehaviour
     Door leftDoor;
     Door rightDoor;
     Scalpel scalpel;
-    InventoryObject elevatorButtonPanel;
 
     Material adMaterial;
 
@@ -25,24 +24,21 @@ public class Floor : MonoBehaviour
 
     private void Start()
     {
-        postboxPartMaterialWithDragonFly = gameObject.transform.Find("postbox").Find("Cube.003").gameObject.GetComponent<MeshRenderer>().material;
-        leftDoor = gameObject.transform.Find("left_door_prefab").gameObject.GetComponent<Door>();
-        rightDoor = gameObject.transform.Find("right_door_prefab").gameObject.GetComponent<Door>();
-
-        scalpel = gameObject.transform.Find(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.SCALPEL]).gameObject.GetComponent<Scalpel>();
-        elevatorButtonPanel = gameObject.transform.Find(GameConstants.inventoryItemToInstanceNameMap[EInventoryItemID.ELEVATOR_BUTTON_PANEL]).gameObject.GetComponent<InventoryObject>();
+        postboxPartMaterialWithDragonFly = transform.Find("postbox").Find("Cube.003").GetComponent<MeshRenderer>().material;
+        leftDoor = gameObject.transform.Find("left_door_prefab").GetComponent<Door>();
+        rightDoor = gameObject.transform.Find("right_door_prefab").GetComponent<Door>();
+        scalpel = transform.Find(InventoryObject.GetPath(EInventoryItemID.SCALPEL)).GetComponent<Scalpel>();
 
         foreach (ESwitchableObjectID id in (ESwitchableObjectID[])Enum.GetValues(typeof(ESwitchableObjectID)))
         {
-            switchableInstancesDict.Add(id, transform.Find(GameConstants.switchableObjectToInstancePathMap[id]).gameObject.GetComponent<SwitchableObject>());
+            switchableInstancesDict.Add(id, transform.Find(SwitchableObject.GetPath(id)).GetComponent<SwitchableObject>());
         }
     }
 
     private void Awake()
     {
-        frontWallMaterial = gameObject.transform.Find(GameConstants.entrywayObjectName).Find(frontWallName).gameObject.GetComponent<MeshRenderer>().material;
-        string adPath = GameConstants.switchableObjectToInstancePathMap[ESwitchableObjectID.AD];
-        adMaterial = gameObject.transform.Find(adPath).gameObject.GetComponent<MeshRenderer>().material;
+        frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(frontWallName).GetComponent<MeshRenderer>().material;
+        adMaterial = transform.Find(SwitchableObject.GetPath(ESwitchableObjectID.AD)).GetComponent<MeshRenderer>().material;
     }
 
     public void HideObject(string name)
@@ -92,7 +88,6 @@ public class Floor : MonoBehaviour
                 postboxPartMaterialWithDragonFly.SetFloat("_IsTitleOn", 0f);
                 leftDoor.UnmarkWithDragonfly();
                 break;
-
         }
     }
 
@@ -107,10 +102,5 @@ public class Floor : MonoBehaviour
     public void SetFrontWallAd(Texture2D texture)
     {
         adMaterial.SetTexture("_MainTex", texture);
-    }
-
-    public void MakeElevatorButtonPanelGrabable()
-    {
-        elevatorButtonPanel.IsGrabable = true;
     }
 }

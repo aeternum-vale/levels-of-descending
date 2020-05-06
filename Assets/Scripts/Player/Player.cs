@@ -23,6 +23,7 @@ public class Player : MonoBehaviour
     static readonly float maxDistanceToSelectableObjectOnSquatting = .8f;
 
     SelectableObject selectedObject;
+    GameObject colliderCarrier;
     public GameObject LastGround1ColliderTouched { get; private set; }
     public GameObject PrevLastGround1ColliderTouched { get; private set; }
 
@@ -116,7 +117,8 @@ public class Player : MonoBehaviour
                 if (hit.distance <= distance)
                 {
                     this.selectedObject = currentSelectedObject;
-                    this.selectedObject.OnOver(hit.transform.gameObject);
+                    this.colliderCarrier = hit.transform.gameObject;
+                    this.selectedObject.OnOver(this.colliderCarrier);
                 }
             }
         }
@@ -136,7 +138,7 @@ public class Player : MonoBehaviour
 
             if (this.selectedObject)
             {
-                this.selectedObject.OnClick(selectedInventoryItem);
+                this.selectedObject.OnClick(selectedInventoryItem, colliderCarrier);
             }
         }
 
