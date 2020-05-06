@@ -9,15 +9,29 @@ namespace AdGeneratorModule
 {
     public class AdGenerator : MonoBehaviour
     {
-        private GameObject _cameraGameObject;
-        private Camera _cameraComponent;
-        private GameObject _canvas;
+        private static readonly int MessageTextMaxLineCount = 3;
+        private static readonly float NewLineProbability = 0.1f;
+        private static readonly float UpperCaseProbability = 0.02f;
 
-        private Text _message;
-        private Text _header;
-        private Image _bg;
+        private static readonly float NumbersProbability = 0.4f;
+        private static readonly int NumbersMaxCount = 5;
 
-        private readonly string[] _politePhrases = {
+        private static readonly int NewLineSpacesMaxCount = 2;
+        private static readonly float BgColorMinValue = .9f;
+
+        private readonly string[] _politeHeaders =
+        {
+            "dear tenants",
+            "dear everyone",
+            "pay little attention",
+            "hello",
+            "hello everyone",
+            "announcement",
+            "important message"
+        };
+
+        private readonly string[] _politePhrases =
+        {
             "it is very kind of you to",
             "may we take this opportunity of thanking you for",
             "please accept our sincere deep appreciation for",
@@ -44,25 +58,13 @@ namespace AdGeneratorModule
             "to our great regret we must inform you that"
         };
 
-        private readonly string[] _politeHeaders = {
-            "dear tenants",
-            "dear everyone",
-            "pay little attention",
-            "hello",
-            "hello everyone",
-            "announcement",
-            "important message"
-        };
+        private Image _bg;
+        private Camera _cameraComponent;
+        private GameObject _cameraGameObject;
+        private GameObject _canvas;
+        private Text _header;
 
-        private static readonly int MessageTextMaxLineCount = 3;
-        private static readonly float NewLineProbability = 0.1f;
-        private static readonly float UpperCaseProbability = 0.02f;
-
-        private static readonly float NumbersProbability = 0.4f;
-        private static readonly int NumbersMaxCount = 5;
-
-        private static readonly int NewLineSpacesMaxCount = 2;
-        private static readonly float BgColorMinValue = .9f;
+        private Text _message;
 
         private void Start()
         {
@@ -93,7 +95,7 @@ namespace AdGeneratorModule
         private static void AppendRandomNumbersToStringBuilder(ref StringBuilder sb)
         {
             if (!(Random.Range(0, 1f) < NumbersProbability)) return;
-            
+
             var numbersStr = Random.Range(0, 1f).ToString(CultureInfo.InvariantCulture);
             sb.Append(numbersStr.Substring(2, Math.Min(NumbersMaxCount, numbersStr.Length - 3)));
             sb.Append('\n');

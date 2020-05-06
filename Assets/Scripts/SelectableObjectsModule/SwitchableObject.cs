@@ -7,13 +7,12 @@ namespace SelectableObjectsModule
     [RequireComponent(typeof(Animator))]
     public class SwitchableObject : MultiStateObject
     {
+        private const string SwitchStateName = "Switch";
+        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
         [SerializeField] private ESwitchableObjectId id;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
-        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
 
         public bool IsOpened { get; set; }
-
-        private const string SwitchStateName = "Switch";
 
         protected override void Awake()
         {
@@ -32,12 +31,15 @@ namespace SelectableObjectsModule
                     new GraphTransition
                     {
                         NextStateId = (byte) ESwitchableObjectStateId.OPEN,
+
                         SelectedInventoryItemId = hasValueOfNecessaryInventoryItem
                             ? necessaryInventoryItem
                             : (EInventoryItemId?) null,
+
                         Condition = OpenCondition
                     }
                 },
+
                 [(byte) ESwitchableObjectStateId.OPEN] = new List<GraphTransition>
                 {
                     new GraphTransition

@@ -5,9 +5,9 @@ namespace SelectableObjectsModule.SpecificObjects
 {
     public class GarbageChute : MonoBehaviour
     {
+        private InventoryObject _elevatorButtonPanel;
         private GarbageChuteDoor _garbageChuteDoor;
         private SwitchableObject _garbageChuteHinge;
-        private InventoryObject _elevatorButtonPanel;
 
         private void Start()
         {

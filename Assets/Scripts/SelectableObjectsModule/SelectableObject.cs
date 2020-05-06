@@ -6,11 +6,11 @@ namespace SelectableObjectsModule
 {
     public class SelectableObject : MonoBehaviour
     {
-        [SerializeField] private float maxDistanceToSelect = .45f;
-        [SerializeField] private bool hasValueOfMaxDistanceToSelect;
+        private static readonly int IsSelected = Shader.PropertyToID("_IsSelected");
 
         private readonly Dictionary<GameObject, Material> _materialsCache = new Dictionary<GameObject, Material>();
-        private static readonly int IsSelected = Shader.PropertyToID("_IsSelected");
+        [SerializeField] private bool hasValueOfMaxDistanceToSelect;
+        [SerializeField] private float maxDistanceToSelect = .45f;
 
         public bool IsGlowingEnabled { get; set; } = true;
 
@@ -65,10 +65,7 @@ namespace SelectableObjectsModule
 
         private Material GetGameObjectMaterial(GameObject go)
         {
-            if (_materialsCache.ContainsKey(go))
-            {
-                return _materialsCache[go];
-            }
+            if (_materialsCache.ContainsKey(go)) return _materialsCache[go];
 
             var mat = go.GetComponent<MeshRenderer>().material;
             _materialsCache.Add(go, mat);

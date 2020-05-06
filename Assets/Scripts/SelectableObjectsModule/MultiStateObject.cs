@@ -6,18 +6,17 @@ namespace SelectableObjectsModule
 {
     public abstract class MultiStateObject : SelectableObject
     {
-        [SerializeField] protected bool isDisposable;
-
+        private static readonly int Direction = Animator.StringToHash("Direction");
         private Animator _animator;
-
-        public bool IsSealed { get; set; }
+        private bool _isAnimationOn;
 
         protected byte CurrentStateId;
-        private bool _isAnimationOn;
+        [SerializeField] protected bool isDisposable;
 
         protected List<GraphState> States;
         protected Dictionary<byte, List<GraphTransition>> StateTransitions;
-        private static readonly int Direction = Animator.StringToHash("Direction");
+
+        public bool IsSealed { get; set; }
         public event EventHandler<MultiStateObjectEventArgs> OnStateReached;
 
         protected virtual void Start()

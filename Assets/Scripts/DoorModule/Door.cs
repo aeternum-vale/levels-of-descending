@@ -6,6 +6,19 @@ namespace DoorModule
     [RequireComponent(typeof(Transform))]
     public abstract class Door : MonoBehaviour
     {
+        private const string DoorBaseName = "doorBase";
+        private const string HandleName = "doorhandle";
+        private const string BellButtonName = "door_bell_button";
+        private const string StaticDetailsName = "staticDetails";
+        private const string DetailsName = "details";
+        private const string NameplateName = "nameplate";
+        private const string PeepholeName = "peephole";
+        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
+
+        private readonly EDoorAction[] _lastActions = new EDoorAction[GameConstants.dragonflyCode.Length];
+        private int _lastActionsCursor;
+
+        private DoorPushableDetail[] _pushableDetails;
         public GameObject DoorBase { get; private set; }
         public GameObject Details { get; private set; }
         public GameObject Handle { get; private set; }
@@ -16,19 +29,6 @@ namespace DoorModule
 
         public bool IsDragonflyMarked { get; private set; }
 
-        private const string DoorBaseName = "doorBase";
-        private const string HandleName = "doorhandle";
-        private const string BellButtonName = "door_bell_button";
-        private const string StaticDetailsName = "staticDetails";
-        private const string DetailsName = "details";
-        private const string NameplateName = "nameplate";
-        private const string PeepholeName = "peephole";
-
-        private readonly EDoorAction[] _lastActions = new EDoorAction[GameConstants.dragonflyCode.Length];
-        private int _lastActionsCursor;
-        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
-
-        private DoorPushableDetail[] _pushableDetails;
         private void Awake()
         {
             DoorBase = transform.Find(DoorBaseName).gameObject;
@@ -43,9 +43,7 @@ namespace DoorModule
             _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
 
             foreach (var pushableDetail in _pushableDetails)
-            {
                 pushableDetail.OnStateReached += OnPushableDetailStateReached;
-            }
 
             Randomize();
         }

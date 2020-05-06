@@ -90,7 +90,8 @@ public static class GameConstants
     public static readonly string stairs1ColliderObjectName = "stairs1";
     public static readonly string stairs2ColliderObjectName = "stairs2";
 
-    public static readonly EDoorAction[] dragonflyCode = {EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE};
+    public static readonly EDoorAction[] dragonflyCode =
+        {EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE};
 
     public static readonly Dictionary<EFloorMarkId, FloorMark> floorMarksDict = new Dictionary<EFloorMarkId, FloorMark>
     {
@@ -132,10 +133,10 @@ public struct GraphState
 
 public class GraphTransition
 {
-    public byte NextStateId;
-    public EInventoryItemId? SelectedInventoryItemId;
     public Func<bool> Condition;
     public bool IsReverse;
+    public byte NextStateId;
+    public EInventoryItemId? SelectedInventoryItemId;
 }
 
 public class MultiStateObjectEventArgs : EventArgs

@@ -14,16 +14,9 @@ namespace FloorModule
         private const string FrontWallName = "front_wall";
         private const string FrontWallNumberMatPropertyName = "_FloorNumber";
 
-        private Material _frontWallMaterial;
-        private Material _postboxPartMaterialWithDragonFly;
-        private Door _leftDoor;
-        private Door _rightDoor;
-        private Scalpel _scalpel;
-
-        private Material _adMaterial;
-
-        public readonly Dictionary<ESwitchableObjectId, SwitchableObject> SwitchableInstancesDict =
-            new Dictionary<ESwitchableObjectId, SwitchableObject>();
+        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
+        private static readonly int ActiveTextureNumber = Shader.PropertyToID("_ActiveTextureNumber");
 
         private readonly Dictionary<EFloorMarkId, bool> _markStatesDict = new Dictionary<EFloorMarkId, bool>
         {
@@ -31,9 +24,16 @@ namespace FloorModule
             {EFloorMarkId.LOST_PET_SIGN, false}
         };
 
-        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
-        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
-        private static readonly int ActiveTextureNumber = Shader.PropertyToID("_ActiveTextureNumber");
+        public readonly Dictionary<ESwitchableObjectId, SwitchableObject> SwitchableInstancesDict =
+            new Dictionary<ESwitchableObjectId, SwitchableObject>();
+
+        private Material _adMaterial;
+
+        private Material _frontWallMaterial;
+        private Door _leftDoor;
+        private Material _postboxPartMaterialWithDragonFly;
+        private Door _rightDoor;
+        private Scalpel _scalpel;
 
         private void Start()
         {

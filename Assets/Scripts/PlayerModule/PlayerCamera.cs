@@ -4,13 +4,13 @@ namespace PlayerModule
 {
     public class PlayerCamera : MonoBehaviour
     {
+        private readonly float _mouseVerticalMax = 70;
+        private readonly float _mouseVerticalMin = -80;
+        private Camera _cameraComponent;
+        private float _rotationX;
         [SerializeField] private Material mat;
         public bool IsInventoryModeOn { get; set; }
-        private Camera _cameraComponent;
         public float MouseSensitivity { get; } = 1;
-        private readonly float _mouseVerticalMin = -80;
-        private readonly float _mouseVerticalMax = 70;
-        private float _rotationX;
 
 
         private void Start()
@@ -23,7 +23,7 @@ namespace PlayerModule
         private void Update()
         {
             if (IsInventoryModeOn) return;
-            
+
             _rotationX -= Input.GetAxis("Mouse Y") * MouseSensitivity;
             _rotationX = Mathf.Clamp(_rotationX, _mouseVerticalMin, _mouseVerticalMax);
             transform.localEulerAngles = new Vector3(_rotationX, 0, 0);
@@ -32,7 +32,7 @@ namespace PlayerModule
         private void OnGUI()
         {
             if (IsInventoryModeOn) return;
-            
+
             const int size = 8;
             float posX = _cameraComponent.pixelWidth / 2 - size / 2;
             float posY = _cameraComponent.pixelHeight / 2 - size;

@@ -6,8 +6,8 @@ namespace InventoryModule
 {
     public class InventoryObject : SelectableObject
     {
-        [SerializeField] protected EInventoryItemId objectId;
         [SerializeField] protected bool isGrabable = true;
+        [SerializeField] protected EInventoryItemId objectId;
 
         public bool IsGrabable
         {
@@ -18,7 +18,7 @@ namespace InventoryModule
         public override void OnClick(EInventoryItemId? selectedInventoryObjectId, GameObject colliderCarrier)
         {
             if (!isGrabable) return;
-            
+
             gameObject.SetActive(false);
             Messenger<EInventoryItemId>.Broadcast(Events.inventoryItemWasClicked, objectId);
         }

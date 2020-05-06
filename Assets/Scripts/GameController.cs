@@ -11,23 +11,6 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private Inventory inventory;
-    [SerializeField] private GameObject floorPrefab;
-    [SerializeField] private GameObject playerGameObject;
-    [SerializeField] private DoorFactory doorFactory;
-
-    [SerializeField] private AdGenerator adGenerator;
-
-    private Player _player;
-    private Floor[] _floors;
-
-    private int _highestFloorIndex;
-    private int _floorsHalf;
-    private int _realFloorNumber = 7;
-
-    private int _fakeFloorNumber = 7;
-    private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
-
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 6;
     private const string EntrywayObjectName = "entryway";
@@ -38,7 +21,21 @@ public class GameController : MonoBehaviour
 
     private readonly Dictionary<Floor, GameObject> _floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
 
-    private delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
+    private int _fakeFloorNumber = 7;
+    private Floor[] _floors;
+    private int _floorsHalf;
+
+    private int _highestFloorIndex;
+
+    private Player _player;
+    private int _realFloorNumber = 7;
+
+    [SerializeField] private AdGenerator adGenerator;
+    [SerializeField] private DoorFactory doorFactory;
+    [SerializeField] private GameObject floorPrefab;
+    [SerializeField] private Inventory inventory;
+    [SerializeField] private GameObject playerGameObject;
+    private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
     private void Start()
     {
@@ -257,4 +254,6 @@ public class GameController : MonoBehaviour
                 }
         }
     }
+
+    private delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
 }

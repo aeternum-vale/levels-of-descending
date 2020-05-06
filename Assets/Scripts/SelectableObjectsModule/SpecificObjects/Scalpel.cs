@@ -5,8 +5,8 @@ namespace SelectableObjectsModule.SpecificObjects
 {
     public class Scalpel : InventoryObject
     {
-        private Animator _anim;
         private static readonly int Active = Animator.StringToHash("Active");
+        private Animator _anim;
 
         protected override void Awake()
         {

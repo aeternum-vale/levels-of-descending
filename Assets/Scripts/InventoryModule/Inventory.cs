@@ -10,31 +10,27 @@ namespace InventoryModule
 {
     public class Inventory : MonoBehaviour
     {
-        private InventoryCamera _inventoryCamera;
-        private Camera _inventoryCameraCameraComponent;
-
-        private Image _backgroundImageComponent;
-        private Texture2D _backgroundTexture;
-        private RenderTexture _inventoryCameraTexture;
-
-        public Dictionary<EInventoryItemId, bool> AvailableItemsDict { get; } = new Dictionary<EInventoryItemId, bool>();
-
-        private readonly Dictionary<EInventoryItemId, GameObject>
-            _instances = new Dictionary<EInventoryItemId, GameObject>();
-
-        private int _currentItemIndex;
-        private List<EInventoryItemId> _listOfAvailableItems;
-        private float _currentTransitionOpacity = 1f;
-        private bool _isTransition;
-        private bool _isTransitionOut = true;
         private const float TransitionStep = 0.1f;
         private const float TransitionXOffset = 15f;
         private const string ItemsContainerName = "items";
 
-        public bool Contains(EInventoryItemId id)
-        {
-            return AvailableItemsDict.ContainsKey(id);
-        }
+        private readonly Dictionary<EInventoryItemId, GameObject>
+            _instances = new Dictionary<EInventoryItemId, GameObject>();
+
+        private Image _backgroundImageComponent;
+        private Texture2D _backgroundTexture;
+
+        private int _currentItemIndex;
+        private float _currentTransitionOpacity = 1f;
+        private InventoryCamera _inventoryCamera;
+        private Camera _inventoryCameraCameraComponent;
+        private RenderTexture _inventoryCameraTexture;
+        private bool _isTransition;
+        private bool _isTransitionOut = true;
+        private List<EInventoryItemId> _listOfAvailableItems;
+
+        public Dictionary<EInventoryItemId, bool> AvailableItemsDict { get; } =
+            new Dictionary<EInventoryItemId, bool>();
 
         public EInventoryItemId CurrentItemId => _listOfAvailableItems[_currentItemIndex];
 
@@ -47,6 +43,11 @@ namespace InventoryModule
                 UpdateListOfAvailableItems();
                 return _listOfAvailableItems.Count != 0;
             }
+        }
+
+        public bool Contains(EInventoryItemId id)
+        {
+            return AvailableItemsDict.ContainsKey(id);
         }
 
         private void Awake()
@@ -177,7 +178,8 @@ namespace InventoryModule
 
         public void OnInventorySwitchToNextItem()
         {
-            if (IsInventoryModeOn && !_isTransition && _listOfAvailableItems.Count > 1) StartCoroutine(SwitchToNextItem());
+            if (IsInventoryModeOn && !_isTransition && _listOfAvailableItems.Count > 1)
+                StartCoroutine(SwitchToNextItem());
         }
 
         private IEnumerator FadeCurrentItem(bool isOut)
@@ -196,11 +198,13 @@ namespace InventoryModule
             GL.PushMatrix();
             GL.LoadPixelMatrix();
 
-            Graphics.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), _backgroundTexture, new Rect(0, 1, 1, -1), 0,
+            Graphics.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), _backgroundTexture, new Rect(0, 1, 1, -1),
+                0,
                 0, 0, 0,
                 new Color(.5f, .5f, .5f, 1f));
 
-            Graphics.DrawTexture(new Rect((1 - _currentTransitionOpacity) * TransitionXOffset * (_isTransitionOut ? 1 : -1),
+            Graphics.DrawTexture(new Rect(
+                    (1 - _currentTransitionOpacity) * TransitionXOffset * (_isTransitionOut ? 1 : -1),
                     0, Screen.width, Screen.height), _inventoryCameraTexture, new Rect(0, 1, 1, -1), 0, 0, 0, 0,
                 new Color(.5f, .5f, .5f, _currentTransitionOpacity));
 

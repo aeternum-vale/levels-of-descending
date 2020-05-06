@@ -7,41 +7,41 @@ namespace PlayerModule
 {
     public class Player : MonoBehaviour
     {
-        [SerializeField] private PlayerCamera playerCamera;
-        [SerializeField] public Inventory inventory;
-        [SerializeField] public bool isSquattingOn = true;
-
-        private Camera _playerCameraComponent;
-
-        private readonly float _speed = 1.5f;
-        private readonly float _gravity = -9.8f;
-        private float _mouseSensitivity;
-        private CharacterController _charController;
-
-        private float _startCameraY;
-        private float _realSquattingAmount;
-        private readonly float _squattingMaxAmount = 2f;
-        private readonly float _squattingSpeed = 3f;
-
-        private float _maxDistanceToSelectableObject = .45f;
         private static readonly float MaxDistanceToSelectableObjectOnStanding = .45f;
         private static readonly float MaxDistanceToSelectableObjectOnSquatting = .8f;
-
-        private SelectableObject _selectedObject;
-        private GameObject _colliderCarrier;
-        public GameObject LastGround1ColliderTouched { get; private set; }
-        public GameObject PrevLastGround1ColliderTouched { get; private set; }
-
-        private bool _isStairCommonPace;
-        private bool _isStair1Pace;
-        private bool _prevIsStairPace;
-        private float _stairPaceYTargetOffset;
-        private float _stairPaceYRealOffset;
-        private float _stairPaceXAdjustment;
-        private bool _isGround1Last;
         private static readonly float StairPaceYSpeed = 0.02f;
         private static readonly float StairPaceYAmplitude = 0.2f;
         private static readonly float StairPaceYFrequency = 20f;
+        private readonly float _gravity = -9.8f;
+
+        private readonly float _speed = 1.5f;
+        private readonly float _squattingMaxAmount = 2f;
+        private readonly float _squattingSpeed = 3f;
+        private CharacterController _charController;
+        private GameObject _colliderCarrier;
+        private bool _isGround1Last;
+        private bool _isStair1Pace;
+
+        private bool _isStairCommonPace;
+
+        private float _maxDistanceToSelectableObject = .45f;
+        private float _mouseSensitivity;
+
+        private Camera _playerCameraComponent;
+        private bool _prevIsStairPace;
+        private float _realSquattingAmount;
+
+        private SelectableObject _selectedObject;
+        private float _stairPaceXAdjustment;
+        private float _stairPaceYRealOffset;
+        private float _stairPaceYTargetOffset;
+
+        private float _startCameraY;
+        [SerializeField] public Inventory inventory;
+        [SerializeField] public bool isSquattingOn = true;
+        [SerializeField] private PlayerCamera playerCamera;
+        public GameObject LastGround1ColliderTouched { get; private set; }
+        public GameObject PrevLastGround1ColliderTouched { get; private set; }
 
         private void Start()
         {
@@ -69,11 +69,11 @@ namespace PlayerModule
         private void UpdateInventoryButton()
         {
             if (!Input.GetButtonDown("Inventory")) return;
-            
+
             if (!inventory.IsInventoryModeOn)
             {
                 if (!inventory.CanActivateInventoryMode) return;
-                
+
                 playerCamera.IsInventoryModeOn = true;
                 inventory.ActivateInventoryMode(playerCamera.GetBackgroundTexture());
                 playerCamera.ActivateInventoryMode();
@@ -102,7 +102,7 @@ namespace PlayerModule
             var ray = _playerCameraComponent.ScreenPointToRay(point);
 
             if (!Physics.Raycast(ray, out var hit)) return;
-            
+
             var currentTransform = hit.transform;
             var currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
 
@@ -113,13 +113,13 @@ namespace PlayerModule
             }
 
             if (!currentSelectedObject) return;
-            
+
             var distance = _maxDistanceToSelectableObject;
             if (currentSelectedObject.MaxDistanceToSelect != null)
                 distance = (float) currentSelectedObject.MaxDistanceToSelect;
 
             if (!(hit.distance <= distance)) return;
-            
+
             _selectedObject = currentSelectedObject;
             _colliderCarrier = hit.transform.gameObject;
             _selectedObject.OnOver(_colliderCarrier);
@@ -128,7 +128,7 @@ namespace PlayerModule
         private void UpdateUseButton()
         {
             if (!Input.GetMouseButtonDown(0)) return;
-            
+
             EInventoryItemId? selectedInventoryItem = null;
 
             if (inventory.IsInventoryModeOn)
@@ -137,7 +137,7 @@ namespace PlayerModule
                 DeactivateInventoryMode();
             }
 
-            if (_selectedObject) 
+            if (_selectedObject)
                 _selectedObject.OnClick(selectedInventoryItem, _colliderCarrier);
         }
 
@@ -197,7 +197,7 @@ namespace PlayerModule
                 _stairPaceYTargetOffset = 0;
 
                 if (_stairPaceYRealOffset == _stairPaceYTargetOffset) return;
-                
+
                 var diff = Mathf.Abs(_stairPaceYRealOffset - _stairPaceYTargetOffset);
                 if (diff <= StairPaceYSpeed)
                     _stairPaceYRealOffset = _stairPaceYTargetOffset;
@@ -219,11 +219,11 @@ namespace PlayerModule
         private void UpdateSquatting()
         {
             if (!isSquattingOn) return;
-            
+
             _realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * _squattingSpeed * Time.deltaTime;
             _realSquattingAmount = Mathf.Clamp(_realSquattingAmount, 0, _squattingMaxAmount);
 
-            _maxDistanceToSelectableObject = (_realSquattingAmount == _squattingMaxAmount)
+            _maxDistanceToSelectableObject = _realSquattingAmount == _squattingMaxAmount
                 ? MaxDistanceToSelectableObjectOnSquatting
                 : MaxDistanceToSelectableObjectOnStanding;
         }
