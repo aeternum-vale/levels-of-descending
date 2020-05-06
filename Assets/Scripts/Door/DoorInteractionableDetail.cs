@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class DoorInteractionableDetail : AnimatedSelectableObject
+public class DoorInteractionableDetail : PushableObject
 {
     Door parentDoor;
     [SerializeField] EDoorAction action;
@@ -10,9 +10,10 @@ public class DoorInteractionableDetail : AnimatedSelectableObject
         base.Start();
         parentDoor = transform.parent.parent.gameObject.GetComponent<Door>();
     }
-    public override void OnClick(EInventoryItemID? selectedInventoryItemId, GameObject colliderCarrier)
+
+    protected override void OnPush()
     {
-        base.OnClick(selectedInventoryItemId, colliderCarrier);
+        base.OnPush();
         parentDoor.Interact(action);
     }
 }
