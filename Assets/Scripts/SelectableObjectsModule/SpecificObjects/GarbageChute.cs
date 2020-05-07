@@ -13,17 +13,16 @@ namespace SelectableObjectsModule.SpecificObjects
         private void Start()
         {
             _garbageChuteDoor = transform.GetComponentInChildren<GarbageChuteDoor>();
-            _garbageChuteHinge = transform.Find(SelectableObject.GetName(ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE))
-                .GetComponent<SwitchableObject>();
-            _elevatorButtonPanel = transform.Find(SelectableObject.GetName(EInventoryItemId.ELEVATOR_CALLER_PANEL))
-                .GetComponent<InventoryObject>();
+            _garbageChuteHinge = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE);
 
-            _garbageChuteHinge.OnStateReached += OnGarbageChuteStateReached;
+            _elevatorButtonPanel = SelectableObject.GetAsChild(gameObject, EInventoryItemId.ELEVATOR_CALLER_PANEL);
+
+            _garbageChuteHinge.States[(byte) ESwitchableObjectStateId.OPEN].OnReached +=
+                OnGarbageChuteHingeOpenStateReached;
         }
 
-        private void OnGarbageChuteStateReached(object sender, MultiStateObjectEventArgs e)
+        private void OnGarbageChuteHingeOpenStateReached()
         {
-            if (e.StateId != (byte) ESwitchableObjectStateId.OPEN) return;
             _garbageChuteDoor.Unhinge();
             _elevatorButtonPanel.IsGrabable = true;
         }

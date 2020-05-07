@@ -5,13 +5,13 @@ namespace SelectableObjectsModule
 {
     public class PushableObject : MultiStateObject
     {
-        private const string AnimationName = "push";
+        private const string AnimationName = "Push";
 
         protected override void Awake()
         {
             base.Awake();
 
-            States = new List<GraphState> {new GraphState {Name = AnimationName, OnReached = OnPush}};
+            States = new List<GraphState> {new GraphState {Name = AnimationName}};
 
             StateTransitions = new Dictionary<byte, List<GraphTransition>>
             {
@@ -19,8 +19,5 @@ namespace SelectableObjectsModule
             };
         }
 
-        protected virtual void OnPush()
-        {
-        }
     }
 }

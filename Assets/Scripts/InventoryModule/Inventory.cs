@@ -36,6 +36,8 @@ namespace InventoryModule
                 {EInventoryItemId.SCREWDRIVER, true},
                 {EInventoryItemId.ELEVATOR_CALLER_PANEL, true},
                 {EInventoryItemId.ELEVATOR_CALLER_BUTTON, true},
+                {EInventoryItemId.INSULATING_TAPE, true},
+                {EInventoryItemId.SCALPEL, true},
             };
 
         public EInventoryItemId CurrentItemId => _listOfAvailableItems[_currentItemIndex];

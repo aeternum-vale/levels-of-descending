@@ -216,11 +216,11 @@ public class GameController : MonoBehaviour
             ) //stop updating of the current floor
                 continue;
 
-            foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId))) //TODO: add cache
+            foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId))) 
                 f.HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
 
-            foreach (var s in f.SwitchableInstancesDict.Values.Where(s => s.IsOpened))
-                s.Switch();
+            // foreach (var s in GameConstants..Values.Where(s => s.IsOpened))
+            //     s.Switch();
 
             f.SetFrontWallAd(adGenerator.GetRandomAdTexture());
         }

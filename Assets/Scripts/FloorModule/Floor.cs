@@ -43,9 +43,9 @@ namespace FloorModule
             _rightDoor = gameObject.transform.Find("right_door_prefab").GetComponent<Door>();
             _scalpel = transform.Find(SelectableObject.GetPath(EInventoryItemId.SCALPEL)).GetComponent<Scalpel>();
 
-            foreach (var id in (ESwitchableObjectId[]) Enum.GetValues(typeof(ESwitchableObjectId)))
-                SwitchableInstancesDict.Add(id,
-                    transform.Find(SelectableObject.GetPath(id)).GetComponent<SwitchableObject>());
+            // foreach (var id in (ESwitchableObjectId[]) Enum.GetValues(typeof(ESwitchableObjectId)))
+            //     SwitchableInstancesDict.Add(id,
+            //         transform.Find(SelectableObject.GetPath(id)).GetComponent<SwitchableObject>());
         }
 
         private void Awake()

@@ -1,3 +1,4 @@
+using System;
 using Plugins;
 using SelectableObjectsModule;
 using SelectableObjectsModule.Utilities;
@@ -43,16 +44,19 @@ namespace DoorModule
             BellButton = StaticDetails.transform.Find(BellButtonName).gameObject;
 
             _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
-
-            foreach (var pushableDetail in _pushableDetails)
-                pushableDetail.OnStateReached += OnPushableDetailStateReached;
-
+            
             Randomize();
         }
 
-        private void OnPushableDetailStateReached(object sender, MultiStateObjectEventArgs e)
+        private void Start()
         {
-            Interact(((DoorPushableDetail) sender).action);
+            foreach (var pushableDetail in _pushableDetails) 
+                pushableDetail.States[0].OnReached += OnPushableDetailActivated(pushableDetail);
+        }
+
+        private Action OnPushableDetailActivated(DoorPushableDetail detail)
+        {
+            return () => Interact(detail.action);
         }
 
         public void Invert()

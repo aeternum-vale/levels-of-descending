@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using InventoryModule;
+using SelectableObjectsModule.Utilities;
 using UnityEngine;
 using Utils;
 
@@ -13,6 +14,8 @@ namespace SelectableObjectsModule
         private readonly Dictionary<GameObject, Material> _materialsCache = new Dictionary<GameObject, Material>();
         [SerializeField] private bool hasValueOfMaxDistanceToSelect;
         [SerializeField] private float maxDistanceToSelect = .45f;
+
+        public event EventHandler<SelectableObjectClickedEventArgs> Clicked;
 
         public bool IsGlowingEnabled { get; set; } = true;
 
@@ -42,6 +45,8 @@ namespace SelectableObjectsModule
 
         public virtual void OnClick(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
         {
+            Clicked?.Invoke(this, new SelectableObjectClickedEventArgs(selectedInventoryItemId, colliderCarrier));
+            
             //string item = !(selectedInventoryItemId is null) ? selectedInventoryItemId.ToString() : "nothing";
             //Debug.Log($"using {item} on {gameObject.name}");
         }

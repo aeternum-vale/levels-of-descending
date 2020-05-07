@@ -85,7 +85,7 @@ public static class GameConstants
 
             {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator_caller/connector"},
             {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator_caller/connector/panel"},
-            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator_caller/connector/wires"}
+            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator_caller/connector/panel/wires"}
             
         };
 

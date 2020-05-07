@@ -18,7 +18,6 @@ namespace SelectableObjectsModule
         [NonSerialized] public Dictionary<byte, List<GraphTransition>> StateTransitions;
 
         public bool IsSealed { get; set; }
-        public event EventHandler<MultiStateObjectEventArgs> OnStateReached;
 
         protected virtual void Start()
         {
@@ -47,7 +46,6 @@ namespace SelectableObjectsModule
 
             CurrentStateId = transition.NextStateId;
             States[CurrentStateId].OnReached?.Invoke();
-            OnStateReached?.Invoke(this, new MultiStateObjectEventArgs(CurrentStateId));
             PlayAnimation(States[transition.NextStateId].Name, transition.IsReverse);
         }
 
