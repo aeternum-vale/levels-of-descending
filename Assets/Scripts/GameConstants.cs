@@ -10,8 +10,8 @@ public enum EInventoryItemId
     SCALPEL,
     E_PANEL_KEY,
     SCREWDRIVER,
-    ELEVATOR_BUTTON,
-    ELEVATOR_BUTTON_PANEL,
+    ELEVATOR_CALLER_BUTTON,
+    ELEVATOR_CALLER_PANEL,
     INSULATING_TAPE
 }
 
@@ -23,7 +23,10 @@ public enum ESwitchableObjectId
     AD,
     AD_COVERING,
     GARBAGE_CHUTE_DOOR,
-    GARBAGE_CHUTE_DOOR_HINGE
+    GARBAGE_CHUTE_DOOR_HINGE,
+
+    ELEVATOR_CALLER_CONNECTOR,
+    ELEVATOR_CALLER_PANEL
 }
 
 public enum EDoorAction
@@ -47,12 +50,12 @@ public enum ESwitchableObjectStateId
 
 public static class Events
 {
-    public static readonly string floorWasTouched = "FLOOR_WAS_TOUCHED";
-    public static readonly string inventoryItemWasClicked = "INVENTORY_ITEM_WAS_CLICKED";
-    public static readonly string inventoryWasUpdated = "INVENTORY_WAS_UPDATED";
-    public static readonly string inventoryButtonWasPressed = "INVENTORY_BUTTON_WAS_PRESSED";
-    public static readonly string switchableObjectWasOpened = "SWITCHABLE_OBJECT_WAS_OPENED";
-    public static readonly string dragonflyCodeActivated = "DRAGONFLY_CODE_ACTIVATED";
+    public const string FloorWasTouched = "FLOOR_WAS_TOUCHED";
+    public const string InventoryItemWasClicked = "INVENTORY_ITEM_WAS_CLICKED";
+    public const string InventoryWasUpdated = "INVENTORY_WAS_UPDATED";
+    public const string InventoryButtonWasPressed = "INVENTORY_BUTTON_WAS_PRESSED";
+    public const string SwitchableObjectWasOpened = "SWITCHABLE_OBJECT_WAS_OPENED";
+    public const string DragonflyCodeActivated = "DRAGONFLY_CODE_ACTIVATED";
 }
 
 public static class GameConstants
@@ -65,8 +68,8 @@ public static class GameConstants
             {EInventoryItemId.SCALPEL, "scalpel"},
             {EInventoryItemId.E_PANEL_KEY, "e-panel_key"},
             {EInventoryItemId.SCREWDRIVER, "screwdriver"},
-            {EInventoryItemId.ELEVATOR_BUTTON, "elevator_button"},
-            {EInventoryItemId.ELEVATOR_BUTTON_PANEL, "garbage_chute/elevator_button_panel"},
+            {EInventoryItemId.ELEVATOR_CALLER_BUTTON, "elevator_caller_button"},
+            {EInventoryItemId.ELEVATOR_CALLER_PANEL, "garbage_chute/elevator_caller_panel"},
             {EInventoryItemId.INSULATING_TAPE, "insulating_tape"}
         };
 
@@ -79,8 +82,12 @@ public static class GameConstants
             {ESwitchableObjectId.AD, "bulletin_board_elevator/ad"},
             {ESwitchableObjectId.AD_COVERING, "bulletin_board_elevator/covering"},
             {ESwitchableObjectId.GARBAGE_CHUTE_DOOR, "garbage_chute/door"},
-            {ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/hinge"}
+            {ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/hinge"},
+
+            {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator_caller/connector"},
+            {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator_caller/connector/panel"}
         };
+
 
     public static readonly string collidersObjectName = "colliders";
     public static readonly string entrywayObjectName = "entryway";
@@ -91,7 +98,9 @@ public static class GameConstants
     public static readonly string stairs2ColliderObjectName = "stairs2";
 
     public static readonly EDoorAction[] dragonflyCode =
-        {EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE};
+    {
+        EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE
+    };
 
     public static readonly Dictionary<EFloorMarkId, FloorMark> floorMarksDict = new Dictionary<EFloorMarkId, FloorMark>
     {

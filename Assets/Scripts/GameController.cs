@@ -70,10 +70,10 @@ public class GameController : MonoBehaviour
     {
         _player = playerGameObject.GetComponent<Player>();
 
-        Messenger.AddListener(Events.floorWasTouched, OnFloorWasTouched);
-        Messenger.AddListener(Events.inventoryWasUpdated, OnInventoryWasUpdated);
-        Messenger<ESwitchableObjectId>.AddListener(Events.switchableObjectWasOpened, OnSwitchableObjectWasOpened);
-        Messenger<Door>.AddListener(Events.dragonflyCodeActivated, OnDragonflyCodeActivated);
+        Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
+        Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
+        Messenger<ESwitchableObjectId>.AddListener(Events.SwitchableObjectWasOpened, OnSwitchableObjectWasOpened);
+        Messenger<Door>.AddListener(Events.DragonflyCodeActivated, OnDragonflyCodeActivated);
     }
 
     private Floor GetNextHigherFloor()

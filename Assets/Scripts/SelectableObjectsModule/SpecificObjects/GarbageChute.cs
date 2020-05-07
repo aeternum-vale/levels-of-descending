@@ -14,7 +14,7 @@ namespace SelectableObjectsModule.SpecificObjects
             _garbageChuteDoor = transform.GetComponentInChildren<GarbageChuteDoor>();
             _garbageChuteHinge = transform.Find(SwitchableObject.GetName(ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE))
                 .GetComponent<SwitchableObject>();
-            _elevatorButtonPanel = transform.Find(InventoryObject.GetName(EInventoryItemId.ELEVATOR_BUTTON_PANEL))
+            _elevatorButtonPanel = transform.Find(InventoryObject.GetName(EInventoryItemId.ELEVATOR_CALLER_PANEL))
                 .GetComponent<InventoryObject>();
 
             _garbageChuteHinge.OnStateReached += OnGarbageChuteStateReached;

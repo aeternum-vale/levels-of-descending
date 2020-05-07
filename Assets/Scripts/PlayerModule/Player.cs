@@ -148,7 +148,7 @@ namespace PlayerModule
             {
                 PrevLastGround1ColliderTouched = LastGround1ColliderTouched;
                 LastGround1ColliderTouched = hit.collider.gameObject;
-                Messenger.Broadcast(Events.floorWasTouched);
+                Messenger.Broadcast(Events.FloorWasTouched);
             }
 
             _prevIsStairPace = _isStairCommonPace;

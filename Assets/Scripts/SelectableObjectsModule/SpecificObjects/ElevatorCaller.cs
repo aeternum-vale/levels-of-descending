@@ -2,7 +2,7 @@
 
 namespace SelectableObjectsModule.SpecificObjects
 {
-    public class ElevatorFullPanel : MonoBehaviour
+    public class ElevatorCaller : MonoBehaviour
     {
     }
 }

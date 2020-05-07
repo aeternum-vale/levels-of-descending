@@ -59,7 +59,7 @@ namespace SelectableObjectsModule
         protected virtual void OnOpen()
         {
             IsOpened = true;
-            Messenger<ESwitchableObjectId>.Broadcast(Events.switchableObjectWasOpened, id);
+            Messenger<ESwitchableObjectId>.Broadcast(Events.SwitchableObjectWasOpened, id);
 
             if (isDisposable) Seal();
         }

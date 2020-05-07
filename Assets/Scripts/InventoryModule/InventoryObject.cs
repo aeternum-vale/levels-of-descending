@@ -20,7 +20,7 @@ namespace InventoryModule
             if (!isGrabable) return;
 
             gameObject.SetActive(false);
-            Messenger<EInventoryItemId>.Broadcast(Events.inventoryItemWasClicked, objectId);
+            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasClicked, objectId);
         }
 
         public override void OnOver(GameObject colliderCarrier)

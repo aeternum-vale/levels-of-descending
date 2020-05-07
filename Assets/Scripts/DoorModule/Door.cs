@@ -89,7 +89,7 @@ namespace DoorModule
                 if (dragonflyCode[i] != _lastActions[(_lastActionsCursor + i) % dragonflyCode.Length])
                     return;
 
-            Messenger<Door>.Broadcast(Events.dragonflyCodeActivated, this);
+            Messenger<Door>.Broadcast(Events.DragonflyCodeActivated, this);
         }
 
         protected abstract void Randomize();

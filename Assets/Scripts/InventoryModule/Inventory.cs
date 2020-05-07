@@ -30,7 +30,10 @@ namespace InventoryModule
         private List<EInventoryItemId> _listOfAvailableItems;
 
         public Dictionary<EInventoryItemId, bool> AvailableItemsDict { get; } =
-            new Dictionary<EInventoryItemId, bool>();
+            new Dictionary<EInventoryItemId, bool>()
+            {
+                {EInventoryItemId.SCREWDRIVER, true}
+            };
 
         public EInventoryItemId CurrentItemId => _listOfAvailableItems[_currentItemIndex];
 
@@ -57,12 +60,12 @@ namespace InventoryModule
 
             _backgroundImageComponent = transform.Find("Canvas").Find("Image").GetComponent<Image>();
 
-            Messenger<EInventoryItemId>.AddListener(Events.inventoryItemWasClicked, OnItemAdding);
-            Messenger.AddListener(Events.inventoryButtonWasPressed, OnInventorySwitchToNextItem);
+            Messenger<EInventoryItemId>.AddListener(Events.InventoryItemWasClicked, OnItemAdding);
+            Messenger.AddListener(Events.InventoryButtonWasPressed, OnInventorySwitchToNextItem);
 
             foreach (var item in GameConstants.inventoryItemToInstancePathMap)
             {
-                var itemName = GameUtils.GetNameByPath(item.Value);
+                var itemName = InventoryObject.GetName(item.Key);
                 var go = transform.Find($"{ItemsContainerName}/{itemName}").gameObject;
                 HideInstance(go);
                 _instances.Add(item.Key, go);
@@ -80,7 +83,7 @@ namespace InventoryModule
             if (IsInventoryModeOn) return;
 
             AvailableItemsDict.Add(id, true);
-            Messenger.Broadcast(Events.inventoryWasUpdated);
+            Messenger.Broadcast(Events.InventoryWasUpdated);
         }
 
         private static void ShowInstance(GameObject instance)
