@@ -41,18 +41,18 @@ namespace FloorModule
                 transform.Find("postbox").Find("Cube.003").GetComponent<MeshRenderer>().material;
             _leftDoor = gameObject.transform.Find("left_door_prefab").GetComponent<Door>();
             _rightDoor = gameObject.transform.Find("right_door_prefab").GetComponent<Door>();
-            _scalpel = transform.Find(InventoryObject.GetPath(EInventoryItemId.SCALPEL)).GetComponent<Scalpel>();
+            _scalpel = transform.Find(SelectableObject.GetPath(EInventoryItemId.SCALPEL)).GetComponent<Scalpel>();
 
             foreach (var id in (ESwitchableObjectId[]) Enum.GetValues(typeof(ESwitchableObjectId)))
                 SwitchableInstancesDict.Add(id,
-                    transform.Find(SwitchableObject.GetPath(id)).GetComponent<SwitchableObject>());
+                    transform.Find(SelectableObject.GetPath(id)).GetComponent<SwitchableObject>());
         }
 
         private void Awake()
         {
             _frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
                 .GetComponent<MeshRenderer>().material;
-            _adMaterial = transform.Find(SwitchableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
+            _adMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
                 .material;
         }
 

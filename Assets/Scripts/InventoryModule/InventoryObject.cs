@@ -29,15 +29,5 @@ namespace InventoryModule
 
             base.OnOver(colliderCarrier);
         }
-
-        public static string GetPath(EInventoryItemId id)
-        {
-            return GameConstants.inventoryItemToInstancePathMap[id];
-        }
-
-        public static string GetName(EInventoryItemId id)
-        {
-            return GameUtils.GetNameByPath(GameConstants.inventoryItemToInstancePathMap[id]);
-        }
     }
 }

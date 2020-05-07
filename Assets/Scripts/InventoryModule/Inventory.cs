@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Plugins;
+using SelectableObjectsModule;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,7 +33,9 @@ namespace InventoryModule
         public Dictionary<EInventoryItemId, bool> AvailableItemsDict { get; } =
             new Dictionary<EInventoryItemId, bool>()
             {
-                {EInventoryItemId.SCREWDRIVER, true}
+                {EInventoryItemId.SCREWDRIVER, true},
+                {EInventoryItemId.ELEVATOR_CALLER_PANEL, true},
+                {EInventoryItemId.ELEVATOR_CALLER_BUTTON, true},
             };
 
         public EInventoryItemId CurrentItemId => _listOfAvailableItems[_currentItemIndex];
@@ -65,7 +68,7 @@ namespace InventoryModule
 
             foreach (var item in GameConstants.inventoryItemToInstancePathMap)
             {
-                var itemName = InventoryObject.GetName(item.Key);
+                var itemName = SelectableObject.GetName(item.Key);
                 var go = transform.Find($"{ItemsContainerName}/{itemName}").gameObject;
                 HideInstance(go);
                 _instances.Add(item.Key, go);

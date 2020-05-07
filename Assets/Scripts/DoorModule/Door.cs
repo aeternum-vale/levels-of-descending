@@ -1,4 +1,6 @@
 using Plugins;
+using SelectableObjectsModule;
+using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
 namespace DoorModule

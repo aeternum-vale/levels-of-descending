@@ -1,4 +1,5 @@
 ﻿using InventoryModule;
+using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
 namespace SelectableObjectsModule.SpecificObjects
@@ -12,9 +13,9 @@ namespace SelectableObjectsModule.SpecificObjects
         private void Start()
         {
             _garbageChuteDoor = transform.GetComponentInChildren<GarbageChuteDoor>();
-            _garbageChuteHinge = transform.Find(SwitchableObject.GetName(ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE))
+            _garbageChuteHinge = transform.Find(SelectableObject.GetName(ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE))
                 .GetComponent<SwitchableObject>();
-            _elevatorButtonPanel = transform.Find(InventoryObject.GetName(EInventoryItemId.ELEVATOR_CALLER_PANEL))
+            _elevatorButtonPanel = transform.Find(SelectableObject.GetName(EInventoryItemId.ELEVATOR_CALLER_PANEL))
                 .GetComponent<InventoryObject>();
 
             _garbageChuteHinge.OnStateReached += OnGarbageChuteStateReached;

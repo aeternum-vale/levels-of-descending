@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using FloorModule;
-using UnityEngine;
 
 public enum EInventoryItemId
 {
@@ -26,7 +24,8 @@ public enum ESwitchableObjectId
     GARBAGE_CHUTE_DOOR_HINGE,
 
     ELEVATOR_CALLER_CONNECTOR,
-    ELEVATOR_CALLER_PANEL
+    ELEVATOR_CALLER_PANEL,
+    ELEVATOR_CALLER_WIRES
 }
 
 public enum EDoorAction
@@ -85,7 +84,9 @@ public static class GameConstants
             {ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/hinge"},
 
             {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator_caller/connector"},
-            {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator_caller/connector/panel"}
+            {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator_caller/connector/panel"},
+            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator_caller/connector/wires"}
+            
         };
 
 
@@ -123,51 +124,4 @@ public static class GameConstants
             }
         }
     };
-}
-
-public static class GameUtils
-{
-    public static string GetNameByPath(string path)
-    {
-        var lastIndexOfSlash = path.LastIndexOf('/');
-        return lastIndexOfSlash == -1 ? path : path.Substring(lastIndexOfSlash + 1);
-    }
-}
-
-public struct GraphState
-{
-    public string Name;
-    public Action OnReached;
-}
-
-public class GraphTransition
-{
-    public Func<bool> Condition;
-    public bool IsReverse;
-    public byte NextStateId;
-    public EInventoryItemId? SelectedInventoryItemId;
-}
-
-public class MultiStateObjectEventArgs : EventArgs
-{
-    public readonly byte StateId;
-
-    public MultiStateObjectEventArgs(byte stateId)
-    {
-        StateId = stateId;
-    }
-}
-
-public static class CameraUtils
-{
-    public static Texture2D GetCameraTexture(Camera cameraComponent, int width, int height)
-    {
-        cameraComponent.targetTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32, 10);
-        cameraComponent.Render();
-
-        var t2d = new Texture2D(width, height, TextureFormat.ARGB32, false);
-        Graphics.CopyTexture(cameraComponent.targetTexture, t2d);
-
-        return t2d;
-    }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Plugins;
+using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
 namespace SelectableObjectsModule
@@ -72,16 +73,6 @@ namespace SelectableObjectsModule
         protected virtual bool OpenCondition()
         {
             return true;
-        }
-
-        public static string GetPath(ESwitchableObjectId id)
-        {
-            return GameConstants.switchableObjectToInstancePathMap[id];
-        }
-
-        public static string GetName(ESwitchableObjectId id)
-        {
-            return GameUtils.GetNameByPath(GameConstants.switchableObjectToInstancePathMap[id]);
         }
     }
 }

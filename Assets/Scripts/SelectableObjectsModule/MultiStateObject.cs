@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
 namespace SelectableObjectsModule
@@ -13,8 +14,8 @@ namespace SelectableObjectsModule
         protected byte CurrentStateId;
         [SerializeField] protected bool isDisposable;
 
-        protected List<GraphState> States;
-        protected Dictionary<byte, List<GraphTransition>> StateTransitions;
+        [NonSerialized] public List<GraphState> States;
+        [NonSerialized] public Dictionary<byte, List<GraphTransition>> StateTransitions;
 
         public bool IsSealed { get; set; }
         public event EventHandler<MultiStateObjectEventArgs> OnStateReached;
@@ -73,6 +74,7 @@ namespace SelectableObjectsModule
         protected virtual void OnAnimationEnd()
         {
             _isAnimationOn = !_isAnimationOn;
+            States[CurrentStateId].OnAnimationEnd?.Invoke();
         }
 
         protected virtual void OnAnimationStart()

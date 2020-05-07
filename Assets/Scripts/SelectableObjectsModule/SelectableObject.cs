@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using InventoryModule;
 using UnityEngine;
+using Utils;
 
 namespace SelectableObjectsModule
 {
@@ -81,5 +83,26 @@ namespace SelectableObjectsModule
         {
             mat.SetFloat(IsSelected, 0f);
         }
+
+        public static string GetPath(ESwitchableObjectId id) =>
+            GameConstants.switchableObjectToInstancePathMap[id];
+
+        public static string GetName(ESwitchableObjectId id) =>
+            GameUtils.GetNameByPath(GameConstants.switchableObjectToInstancePathMap[id]);
+
+        public static string GetPath(EInventoryItemId id) =>
+            GameConstants.inventoryItemToInstancePathMap[id];
+
+        public static string GetName(EInventoryItemId id) =>
+            GameUtils.GetNameByPath(GameConstants.inventoryItemToInstancePathMap[id]);
+
+        public static SwitchableObject GetAsChild(GameObject parent, ESwitchableObjectId id) =>
+            parent.transform.Find(GetName(id)).GetComponent<SwitchableObject>();
+
+        public static InventoryObject GetAsChild(GameObject parent, EInventoryItemId id) =>
+            parent.transform.Find(GetName(id)).GetComponent<InventoryObject>();
+
+        public static T GetAsChild<T>(GameObject parent, string objName) where T : SelectableObject =>
+            parent.transform.Find(objName).GetComponent<T>();
     }
 }

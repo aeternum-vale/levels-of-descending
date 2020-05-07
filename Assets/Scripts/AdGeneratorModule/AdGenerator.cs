@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
+using Utils;
 using Random = UnityEngine.Random;
 
 namespace AdGeneratorModule
