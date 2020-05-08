@@ -3,21 +3,17 @@ using SelectableObjectsModule.Utilities;
 
 namespace SelectableObjectsModule
 {
-    public class PushableObject : MultiStateObject
+    public class PushableObject : SwitchableObject
     {
-        private const string AnimationName = "Push";
-
-        protected override void Awake()
+        public override void Switch(EInventoryItemId? selectedInventoryItemId = null)
         {
-            base.Awake();
-
-            States = new List<GraphState> {new GraphState {Name = AnimationName}};
-
-            StateTransitions = new Dictionary<byte, List<GraphTransition>>
+            if (IsAnimationOn) return;
+            if (IsSealed) return;
+            
+            if (OpenCondition == null || OpenCondition())
             {
-                [0] = new List<GraphTransition> {new GraphTransition {NextStateId = 0}}
-            };
+                Open();
+            }
         }
-
     }
 }
