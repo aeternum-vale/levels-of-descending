@@ -11,9 +11,7 @@ namespace SelectableObjectsModule.SpecificObjects
         private SwitchableObject _panel;
         private SwitchableObject _wires;
         private PushableObject _button;
-
-        private bool _isPanelAdded;
-
+        
         private void Start()
         {
             _connector = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR);
@@ -21,7 +19,7 @@ namespace SelectableObjectsModule.SpecificObjects
             _wires = SelectableObject.GetAsChild(_panel.gameObject, ESwitchableObjectId.ELEVATOR_CALLER_WIRES);
             _button = SelectableObject.GetAsChild<PushableObject>(_panel.gameObject, "button");
 
-            _connector.States[(byte) ESwitchableObjectStateId.OPEN].OnAnimationEnd += OnPanelAdded;
+            _connector.CloseAnimationCompleted += OnPanelAdded;
             
             _panel.Clicked += OnPanelClicked;
         }
@@ -34,12 +32,10 @@ namespace SelectableObjectsModule.SpecificObjects
             }
         }
 
-        private void OnPanelAdded()
+        private void OnPanelAdded(object s, EventArgs e)
         {
             _panel.gameObject.SetActive(true);
-            _isPanelAdded = true;
-
-            _connector.StateTransitions[(byte) ESwitchableObjectStateId.CLOSE][0].SelectedInventoryItemId = null;
+            _connector.NecessaryInventoryItem = null;
         }
         
     }

@@ -6,8 +6,8 @@ namespace SelectableObjectsModule
     [RequireComponent(typeof(Animator))]
     public class SwitchableObject : SelectableObject
     {
-        private static readonly int DirectionParam = Animator.StringToHash("Direction");
-        private static readonly int SwitchState = Animator.StringToHash("Switch");
+        private static readonly int DirectionParamHash = Animator.StringToHash("Direction");
+        private static readonly int DefaultStateNameHash = Animator.StringToHash("Switch");
         private Animator _animator;
         protected bool IsAnimationOn;
         [SerializeField] private ESwitchableObjectId id;
@@ -22,6 +22,8 @@ namespace SelectableObjectsModule
 
         public Func<bool> OpenCondition { get; set; }
 
+        public int AnimationNameHash { get; set; }
+
         public event EventHandler Opened;
         public event EventHandler Closed;
         public event EventHandler OpenAnimationCompleted;
@@ -35,7 +37,10 @@ namespace SelectableObjectsModule
         protected override void Awake()
         {
             base.Awake();
-            NecessaryInventoryItem = necessaryInventoryItem;
+            if (hasValueOfNecessaryInventoryItem)
+                NecessaryInventoryItem = necessaryInventoryItem;
+            
+            AnimationNameHash = DefaultStateNameHash;
         }
 
         public override void OnClick(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
@@ -69,7 +74,7 @@ namespace SelectableObjectsModule
             if (isDisposable) Seal();
 
             Opened?.Invoke(this, EventArgs.Empty);
-            
+
             PlayAnimation();
         }
 
@@ -78,7 +83,7 @@ namespace SelectableObjectsModule
             IsOpened = false;
 
             Closed?.Invoke(this, EventArgs.Empty);
-            
+
             PlayAnimation(true);
         }
 
@@ -92,13 +97,13 @@ namespace SelectableObjectsModule
         {
             if (isReverse)
             {
-                _animator.SetFloat(DirectionParam, -1f);
-                _animator.Play(SwitchState, -1, 1f);
+                _animator.SetFloat(DirectionParamHash, -1f);
+                _animator.Play(AnimationNameHash, -1, 1f);
             }
             else
             {
-                _animator.SetFloat(DirectionParam, 1f);
-                _animator.Play(SwitchState, -1, 0f);
+                _animator.SetFloat(DirectionParamHash, 1f);
+                _animator.Play(AnimationNameHash, -1, 0f);
             }
         }
 

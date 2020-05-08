@@ -1,5 +1,5 @@
-﻿using InventoryModule;
-using SelectableObjectsModule.Utilities;
+﻿using System;
+using InventoryModule;
 using UnityEngine;
 
 namespace SelectableObjectsModule.SpecificObjects
@@ -7,23 +7,32 @@ namespace SelectableObjectsModule.SpecificObjects
     public class GarbageChute : MonoBehaviour
     {
         private InventoryObject _elevatorButtonPanel;
-        private GarbageChuteDoor _garbageChuteDoor;
+        private SwitchableObject _garbageChuteDoor;
         private SwitchableObject _garbageChuteHinge;
+        private GameObject _rigidDoor;
+        
+        private static readonly int RemoveStateNameHash = Animator.StringToHash("Remove");
 
         private void Start()
         {
-            _garbageChuteDoor = transform.GetComponentInChildren<GarbageChuteDoor>();
+            _garbageChuteDoor = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.GARBAGE_CHUTE_DOOR);
             _garbageChuteHinge = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE);
-
             _elevatorButtonPanel = SelectableObject.GetAsChild(gameObject, EInventoryItemId.ELEVATOR_CALLER_PANEL);
+            _rigidDoor = transform.Find("rigid_garbage_chute_door").gameObject;
 
-            _garbageChuteHinge.States[(byte) ESwitchableObjectStateId.OPEN].OnReached +=
-                OnGarbageChuteHingeOpenStateReached;
+            _garbageChuteHinge.Opened += OnUnhinged;
         }
 
-        private void OnGarbageChuteHingeOpenStateReached()
+        private void OnUnhinged(object s, EventArgs e)
         {
-            _garbageChuteDoor.Unhinge();
+            _garbageChuteDoor.AnimationNameHash = RemoveStateNameHash;
+            
+            _garbageChuteDoor.OpenAnimationCompleted += (sender, args) =>
+            {
+                _rigidDoor.SetActive(true);
+                _garbageChuteDoor.IsGlowingEnabled = false;
+            };
+            
             _elevatorButtonPanel.IsGrabable = true;
         }
     }

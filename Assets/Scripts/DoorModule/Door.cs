@@ -51,12 +51,12 @@ namespace DoorModule
         private void Start()
         {
             foreach (var pushableDetail in _pushableDetails) 
-                pushableDetail.States[0].OnReached += OnPushableDetailActivated(pushableDetail);
+                pushableDetail.Opened += OnPushableDetailActivated(pushableDetail);
         }
 
-        private Action OnPushableDetailActivated(DoorPushableDetail detail)
+        private EventHandler OnPushableDetailActivated(DoorPushableDetail detail)
         {
-            return () => Interact(detail.action);
+            return (object s, EventArgs e) => Interact(detail.action);
         }
 
         public void Invert()

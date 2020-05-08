@@ -72,7 +72,6 @@ public class GameController : MonoBehaviour
 
         Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
         Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
-        Messenger<ESwitchableObjectId>.AddListener(Events.SwitchableObjectWasOpened, OnSwitchableObjectWasOpened);
         Messenger<Door>.AddListener(Events.DragonflyCodeActivated, OnDragonflyCodeActivated);
     }
 
@@ -197,11 +196,7 @@ public class GameController : MonoBehaviour
     private void OnInventoryWasUpdated()
     {
     }
-
-    private void OnSwitchableObjectWasOpened(ESwitchableObjectId id)
-    {
-    }
-
+    
     private void OnDragonflyCodeActivated(Door door)
     {
         if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
