@@ -1,78 +1,117 @@
-using System.Collections.Generic;
-using Plugins;
-using SelectableObjectsModule.Utilities;
+using System;
 using UnityEngine;
 
 namespace SelectableObjectsModule
 {
     [RequireComponent(typeof(Animator))]
-    public class SwitchableObject : MultiStateObject
+    public class SwitchableObject : SelectableObject
     {
-        private const string SwitchStateName = "Switch";
-        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
+        private static readonly int DirectionParam = Animator.StringToHash("Direction");
+        private static readonly int SwitchState = Animator.StringToHash("Switch");
+        private Animator _animator;
+        protected bool IsAnimationOn;
         [SerializeField] private ESwitchableObjectId id;
+        [SerializeField] protected bool isDisposable;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
+        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
 
-        public bool IsOpened { get; set; }
+        public bool IsOpened { get; protected set; }
+        public bool IsSealed { get; set; }
+
+        public EInventoryItemId? NecessaryInventoryItem { get; set; }
+
+        public Func<bool> OpenCondition { get; set; }
+
+        public event EventHandler Opened;
+        public event EventHandler Closed;
+        public event EventHandler OpenAnimationCompleted;
+        public event EventHandler CloseAnimationCompleted;
+
+        protected virtual void Start()
+        {
+            _animator = GetComponent<Animator>();
+        }
 
         protected override void Awake()
         {
             base.Awake();
-
-            States = new List<GraphState>
-            {
-                new GraphState {Name = SwitchStateName, OnReached = OnClose}, //0 - close
-                new GraphState {Name = SwitchStateName, OnReached = OnOpen} //1 - open
-            };
-
-            StateTransitions = new Dictionary<byte, List<GraphTransition>>
-            {
-                [(byte) ESwitchableObjectStateId.CLOSE] = new List<GraphTransition>
-                {
-                    new GraphTransition
-                    {
-                        NextStateId = (byte) ESwitchableObjectStateId.OPEN,
-
-                        SelectedInventoryItemId = hasValueOfNecessaryInventoryItem
-                            ? necessaryInventoryItem
-                            : (EInventoryItemId?) null,
-
-                        Condition = OpenCondition
-                    }
-                },
-
-                [(byte) ESwitchableObjectStateId.OPEN] = new List<GraphTransition>
-                {
-                    new GraphTransition
-                    {
-                        NextStateId = (byte) ESwitchableObjectStateId.CLOSE,
-                        IsReverse = true
-                    }
-                }
-            };
+            NecessaryInventoryItem = necessaryInventoryItem;
         }
 
-        public virtual void Switch()
+        public override void OnClick(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
         {
-            MakeTransition(StateTransitions[CurrentStateId][0]);
+            base.OnClick(selectedInventoryItemId, colliderCarrier);
+            Switch(selectedInventoryItemId);
         }
 
-        protected virtual void OnOpen()
+        public virtual void Switch(EInventoryItemId? selectedInventoryItemId = null)
+        {
+            if (IsAnimationOn) return;
+            if (IsSealed) return;
+
+            if (IsOpened)
+            {
+                Close();
+            }
+            else
+            {
+                if ((OpenCondition == null || OpenCondition()) &&
+                    (NecessaryInventoryItem == null || NecessaryInventoryItem == selectedInventoryItemId))
+                {
+                    Open();
+                }
+            }
+        }
+
+        public virtual void Open()
         {
             IsOpened = true;
-            Messenger<ESwitchableObjectId>.Broadcast(Events.SwitchableObjectWasOpened, id);
-
             if (isDisposable) Seal();
+
+            Opened?.Invoke(this, EventArgs.Empty);
+            
+            PlayAnimation();
         }
 
-        protected virtual void OnClose()
+        public virtual void Close()
         {
             IsOpened = false;
+
+            Closed?.Invoke(this, EventArgs.Empty);
+            
+            PlayAnimation(true);
         }
 
-        protected virtual bool OpenCondition()
+        protected virtual void Seal()
         {
-            return true;
+            IsSealed = true;
+            IsGlowingEnabled = false;
+        }
+
+        protected virtual void PlayAnimation(bool isReverse = false)
+        {
+            if (isReverse)
+            {
+                _animator.SetFloat(DirectionParam, -1f);
+                _animator.Play(SwitchState, -1, 1f);
+            }
+            else
+            {
+                _animator.SetFloat(DirectionParam, 1f);
+                _animator.Play(SwitchState, -1, 0f);
+            }
+        }
+
+        protected virtual void OnAnimationEnd()
+        {
+            IsAnimationOn = !IsAnimationOn;
+
+            (IsOpened ? OpenAnimationCompleted : CloseAnimationCompleted)?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnAnimationStart()
+        {
+            IsAnimationOn = !IsAnimationOn;
         }
     }
 }
