@@ -17,6 +17,7 @@ namespace SelectableObjectsModule
 
         public bool IsOpened { get; protected set; }
         public bool IsSealed { get; set; }
+        public bool PreventSwitching { get; set; }
 
         public EInventoryItemId? NecessaryInventoryItem { get; set; }
 
@@ -46,7 +47,11 @@ namespace SelectableObjectsModule
         public override void OnClick(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
         {
             base.OnClick(selectedInventoryItemId, colliderCarrier);
-            Switch(selectedInventoryItemId);
+
+            if (!PreventSwitching)
+                Switch(selectedInventoryItemId);
+
+            PreventSwitching = false;
         }
 
         public virtual void Switch(EInventoryItemId? selectedInventoryItemId = null)
@@ -56,12 +61,12 @@ namespace SelectableObjectsModule
 
             if (IsOpened)
             {
-                Close();
+                if (selectedInventoryItemId == null)
+                    Close();
             }
             else
             {
-                if ((OpenCondition == null || OpenCondition()) &&
-                    (NecessaryInventoryItem == null || NecessaryInventoryItem == selectedInventoryItemId))
+                if ((OpenCondition == null || OpenCondition()) && NecessaryInventoryItem == selectedInventoryItemId)
                     Open();
             }
         }
@@ -69,7 +74,8 @@ namespace SelectableObjectsModule
         public virtual void Open()
         {
             IsOpened = true;
-            if (isDisposable) Seal();
+            if (isDisposable)
+                SealAndDisableGlowing();
 
             Opened?.Invoke(this, EventArgs.Empty);
 
@@ -85,7 +91,7 @@ namespace SelectableObjectsModule
             PlayAnimation(true);
         }
 
-        protected virtual void Seal()
+        public virtual void SealAndDisableGlowing()
         {
             IsSealed = true;
             IsGlowingEnabled = false;
@@ -109,7 +115,10 @@ namespace SelectableObjectsModule
         {
             IsAnimationOn = !IsAnimationOn;
 
-            (IsOpened ? OpenAnimationCompleted : CloseAnimationCompleted)?.Invoke(this, EventArgs.Empty);
+            if (IsOpened)
+                OpenAnimationCompleted?.Invoke(this, EventArgs.Empty);
+            else
+                CloseAnimationCompleted?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnAnimationStart()
