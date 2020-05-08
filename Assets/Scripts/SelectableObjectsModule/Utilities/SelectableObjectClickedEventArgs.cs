@@ -5,8 +5,8 @@ namespace SelectableObjectsModule.Utilities
 {
     public class SelectableObjectClickedEventArgs : EventArgs
     {
-        public readonly EInventoryItemId? SelectedInventoryItemId;
         public readonly GameObject ColliderCarrier;
+        public readonly EInventoryItemId? SelectedInventoryItemId;
 
         public SelectableObjectClickedEventArgs(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
         {

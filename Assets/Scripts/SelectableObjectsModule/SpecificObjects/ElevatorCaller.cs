@@ -1,5 +1,4 @@
 ﻿using System;
-using InventoryModule;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
@@ -7,11 +6,11 @@ namespace SelectableObjectsModule.SpecificObjects
 {
     public class ElevatorCaller : MonoBehaviour
     {
+        private PushableObject _button;
         private SwitchableObject _connector;
         private SwitchableObject _panel;
         private SwitchableObject _wires;
-        private PushableObject _button;
-        
+
         private void Start()
         {
             _connector = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR);
@@ -20,16 +19,14 @@ namespace SelectableObjectsModule.SpecificObjects
             _button = SelectableObject.GetAsChild<PushableObject>(_panel.gameObject, "button");
 
             _connector.CloseAnimationCompleted += OnPanelAdded;
-            
+
             _panel.Clicked += OnPanelClicked;
         }
 
         private void OnPanelClicked(object sender, SelectableObjectClickedEventArgs e)
         {
             if (e.SelectedInventoryItemId == EInventoryItemId.ELEVATOR_CALLER_BUTTON)
-            {
                 _button.gameObject.SetActive(true);
-            }
         }
 
         private void OnPanelAdded(object s, EventArgs e)
@@ -37,6 +34,5 @@ namespace SelectableObjectsModule.SpecificObjects
             _panel.gameObject.SetActive(true);
             _connector.NecessaryInventoryItem = null;
         }
-        
     }
 }

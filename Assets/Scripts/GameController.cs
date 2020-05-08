@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AdGeneratorModule;
 using DoorModule;
 using FloorModule;
@@ -196,7 +195,7 @@ public class GameController : MonoBehaviour
     private void OnInventoryWasUpdated()
     {
     }
-    
+
     private void OnDragonflyCodeActivated(Door door)
     {
         if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
@@ -211,7 +210,7 @@ public class GameController : MonoBehaviour
             ) //stop updating of the current floor
                 continue;
 
-            foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId))) 
+            foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId)))
                 f.HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
 
             // foreach (var s in GameConstants..Values.Where(s => s.IsOpened))

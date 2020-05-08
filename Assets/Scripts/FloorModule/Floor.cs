@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DoorModule;
-using InventoryModule;
 using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
 using UnityEngine;

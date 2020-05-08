@@ -15,8 +15,6 @@ namespace SelectableObjectsModule
         [SerializeField] private bool hasValueOfMaxDistanceToSelect;
         [SerializeField] private float maxDistanceToSelect = .45f;
 
-        public event EventHandler<SelectableObjectClickedEventArgs> Clicked;
-
         public bool IsGlowingEnabled { get; set; } = true;
 
         public float? MaxDistanceToSelect
@@ -28,6 +26,8 @@ namespace SelectableObjectsModule
                 return null;
             }
         }
+
+        public event EventHandler<SelectableObjectClickedEventArgs> Clicked;
 
         protected virtual void Awake()
         {
@@ -46,7 +46,7 @@ namespace SelectableObjectsModule
         public virtual void OnClick(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
         {
             Clicked?.Invoke(this, new SelectableObjectClickedEventArgs(selectedInventoryItemId, colliderCarrier));
-            
+
             //string item = !(selectedInventoryItemId is null) ? selectedInventoryItemId.ToString() : "nothing";
             //Debug.Log($"using {item} on {gameObject.name}");
         }
@@ -89,25 +89,39 @@ namespace SelectableObjectsModule
             mat.SetFloat(IsSelected, 0f);
         }
 
-        public static string GetPath(ESwitchableObjectId id) =>
-            GameConstants.switchableObjectToInstancePathMap[id];
+        public static string GetPath(ESwitchableObjectId id)
+        {
+            return GameConstants.switchableObjectToInstancePathMap[id];
+        }
 
-        public static string GetName(ESwitchableObjectId id) =>
-            GameUtils.GetNameByPath(GameConstants.switchableObjectToInstancePathMap[id]);
+        public static string GetName(ESwitchableObjectId id)
+        {
+            return GameUtils.GetNameByPath(GameConstants.switchableObjectToInstancePathMap[id]);
+        }
 
-        public static string GetPath(EInventoryItemId id) =>
-            GameConstants.inventoryItemToInstancePathMap[id];
+        public static string GetPath(EInventoryItemId id)
+        {
+            return GameConstants.inventoryItemToInstancePathMap[id];
+        }
 
-        public static string GetName(EInventoryItemId id) =>
-            GameUtils.GetNameByPath(GameConstants.inventoryItemToInstancePathMap[id]);
+        public static string GetName(EInventoryItemId id)
+        {
+            return GameUtils.GetNameByPath(GameConstants.inventoryItemToInstancePathMap[id]);
+        }
 
-        public static SwitchableObject GetAsChild(GameObject parent, ESwitchableObjectId id) =>
-            parent.transform.Find(GetName(id)).GetComponent<SwitchableObject>();
+        public static SwitchableObject GetAsChild(GameObject parent, ESwitchableObjectId id)
+        {
+            return parent.transform.Find(GetName(id)).GetComponent<SwitchableObject>();
+        }
 
-        public static InventoryObject GetAsChild(GameObject parent, EInventoryItemId id) =>
-            parent.transform.Find(GetName(id)).GetComponent<InventoryObject>();
+        public static InventoryObject GetAsChild(GameObject parent, EInventoryItemId id)
+        {
+            return parent.transform.Find(GetName(id)).GetComponent<InventoryObject>();
+        }
 
-        public static T GetAsChild<T>(GameObject parent, string objName) where T : SelectableObject =>
-            parent.transform.Find(objName).GetComponent<T>();
+        public static T GetAsChild<T>(GameObject parent, string objName) where T : SelectableObject
+        {
+            return parent.transform.Find(objName).GetComponent<T>();
+        }
     }
 }

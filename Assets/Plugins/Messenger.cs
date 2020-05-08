@@ -89,7 +89,8 @@ namespace Plugins
 
                 if (d == null)
                     throw new ListenerException(string.Format(
-                        "Attempting to remove listener with for event type {0} but current listener is null.", eventType));
+                        "Attempting to remove listener with for event type {0} but current listener is null.",
+                        eventType));
                 if (d.GetType() != listenerBeingRemoved.GetType())
                     throw new ListenerException(string.Format(
                         "Attempting to remove listener with inconsistent signature for event type {0}. Current listeners have type {1} and listener being removed has type {2}",
@@ -111,7 +112,8 @@ namespace Plugins
         public static void OnBroadcasting(string eventType, MessengerMode mode)
         {
             if (mode == MessengerMode.REQUIRE_LISTENER && !eventTable.ContainsKey(eventType))
-                throw new BroadcastException(string.Format("Broadcasting message {0} but no listener found.", eventType));
+                throw new BroadcastException(
+                    string.Format("Broadcasting message {0} but no listener found.", eventType));
         }
 
         public static BroadcastException CreateBroadcastSignatureException(string eventType)

@@ -39,7 +39,7 @@ namespace SelectableObjectsModule
             base.Awake();
             if (hasValueOfNecessaryInventoryItem)
                 NecessaryInventoryItem = necessaryInventoryItem;
-            
+
             AnimationNameHash = DefaultStateNameHash;
         }
 
@@ -62,9 +62,7 @@ namespace SelectableObjectsModule
             {
                 if ((OpenCondition == null || OpenCondition()) &&
                     (NecessaryInventoryItem == null || NecessaryInventoryItem == selectedInventoryItemId))
-                {
                     Open();
-                }
             }
         }
 

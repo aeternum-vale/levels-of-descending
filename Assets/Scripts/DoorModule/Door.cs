@@ -1,7 +1,5 @@
 using System;
 using Plugins;
-using SelectableObjectsModule;
-using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
 namespace DoorModule
@@ -44,19 +42,19 @@ namespace DoorModule
             BellButton = StaticDetails.transform.Find(BellButtonName).gameObject;
 
             _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
-            
+
             Randomize();
         }
 
         private void Start()
         {
-            foreach (var pushableDetail in _pushableDetails) 
+            foreach (var pushableDetail in _pushableDetails)
                 pushableDetail.Opened += OnPushableDetailActivated(pushableDetail);
         }
 
         private EventHandler OnPushableDetailActivated(DoorPushableDetail detail)
         {
-            return (object s, EventArgs e) => Interact(detail.action);
+            return (s, e) => Interact(detail.action);
         }
 
         public void Invert()
