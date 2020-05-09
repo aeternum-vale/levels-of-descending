@@ -21,7 +21,7 @@ namespace SelectableObjectsModule
             if (!IsGrabable) return;
 
             gameObject.SetActive(false);
-            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasClicked, objectId);
+            Messenger<EInventoryItemId>.Broadcast(Events.InventoryObjectWasClicked, objectId);
         }
 
         public override void OnOver(GameObject colliderCarrier)

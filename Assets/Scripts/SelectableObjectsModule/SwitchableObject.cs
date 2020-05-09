@@ -1,4 +1,5 @@
 using System;
+using Plugins;
 using UnityEngine;
 
 namespace SelectableObjectsModule
@@ -67,7 +68,15 @@ namespace SelectableObjectsModule
             else
             {
                 if ((OpenCondition == null || OpenCondition()) && NecessaryInventoryItem == selectedInventoryItemId)
+                {
+                    if (selectedInventoryItemId != null)
+                    {
+                        Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
+                            (EInventoryItemId) selectedInventoryItemId);
+                    }
+
                     Open();
+                }
             }
         }
 

@@ -15,25 +15,18 @@ namespace InventoryModule
         private const float TransitionXOffset = 15f;
         private const string ItemsContainerName = "items";
 
-        private readonly Dictionary<EInventoryItemId, InventoryItemData> _inventoryItemsData =
+        private readonly Dictionary<EInventoryItemId, InventoryItemData> _itemsData =
             new Dictionary<EInventoryItemId, InventoryItemData>
             {
                 [EInventoryItemId.POSTBOX_KEY] = new InventoryItemData(),
                 [EInventoryItemId.LETTER] = new InventoryItemData(),
                 [EInventoryItemId.SCALPEL] = new InventoryItemData(),
                 [EInventoryItemId.E_PANEL_KEY] = new InventoryItemData(),
-                [EInventoryItemId.SCREWDRIVER] = new InventoryItemData(),
+                [EInventoryItemId.SCREWDRIVER] = new InventoryItemData {IsInStock = true},
                 [EInventoryItemId.INSULATING_TAPE] = new InventoryItemData(),
-                [EInventoryItemId.ELEVATOR_CALLER_BUTTON] = new InventoryItemData
-                {
-                    IsDisposable = true
-                },
-                [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData
-                {
-                    IsDisposable = true
-                }
+                [EInventoryItemId.ELEVATOR_CALLER_BUTTON] = new InventoryItemData {IsDisposable = true},
+                [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData {IsDisposable = true}
             };
-
 
         private Image _backgroundImageComponent;
         private Texture2D _backgroundTexture;
@@ -44,21 +37,21 @@ namespace InventoryModule
         private RenderTexture _inventoryCameraTexture;
         private bool _isTransition;
         private bool _isTransitionOut = true;
-        
-        public bool IsInventoryModeOn { get; private set; }
-        public bool CanActivateInventoryMode => _inventoryItemsData.Any(pair => pair.Value.IsInStock);
 
-        private EInventoryItemId[] ArrayOfAvailableItemsIds => _inventoryItemsData
+        public bool IsInventoryModeOn { get; private set; }
+        public bool CanActivateInventoryMode => _itemsData.Any(pair => pair.Value.IsInStock);
+
+        private EInventoryItemId[] ArrayOfAvailableItemsIds => _itemsData
             .Where(pair => pair.Value.IsInStock)
             .Select(pair => pair.Key)
             .ToArray();
 
-        private GameObject CurrentInstance => _inventoryItemsData[CurrentItemId].ItemGameObject;
+        private GameObject CurrentInstance => _itemsData[CurrentItemId].ItemGameObject;
         public EInventoryItemId CurrentItemId { get; private set; }
 
         public bool Contains(EInventoryItemId id)
         {
-            return _inventoryItemsData[id].IsInStock;
+            return _itemsData[id].IsInStock;
         }
 
         private void Awake()
@@ -68,11 +61,15 @@ namespace InventoryModule
 
             _backgroundImageComponent = transform.Find("Canvas").Find("Image").GetComponent<Image>();
 
-            Messenger<EInventoryItemId>.AddListener(Events.InventoryItemWasClicked, OnItemAdding);
-            Messenger.AddListener(Events.InventoryButtonWasPressed, OnInventorySwitchToNextItem);
+            Messenger<EInventoryItemId>.AddListener(Events.InventoryObjectWasClicked,
+                OnInventoryObjectWasClicked);
+            Messenger.AddListener(Events.InventoryButtonWasPressed,
+                OnInventorySwitchToNextItem);
+            Messenger<EInventoryItemId>.AddListener(Events.InventoryItemWasSuccessfullyUsed,
+                OnInventoryItemSuccessfullyUsed);
 
             var itemsContainerTransform = transform.Find(ItemsContainerName);
-            foreach (var pair in _inventoryItemsData)
+            foreach (var pair in _itemsData)
             {
                 var itemName = GameUtils.GetNameByPath(GameConstants.inventoryObjectPaths[pair.Key]);
                 var go = itemsContainerTransform.Find(itemName).gameObject;
@@ -80,12 +77,12 @@ namespace InventoryModule
                 pair.Value.ItemGameObject = go;
             }
         }
-        
-        private void OnItemAdding(EInventoryItemId id)
+
+        private void OnInventoryObjectWasClicked(EInventoryItemId id)
         {
             if (IsInventoryModeOn) return;
 
-            _inventoryItemsData[id].IsInStock = true;
+            _itemsData[id].IsInStock = true;
             Messenger.Broadcast(Events.InventoryWasUpdated);
         }
 
@@ -113,7 +110,7 @@ namespace InventoryModule
 
         private void HideAllInstances()
         {
-            foreach (var instance in _inventoryItemsData.Values.Select(data => data.ItemGameObject))
+            foreach (var instance in _itemsData.Values.Select(data => data.ItemGameObject))
                 HideInstance(instance);
         }
 
@@ -221,6 +218,14 @@ namespace InventoryModule
                 new Color(.5f, .5f, .5f, _currentTransitionOpacity));
 
             GL.PopMatrix();
+        }
+
+        private void OnInventoryItemSuccessfullyUsed(EInventoryItemId id)
+        {
+            if (_itemsData[id].IsDisposable)
+            {
+                _itemsData[id].IsInStock = false;
+            }
         }
     }
 }

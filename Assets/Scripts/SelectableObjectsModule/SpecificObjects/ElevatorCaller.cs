@@ -1,4 +1,5 @@
 ﻿using System;
+using Plugins;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
@@ -41,6 +42,9 @@ namespace SelectableObjectsModule.SpecificObjects
             _button.gameObject.SetActive(true);
 
             _isButtonAdded = true;
+            
+            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed, 
+                EInventoryItemId.ELEVATOR_CALLER_BUTTON);
         }
 
         private void OnConnectorClicked(object s, SelectableObjectClickedEventArgs e)
@@ -52,6 +56,9 @@ namespace SelectableObjectsModule.SpecificObjects
 
             _connectorWire1.SetActive(false);
             _connectorWire2.SetActive(false);
+            
+            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed, 
+                EInventoryItemId.ELEVATOR_CALLER_PANEL);
         }
 
         private void OnWiresConnectedWithTape(object s, EventArgs e)
