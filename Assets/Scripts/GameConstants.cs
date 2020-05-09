@@ -59,20 +59,7 @@ public static class Events
 
 public static class GameConstants
 {
-    public static readonly Dictionary<EInventoryItemId, string> inventoryItemToInstancePathMap =
-        new Dictionary<EInventoryItemId, string>
-        {
-            {EInventoryItemId.POSTBOX_KEY, "postbox_key"},
-            {EInventoryItemId.LETTER, "letter"},
-            {EInventoryItemId.SCALPEL, "scalpel"},
-            {EInventoryItemId.E_PANEL_KEY, "e-panel_key"},
-            {EInventoryItemId.SCREWDRIVER, "screwdriver"},
-            {EInventoryItemId.ELEVATOR_CALLER_BUTTON, "elevator_caller_button"},
-            {EInventoryItemId.ELEVATOR_CALLER_PANEL, "garbage_chute/elevator_caller_panel"},
-            {EInventoryItemId.INSULATING_TAPE, "insulating_tape"}
-        };
-
-    public static readonly Dictionary<ESwitchableObjectId, string> switchableObjectToInstancePathMap =
+    public static readonly Dictionary<ESwitchableObjectId, string> switchableObjectPaths =
         new Dictionary<ESwitchableObjectId, string>
         {
             {ESwitchableObjectId.PAD, "pad"},
@@ -88,6 +75,18 @@ public static class GameConstants
             {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator_caller/connector/panel/wires"}
         };
 
+    public static readonly Dictionary<EInventoryItemId, string> inventoryObjectPaths =
+        new Dictionary<EInventoryItemId, string>
+        {
+            {EInventoryItemId.POSTBOX_KEY, "postbox_key"},
+            {EInventoryItemId.LETTER, "letter"},
+            {EInventoryItemId.SCALPEL, "scalpel"},
+            {EInventoryItemId.E_PANEL_KEY, "e-panel_key"},
+            {EInventoryItemId.SCREWDRIVER, "screwdriver"},
+            {EInventoryItemId.ELEVATOR_CALLER_BUTTON, "elevator_caller_button"},
+            {EInventoryItemId.ELEVATOR_CALLER_PANEL, "garbage_chute/elevator_caller_panel"},
+            {EInventoryItemId.INSULATING_TAPE, "insulating_tape"}
+        };
 
     public static readonly string collidersObjectName = "colliders";
     public static readonly string entrywayObjectName = "entryway";

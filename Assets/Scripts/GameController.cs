@@ -211,7 +211,7 @@ public class GameController : MonoBehaviour
                 continue;
 
             foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId)))
-                f.HideObject(GameConstants.inventoryItemToInstancePathMap[id]);
+                f.HideObject(GameConstants.inventoryObjectPaths[id]);
 
             // foreach (var s in GameConstants..Values.Where(s => s.IsOpened))
             //     s.Switch();
@@ -243,8 +243,8 @@ public class GameController : MonoBehaviour
             foreach (var inventoryItem in floorMarkValue.AssociatedInventoryItems)
                 if (!inventory.Contains(inventoryItem))
                 {
-                    nextHighFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
-                    nextLowFloor.ShowObject(GameConstants.inventoryItemToInstancePathMap[inventoryItem]);
+                    nextHighFloor.ShowObject(GameConstants.inventoryObjectPaths[inventoryItem]);
+                    nextLowFloor.ShowObject(GameConstants.inventoryObjectPaths[inventoryItem]);
                 }
         }
     }

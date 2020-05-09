@@ -1,5 +1,4 @@
-﻿using InventoryModule;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace SelectableObjectsModule.SpecificObjects
 {

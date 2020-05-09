@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using InventoryModule;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
 using Utils;
@@ -91,22 +90,22 @@ namespace SelectableObjectsModule
 
         public static string GetPath(ESwitchableObjectId id)
         {
-            return GameConstants.switchableObjectToInstancePathMap[id];
+            return GameConstants.switchableObjectPaths[id];
         }
 
         public static string GetName(ESwitchableObjectId id)
         {
-            return GameUtils.GetNameByPath(GameConstants.switchableObjectToInstancePathMap[id]);
+            return GameUtils.GetNameByPath(GameConstants.switchableObjectPaths[id]);
         }
 
         public static string GetPath(EInventoryItemId id)
         {
-            return GameConstants.inventoryItemToInstancePathMap[id];
+            return GameConstants.inventoryObjectPaths[id];
         }
 
         public static string GetName(EInventoryItemId id)
         {
-            return GameUtils.GetNameByPath(GameConstants.inventoryItemToInstancePathMap[id]);
+            return GameUtils.GetNameByPath(GameConstants.inventoryObjectPaths[id]);
         }
 
         public static SwitchableObject GetAsChild(GameObject parent, ESwitchableObjectId id)
