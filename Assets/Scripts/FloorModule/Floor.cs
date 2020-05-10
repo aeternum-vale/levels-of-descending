@@ -12,6 +12,12 @@ namespace FloorModule
     public class Floor : MonoBehaviour
     {
         private const string FrontWallName = "front_wall";
+
+        private const string EntrywayObjectName = "entryway";
+        private const string LeftDoorBaseObjectName = "door_left";
+        private const string RightDoorBaseObjectName = "door_right";
+        private const string LeftDoorObjectName = "left_door_prefab";
+        private const string RightDoorObjectName = "right_door_prefab";
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
         private static readonly int ActiveTextureNumber = Shader.PropertyToID("_ActiveTextureNumber");
@@ -33,6 +39,8 @@ namespace FloorModule
         [NonSerialized] private IInitStateReturnable[] _returnableObjects;
         private Door _rightDoor;
         private Scalpel _scalpel;
+
+        [SerializeField] private DoorFactory doorFactory;
 
         private void Start()
         {
@@ -116,6 +124,28 @@ namespace FloorModule
         public void SetFrontWallAd(Texture2D texture)
         {
             _adMaterial.SetTexture(MainTex, texture);
+        }
+
+        public void UpdateDoors()
+        {
+            var entrywayTransform = transform.Find(EntrywayObjectName);
+            var floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
+            var floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
+
+            var leftDoor = doorFactory.GenerateRandomDoor();
+            var rightDoor = doorFactory.GenerateRandomDoor();
+
+            leftDoor.transform.position = floorLeftDoorBaseTransform.position;
+
+            rightDoor.transform.position = floorRightDoorBaseTransform.position;
+            rightDoor.Invert();
+
+            leftDoor.name = LeftDoorObjectName;
+            rightDoor.name = RightDoorObjectName;
+
+            var transformValue = transform;
+            leftDoor.transform.SetParent(transformValue);
+            rightDoor.transform.SetParent(transformValue);
         }
     }
 }

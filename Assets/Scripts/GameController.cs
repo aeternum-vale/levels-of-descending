@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AdGeneratorModule;
-using DoorModule;
 using FloorModule;
 using InventoryModule;
 using PlayerModule;
@@ -12,25 +11,18 @@ public class GameController : MonoBehaviour
 {
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 6;
-    private const string EntrywayObjectName = "entryway";
-    private const string LeftDoorBaseObjectName = "door_left";
-    private const string RightDoorBaseObjectName = "door_right";
-    private const string LeftDoorObjectName = "left_door_prefab";
-    private const string RightDoorObjectName = "right_door_prefab";
 
     private readonly Dictionary<Floor, GameObject> _floorToGround1Collider = new Dictionary<Floor, GameObject>();
 
     private int _fakeFloorNumber = 7;
+
     private Floor[] _floors;
     private int _floorsHalf;
-
     private int _highestFloorIndex;
-
     private Player _player;
     private int _realFloorNumber = 7;
 
     [SerializeField] private AdGenerator adGenerator;
-    [SerializeField] private DoorFactory doorFactory;
     [SerializeField] private GameObject floorPrefab;
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
@@ -71,7 +63,7 @@ public class GameController : MonoBehaviour
 
         Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
         Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
-        Messenger<Door>.AddListener(Events.DragonflyCodeActivated, OnDragonflyCodeActivated);
+        Messenger.AddListener(Events.DragonflyCodeActivated, OnDragonflyCodeActivated);
     }
 
     private Floor GetNextHigherFloor()
@@ -97,44 +89,12 @@ public class GameController : MonoBehaviour
         return null;
     }
 
-    private void UpdateFloorDoors(Floor floor)
-    {
-        // Transform oldLeftDoorTransform = floor.transform.Find (leftDoorObjectName);
-        // Transform oldRightDoorTransform = floor.transform.Find (rightDoorObjectName);
-
-        // if (oldLeftDoorTransform) {
-        // 	Destroy (oldLeftDoorTransform.gameObject);
-        // }
-
-        // if (oldRightDoorTransform) {
-        // 	Destroy (oldRightDoorTransform.gameObject);
-        // }
-
-        var entrywayTransform = floor.transform.Find(EntrywayObjectName);
-        var floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
-        var floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
-
-        var leftDoor = doorFactory.GenerateRandomDoor();
-        var rightDoor = doorFactory.GenerateRandomDoor();
-
-        leftDoor.transform.position = floorLeftDoorBaseTransform.position;
-
-        rightDoor.transform.position = floorRightDoorBaseTransform.position;
-        rightDoor.Invert();
-
-        leftDoor.name = LeftDoorObjectName;
-
-        rightDoor.name = RightDoorObjectName;
-
-        leftDoor.transform.SetParent(floor.transform);
-        rightDoor.transform.SetParent(floor.transform);
-    }
 
     private Floor GenerateRandomFloor(Vector3 position)
     {
         var floor = Instantiate(floorPrefab).GetComponent<Floor>();
         floor.transform.position = position;
-        UpdateFloorDoors(floor);
+        floor.UpdateDoors();
         return floor;
     }
 
@@ -196,7 +156,7 @@ public class GameController : MonoBehaviour
     {
     }
 
-    private void OnDragonflyCodeActivated(Door door)
+    private void OnDragonflyCodeActivated()
     {
         if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
     }
