@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SelectableObjectsModule.SpecificObjects
 {
-    public class ElevatorCaller : MonoBehaviour
+    public class ElevatorCaller : MonoBehaviour, IInitStateReturnable
     {
         private PushableObject _button;
         private SwitchableObject _commonWires;
@@ -16,6 +16,10 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private bool _isWiresConnected;
         private SwitchableObject _panel;
+
+        public void ReturnToInitState()
+        {
+        }
 
         private void Start()
         {
@@ -42,8 +46,8 @@ namespace SelectableObjectsModule.SpecificObjects
             _button.gameObject.SetActive(true);
 
             _isButtonAdded = true;
-            
-            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed, 
+
+            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
                 EInventoryItemId.ELEVATOR_CALLER_BUTTON);
         }
 
@@ -56,8 +60,8 @@ namespace SelectableObjectsModule.SpecificObjects
 
             _connectorWire1.SetActive(false);
             _connectorWire2.SetActive(false);
-            
-            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed, 
+
+            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
                 EInventoryItemId.ELEVATOR_CALLER_PANEL);
         }
 

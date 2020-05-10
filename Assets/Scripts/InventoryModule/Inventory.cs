@@ -222,10 +222,7 @@ namespace InventoryModule
 
         private void OnInventoryItemSuccessfullyUsed(EInventoryItemId id)
         {
-            if (_itemsData[id].IsDisposable)
-            {
-                _itemsData[id].IsInStock = false;
-            }
+            if (_itemsData[id].IsDisposable) _itemsData[id].IsInStock = false;
         }
     }
 }

@@ -122,5 +122,10 @@ namespace SelectableObjectsModule
         {
             return parent.transform.Find(objName).GetComponent<T>();
         }
+
+        public static T GetAsChild<T>(GameObject parent, EInventoryItemId id) where T : InventoryObject
+        {
+            return (T) GetAsChild(parent, id);
+        }
     }
 }

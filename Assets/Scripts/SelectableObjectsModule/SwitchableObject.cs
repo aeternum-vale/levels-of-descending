@@ -9,10 +9,13 @@ namespace SelectableObjectsModule
     public class SwitchableObject : SelectableObject, IInitStateReturnable
     {
         private static readonly int DirectionParamHash = Animator.StringToHash("Direction");
-        private static readonly int DefaultStateNameHash = Animator.StringToHash("Switch");
+        private static readonly int DefaultSwitchStateNameHash = Animator.StringToHash("Switch");
+        private static readonly int IdleStateNameHash = Animator.StringToHash("Idle");
+
         private Animator _animator;
-        protected bool IsAnimationOn;
+
         [SerializeField] private ESwitchableObjectId id;
+        protected bool IsAnimationOn;
         [SerializeField] protected bool isDisposable;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
         [SerializeField] private bool hasValueOfNecessaryInventoryItem;
@@ -26,6 +29,13 @@ namespace SelectableObjectsModule
         public Func<bool> OpenCondition { get; set; }
 
         public int AnimationNameHash { get; set; }
+
+        public void ReturnToInitState()
+        {
+            if (!gameObject.activeSelf) return;
+
+            Close(true);
+        }
 
         public event EventHandler Opened;
         public event EventHandler Closed;
@@ -43,7 +53,7 @@ namespace SelectableObjectsModule
             if (hasValueOfNecessaryInventoryItem)
                 NecessaryInventoryItem = necessaryInventoryItem;
 
-            AnimationNameHash = DefaultStateNameHash;
+            AnimationNameHash = DefaultSwitchStateNameHash;
         }
 
         public override void OnClick(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
@@ -71,10 +81,8 @@ namespace SelectableObjectsModule
                 if ((OpenCondition == null || OpenCondition()) && NecessaryInventoryItem == selectedInventoryItemId)
                 {
                     if (selectedInventoryItemId != null)
-                    {
                         Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
                             (EInventoryItemId) selectedInventoryItemId);
-                    }
 
                     Open();
                 }
@@ -87,16 +95,17 @@ namespace SelectableObjectsModule
             if (isDisposable)
                 SealAndDisableGlowing();
 
+            PlayAnimation(immediately);
+
             Opened?.Invoke(this, EventArgs.Empty);
-            PlayAnimation(immediately: immediately);
         }
 
         public virtual void Close(bool immediately = false)
         {
             IsOpened = false;
+            PlayAnimation(immediately);
 
             Closed?.Invoke(this, EventArgs.Empty);
-            PlayAnimation(true, immediately);
         }
 
         public virtual void SealAndDisableGlowing()
@@ -105,13 +114,19 @@ namespace SelectableObjectsModule
             IsGlowingEnabled = false;
         }
 
-        protected virtual void PlayAnimation(bool isReverse = false, bool immediately = false)
+        protected virtual void PlayAnimation(bool immediately = false)
         {
-            if (isReverse)
+            if (!IsOpened)
             {
-                
-                _animator.SetFloat(DirectionParamHash, -1f);
-                _animator.Play(AnimationNameHash, -1, immediately ? 0f : 1f);
+                if (immediately)
+                {
+                    _animator.Play(IdleStateNameHash, -1, 1f);
+                }
+                else
+                {
+                    _animator.SetFloat(DirectionParamHash, -1f);
+                    _animator.Play(AnimationNameHash, -1, 1f);
+                }
             }
             else
             {
@@ -144,11 +159,6 @@ namespace SelectableObjectsModule
                 IsAnimationOn = false;
                 OpenAnimationCompleted?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        public void ReturnToInitState()
-        {
-            Close(true);
         }
     }
 }

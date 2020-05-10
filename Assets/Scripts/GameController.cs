@@ -18,7 +18,7 @@ public class GameController : MonoBehaviour
     private const string LeftDoorObjectName = "left_door_prefab";
     private const string RightDoorObjectName = "right_door_prefab";
 
-    private readonly Dictionary<Floor, GameObject> _floorToGround1ColliderDict = new Dictionary<Floor, GameObject>();
+    private readonly Dictionary<Floor, GameObject> _floorToGround1Collider = new Dictionary<Floor, GameObject>();
 
     private int _fakeFloorNumber = 7;
     private Floor[] _floors;
@@ -44,7 +44,7 @@ public class GameController : MonoBehaviour
         for (var i = 0; i < FloorCount; i++)
         {
             _floors[i] = GenerateRandomFloor(floorPrefab.transform.position + new Vector3(0, FloorHeight * i, 0));
-            _floorToGround1ColliderDict.Add(_floors[i],
+            _floorToGround1Collider.Add(_floors[i],
                 _floors[i].transform.Find(GameConstants.collidersObjectName)
                     .Find(GameConstants.ground1ColliderObjectName).gameObject);
         }
@@ -92,7 +92,7 @@ public class GameController : MonoBehaviour
     private Floor GetSpecificFloor(OnReachedCurrentIndexCallback cb)
     {
         for (var i = 0; i < _floors.Length; i++)
-            if (_player.LastGround1ColliderTouched == _floorToGround1ColliderDict[_floors[i]])
+            if (_player.LastGround1ColliderTouched == _floorToGround1Collider[_floors[i]])
                 return _floors[cb(i, FloorCount)];
         return null;
     }
@@ -203,20 +203,19 @@ public class GameController : MonoBehaviour
 
     private void UpdateEnvironment()
     {
-        foreach (var f in _floors)
+        foreach (var floor in _floors)
         {
             if (_player.LastGround1ColliderTouched &&
-                _player.LastGround1ColliderTouched == _floorToGround1ColliderDict[f]
+                _player.LastGround1ColliderTouched == _floorToGround1Collider[floor]
             ) //stop updating of the current floor
                 continue;
 
             foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId)))
-                f.HideObject(GameConstants.inventoryObjectPaths[id]);
+                floor.HideObject(GameConstants.inventoryObjectPaths[id]);
 
-            // foreach (var s in GameConstants..Values.Where(s => s.IsOpened))
-            //     s.Switch();
+            floor.ReturnAllObjectsToInitState();
 
-            f.SetFrontWallAd(adGenerator.GetRandomAdTexture());
+            floor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
         }
 
         var nextFakeFloorNumber = _fakeFloorNumber + 1;
