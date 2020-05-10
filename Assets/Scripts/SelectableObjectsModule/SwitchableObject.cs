@@ -1,11 +1,12 @@
 using System;
 using Plugins;
+using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
 namespace SelectableObjectsModule
 {
     [RequireComponent(typeof(Animator))]
-    public class SwitchableObject : SelectableObject
+    public class SwitchableObject : SelectableObject, IInitStateReturnable
     {
         private static readonly int DirectionParamHash = Animator.StringToHash("Direction");
         private static readonly int DefaultStateNameHash = Animator.StringToHash("Switch");
@@ -80,24 +81,22 @@ namespace SelectableObjectsModule
             }
         }
 
-        public virtual void Open()
+        public virtual void Open(bool immediately = false)
         {
             IsOpened = true;
             if (isDisposable)
                 SealAndDisableGlowing();
 
             Opened?.Invoke(this, EventArgs.Empty);
-
-            PlayAnimation();
+            PlayAnimation(immediately: immediately);
         }
 
-        public virtual void Close()
+        public virtual void Close(bool immediately = false)
         {
             IsOpened = false;
 
             Closed?.Invoke(this, EventArgs.Empty);
-
-            PlayAnimation(true);
+            PlayAnimation(true, immediately);
         }
 
         public virtual void SealAndDisableGlowing()
@@ -106,33 +105,50 @@ namespace SelectableObjectsModule
             IsGlowingEnabled = false;
         }
 
-        protected virtual void PlayAnimation(bool isReverse = false)
+        protected virtual void PlayAnimation(bool isReverse = false, bool immediately = false)
         {
             if (isReverse)
             {
+                
                 _animator.SetFloat(DirectionParamHash, -1f);
-                _animator.Play(AnimationNameHash, -1, 1f);
+                _animator.Play(AnimationNameHash, -1, immediately ? 0f : 1f);
             }
             else
             {
                 _animator.SetFloat(DirectionParamHash, 1f);
-                _animator.Play(AnimationNameHash, -1, 0f);
+                _animator.Play(AnimationNameHash, -1, immediately ? 1f : 0f);
+            }
+        }
+
+        protected virtual void OnAnimationStart()
+        {
+            if (IsOpened)
+            {
+                IsAnimationOn = true;
+            }
+            else
+            {
+                IsAnimationOn = false;
+                CloseAnimationCompleted?.Invoke(this, EventArgs.Empty);
             }
         }
 
         protected virtual void OnAnimationEnd()
         {
-            IsAnimationOn = !IsAnimationOn;
-
-            if (IsOpened)
-                OpenAnimationCompleted?.Invoke(this, EventArgs.Empty);
+            if (!IsOpened)
+            {
+                IsAnimationOn = true;
+            }
             else
-                CloseAnimationCompleted?.Invoke(this, EventArgs.Empty);
+            {
+                IsAnimationOn = false;
+                OpenAnimationCompleted?.Invoke(this, EventArgs.Empty);
+            }
         }
 
-        protected virtual void OnAnimationStart()
+        public void ReturnToInitState()
         {
-            IsAnimationOn = !IsAnimationOn;
+            Close(true);
         }
     }
 }
