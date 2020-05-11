@@ -149,9 +149,11 @@ namespace InventoryModule
 
         private void SwitchCurrentItemIdToNext()
         {
-            CurrentItemId = CurrentItemId == ArrayOfAvailableItemsIds.Last()
-                ? ArrayOfAvailableItemsIds.First()
-                : ArrayOfAvailableItemsIds.First(id => (int) id > (int) CurrentItemId);
+            var arrayOfAvailableItemsIdsCopy = ArrayOfAvailableItemsIds;
+            var indexOfCurrentItemId = Array.IndexOf(arrayOfAvailableItemsIdsCopy, CurrentItemId);
+
+            CurrentItemId =
+                arrayOfAvailableItemsIdsCopy[(indexOfCurrentItemId + 1) % arrayOfAvailableItemsIdsCopy.Length];
         }
 
         private IEnumerator SwitchToNextItem()
