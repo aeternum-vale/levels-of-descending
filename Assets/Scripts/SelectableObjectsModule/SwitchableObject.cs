@@ -13,12 +13,12 @@ namespace SelectableObjectsModule
         private static readonly int IdleStateNameHash = Animator.StringToHash("Idle");
 
         private Animator _animator;
+        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
 
         [SerializeField] private ESwitchableObjectId id;
         protected bool IsAnimationOn;
         [SerializeField] protected bool isDisposable;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
-        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
 
         public bool IsOpened { get; protected set; }
         public bool IsSealed { get; set; }

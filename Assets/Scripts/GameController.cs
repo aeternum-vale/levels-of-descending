@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using AdGeneratorModule;
 using FloorModule;
 using InventoryModule;
@@ -12,7 +11,7 @@ public class GameController : MonoBehaviour
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 6;
 
-    private readonly Dictionary<Floor, GameObject> _floorToGround1Collider = new Dictionary<Floor, GameObject>();
+    private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
     private int _fakeFloorNumber = 7;
 
@@ -36,7 +35,7 @@ public class GameController : MonoBehaviour
         for (var i = 0; i < FloorCount; i++)
         {
             _floors[i] = GenerateRandomFloor(floorPrefab.transform.position + new Vector3(0, FloorHeight * i, 0));
-            _floorToGround1Collider.Add(_floors[i],
+            _ground1Colliders.Add(_floors[i],
                 _floors[i].transform.Find(GameConstants.collidersObjectName)
                     .Find(GameConstants.ground1ColliderObjectName).gameObject);
         }
@@ -84,7 +83,7 @@ public class GameController : MonoBehaviour
     private Floor GetSpecificFloor(OnReachedCurrentIndexCallback cb)
     {
         for (var i = 0; i < _floors.Length; i++)
-            if (_player.LastGround1ColliderTouched == _floorToGround1Collider[_floors[i]])
+            if (_player.LastGround1ColliderTouched == _ground1Colliders[_floors[i]])
                 return _floors[cb(i, FloorCount)];
         return null;
     }
@@ -165,16 +164,11 @@ public class GameController : MonoBehaviour
     {
         foreach (var floor in _floors)
         {
-            if (_player.LastGround1ColliderTouched &&
-                _player.LastGround1ColliderTouched == _floorToGround1Collider[floor]
-            ) //stop updating of the current floor
+            if (_player.LastGround1ColliderTouched && _player.LastGround1ColliderTouched == _ground1Colliders[floor])
                 continue;
 
-            foreach (var id in (EInventoryItemId[]) Enum.GetValues(typeof(EInventoryItemId)))
-                floor.HideObject(GameConstants.inventoryObjectPaths[id]);
-
+            floor.HideAllInventoryObjects();
             floor.ReturnAllObjectsToInitState();
-
             floor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
         }
 
@@ -189,7 +183,7 @@ public class GameController : MonoBehaviour
         nextHighFloor.ResetAllMarks();
         nextLowFloor.ResetAllMarks();
 
-        foreach (var floorMarkKeyValuePair in GameConstants.floorMarksDict)
+        foreach (var floorMarkKeyValuePair in GameConstants.floorMarks)
         {
             var id = floorMarkKeyValuePair.Key;
             var floorMarkValue = floorMarkKeyValuePair.Value;
@@ -200,11 +194,12 @@ public class GameController : MonoBehaviour
             nextLowFloor.SetMark(id);
 
             foreach (var inventoryItem in floorMarkValue.AssociatedInventoryItems)
-                if (!inventory.Contains(inventoryItem))
-                {
-                    nextHighFloor.ShowObject(GameConstants.inventoryObjectPaths[inventoryItem]);
-                    nextLowFloor.ShowObject(GameConstants.inventoryObjectPaths[inventoryItem]);
-                }
+            {
+                if (inventory.Contains(inventoryItem)) continue;
+
+                nextHighFloor.ShowInventoryObject(inventoryItem);
+                nextLowFloor.ShowInventoryObject(inventoryItem);
+            }
         }
     }
 

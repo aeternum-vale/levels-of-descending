@@ -6,7 +6,7 @@ namespace SelectableObjectsModule
     public class InventoryObject : SelectableObject
     {
         [SerializeField] protected bool isGrabable = true;
-        [SerializeField] protected EInventoryItemId objectId;
+        [SerializeField] public EInventoryItemId objectId;
 
         public bool IsGrabable { get; set; }
 

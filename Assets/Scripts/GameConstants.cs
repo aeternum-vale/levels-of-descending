@@ -41,12 +41,6 @@ public enum EFloorMarkId
     LOST_PET_SIGN
 }
 
-public enum ESwitchableObjectStateId
-{
-    CLOSE = 0,
-    OPEN
-}
-
 public static class Events
 {
     public const string FloorWasTouched = "FLOOR_WAS_TOUCHED";
@@ -99,10 +93,14 @@ public static class GameConstants
 
     public static readonly EDoorAction[] dragonflyCode =
     {
-        EDoorAction.BELL, EDoorAction.BELL, EDoorAction.HANDLE, EDoorAction.BELL, EDoorAction.HANDLE
+        EDoorAction.BELL,
+        EDoorAction.BELL,
+        EDoorAction.HANDLE,
+        EDoorAction.BELL,
+        EDoorAction.HANDLE
     };
 
-    public static readonly Dictionary<EFloorMarkId, FloorMark> floorMarksDict = new Dictionary<EFloorMarkId, FloorMark>
+    public static readonly Dictionary<EFloorMarkId, FloorMark> floorMarks = new Dictionary<EFloorMarkId, FloorMark>
     {
         {
             EFloorMarkId.DRAGONFLY,

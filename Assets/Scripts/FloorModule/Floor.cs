@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using DoorModule;
 using SelectableObjectsModule;
@@ -12,7 +11,6 @@ namespace FloorModule
     public class Floor : MonoBehaviour
     {
         private const string FrontWallName = "front_wall";
-
         private const string EntrywayObjectName = "entryway";
         private const string LeftDoorBaseObjectName = "door_left";
         private const string RightDoorBaseObjectName = "door_right";
@@ -23,6 +21,9 @@ namespace FloorModule
         private static readonly int ActiveTextureNumber = Shader.PropertyToID("_ActiveTextureNumber");
         private static readonly int FloorNumber = Shader.PropertyToID("_FloorNumber");
 
+        private readonly Dictionary<EInventoryItemId, InventoryObject> _inventoryObjects =
+            new Dictionary<EInventoryItemId, InventoryObject>();
+
         private readonly Dictionary<EFloorMarkId, bool> _markStatesDict = new Dictionary<EFloorMarkId, bool>
         {
             {EFloorMarkId.DRAGONFLY, false},
@@ -31,13 +32,12 @@ namespace FloorModule
 
         private Material _adMaterial;
         private Material _frontWallMaterial;
-
         private Door _leftDoor;
-
         private Material _postboxPartMaterialWithDragonFly;
 
-        [NonSerialized] private IInitStateReturnable[] _returnableObjects;
+        private IInitStateReturnable[] _returnableObjects;
         private Door _rightDoor;
+
         private Scalpel _scalpel;
 
         [SerializeField] private DoorFactory doorFactory;
@@ -45,12 +45,16 @@ namespace FloorModule
         private void Start()
         {
             _postboxPartMaterialWithDragonFly =
-                transform.Find("postbox").Find("Cube.003").GetComponent<MeshRenderer>().material;
+                transform.Find("postbox/Cube.003").GetComponent<MeshRenderer>().material;
             _leftDoor = transform.Find("left_door_prefab").GetComponent<Door>();
             _rightDoor = transform.Find("right_door_prefab").GetComponent<Door>();
             _scalpel = SelectableObject.GetAsChild<Scalpel>(gameObject, EInventoryItemId.SCALPEL);
 
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true);
+
+            transform.GetComponentsInChildren<InventoryObject>(true)
+                .ToList()
+                .ForEach(io => _inventoryObjects.Add(io.objectId, io));
         }
 
         private void Awake()
@@ -66,14 +70,24 @@ namespace FloorModule
             _returnableObjects.ToList().ForEach(returnable => returnable.ReturnToInitState());
         }
 
-        public void HideObject(string objectName)
+        private void SetActivityOfInventoryObject(EInventoryItemId id, bool active)
         {
-            transform.Find(objectName).gameObject.SetActive(false);
+            _inventoryObjects[id].gameObject.SetActive(active);
         }
 
-        public void ShowObject(string objectName)
+        public void HideInventoryObject(EInventoryItemId id)
         {
-            transform.Find(objectName).gameObject.SetActive(true);
+            SetActivityOfInventoryObject(id, false);
+        }
+
+        public void ShowInventoryObject(EInventoryItemId id)
+        {
+            SetActivityOfInventoryObject(id, true);
+        }
+
+        public void HideAllInventoryObjects()
+        {
+            _inventoryObjects.Keys.ToList().ForEach(HideInventoryObject);
         }
 
         public void SetFloorDrawnNumber(int number)
