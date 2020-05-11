@@ -13,14 +13,18 @@ namespace SelectableObjectsModule
         private static readonly int IdleStateNameHash = Animator.StringToHash("Idle");
 
         private Animator _animator;
-        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
-
+        
         [SerializeField] private ESwitchableObjectId id;
-        protected bool IsAnimationOn;
+        [SerializeField] private bool isDependent;
         [SerializeField] protected bool isDisposable;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
+        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
 
-        public bool IsOpened { get; protected set; }
+        protected bool IsAnimationOn;
+
+        public bool IsOpened { get; private set; }
+        public bool IsDependent { get; private set; }
+
         public bool IsSealed { get; set; }
         public bool PreventSwitching { get; set; }
 
@@ -32,7 +36,7 @@ namespace SelectableObjectsModule
 
         public void ReturnToInitState()
         {
-            if (!gameObject.activeSelf) return;
+            if (!gameObject.activeSelf || IsDependent) return;
 
             Close(true);
         }
@@ -54,6 +58,8 @@ namespace SelectableObjectsModule
                 NecessaryInventoryItem = necessaryInventoryItem;
 
             AnimationNameHash = DefaultSwitchStateNameHash;
+
+            IsDependent = isDependent;
         }
 
         public override void OnClick(EInventoryItemId? selectedInventoryItemId, GameObject colliderCarrier)
