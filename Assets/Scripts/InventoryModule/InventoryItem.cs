@@ -6,6 +6,8 @@ namespace InventoryModule
     {
         public bool IsDisposable;
         public bool IsInStock;
-        public GameObject ItemGameObject;
+        public GameObject Container;
+        public GameObject Content;
+        public Animator AnimatorComponent;
     }
 }

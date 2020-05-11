@@ -14,6 +14,7 @@ namespace InventoryModule
         private const float TransitionStep = 0.1f;
         private const float TransitionXOffset = 15f;
         private const string ItemsContainerName = "items";
+        private static readonly int ItemRotationStateNameHash = Animator.StringToHash("inventoryItemRotation");
 
         private readonly Dictionary<EInventoryItemId, InventoryItemData> _itemsData =
             new Dictionary<EInventoryItemId, InventoryItemData>
@@ -46,7 +47,6 @@ namespace InventoryModule
             .Select(pair => pair.Key)
             .ToArray();
 
-        private GameObject CurrentInstance => _itemsData[CurrentItemId].ItemGameObject;
         public EInventoryItemId CurrentItemId { get; private set; }
 
         public bool Contains(EInventoryItemId id)
@@ -58,8 +58,7 @@ namespace InventoryModule
         {
             _inventoryCamera = transform.GetComponentInChildren<InventoryCamera>();
             _inventoryCameraCameraComponent = _inventoryCamera.GetComponent<Camera>();
-
-            _backgroundImageComponent = transform.Find("Canvas").Find("Image").GetComponent<Image>();
+            _backgroundImageComponent = transform.Find("Canvas/Image").GetComponent<Image>();
 
             Messenger<EInventoryItemId>.AddListener(Events.InventoryObjectWasClicked,
                 OnInventoryObjectWasClicked);
@@ -73,8 +72,10 @@ namespace InventoryModule
             {
                 var itemName = GameUtils.GetNameByPath(GameConstants.inventoryObjectPaths[pair.Key]);
                 var go = itemsContainerTransform.Find(itemName).gameObject;
-                HideInstance(go);
-                pair.Value.ItemGameObject = go;
+                pair.Value.Container = go;
+                pair.Value.Content = go.transform.GetChild(0).gameObject;
+                pair.Value.AnimatorComponent = go.GetComponent<Animator>();
+                HideInstance(pair.Key);
             }
         }
 
@@ -86,32 +87,31 @@ namespace InventoryModule
             Messenger.Broadcast(Events.InventoryWasUpdated);
         }
 
-        private static void ShowInstance(GameObject instance)
+        private void ShowInstance(EInventoryItemId id)
         {
-            instance.transform.GetChild(0).gameObject.SetActive(true);
+            _itemsData[id].Content.SetActive(true);
         }
 
-        private static void HideInstance(GameObject instance)
+        private void HideInstance(EInventoryItemId id)
         {
-            StopInstanceAnimation(instance);
-            instance.transform.GetChild(0).gameObject.SetActive(false);
+            StopInstanceAnimation(id);
+            _itemsData[id].Content.SetActive(false);
         }
 
-        private static void StopInstanceAnimation(GameObject instance)
+        private void StopInstanceAnimation(EInventoryItemId id)
         {
-            instance.GetComponent<Animator>().Play("inventoryItemRotation", -1, 0f);
-            instance.GetComponent<Animator>().speed = 0f;
+            _itemsData[id].AnimatorComponent.Play(ItemRotationStateNameHash, -1, 0f);
+            _itemsData[id].AnimatorComponent.speed = 0f;
         }
 
-        private static void StartInstanceAnimation(GameObject instance)
+        private void StartInstanceAnimation(EInventoryItemId id)
         {
-            instance.GetComponent<Animator>().speed = 1f;
+            _itemsData[id].AnimatorComponent.speed = 1f;
         }
 
         private void HideAllInstances()
         {
-            foreach (var instance in _itemsData.Values.Select(data => data.ItemGameObject))
-                HideInstance(instance);
+            _itemsData.Keys.ToList().ForEach(HideInstance);
         }
 
         public void ActivateInventoryMode(Texture2D backgroundTexture)
@@ -129,8 +129,8 @@ namespace InventoryModule
                 HideAllInstances();
 
                 CurrentItemId = ArrayOfAvailableItemsIds.First();
-                ShowInstance(CurrentInstance);
-                StartInstanceAnimation(CurrentInstance);
+                ShowInstance(CurrentItemId);
+                StartInstanceAnimation(CurrentItemId);
 
                 _inventoryCamera.gameObject.SetActive(true);
             }
@@ -171,7 +171,7 @@ namespace InventoryModule
             yield return StartCoroutine(FadeCurrentItem(true));
 
             SwitchCurrentItemIdToNext();
-            ShowInstance(CurrentInstance);
+            ShowInstance(CurrentItemId);
 
             _inventoryCameraCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
             _inventoryCameraCameraComponent.Render();
@@ -184,7 +184,7 @@ namespace InventoryModule
             _isTransition = false;
             _inventoryCameraCameraComponent.targetTexture = null;
             _backgroundImageComponent.enabled = true;
-            StartInstanceAnimation(CurrentInstance);
+            StartInstanceAnimation(CurrentItemId);
         }
 
         public void OnInventorySwitchToNextItem()
