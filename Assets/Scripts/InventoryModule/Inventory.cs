@@ -189,8 +189,9 @@ namespace InventoryModule
 
         public void OnInventorySwitchToNextItem()
         {
-            if (IsInventoryModeOn && !_isTransition && ArrayOfAvailableItemsIds.Length > 1)
-                StartCoroutine(SwitchToNextItem());
+            if (!IsInventoryModeOn || _isTransition || ArrayOfAvailableItemsIds.Length <= 1) return;
+            
+            StartCoroutine(SwitchToNextItem());
         }
 
         private IEnumerator FadeCurrentItem(bool isOut)
