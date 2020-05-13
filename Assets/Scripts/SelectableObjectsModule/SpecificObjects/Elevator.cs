@@ -8,6 +8,8 @@ namespace SelectableObjectsModule.SpecificObjects
     {
         private ElevatorCaller _caller;
         private Animator _doorsAnimator;
+        private GameObject _elevatorBase;
+        
         private bool _isDoorsOpened;
 
         public void ReturnToInitState()
@@ -19,6 +21,7 @@ namespace SelectableObjectsModule.SpecificObjects
         {
             _caller = transform.GetComponentInChildren<ElevatorCaller>();
             _doorsAnimator = transform.Find("doors").GetComponent<Animator>();
+            _elevatorBase = transform.Find("base").gameObject;
 
             _caller.CallIsDone += CallIsDone;
         }
@@ -28,6 +31,8 @@ namespace SelectableObjectsModule.SpecificObjects
             if (_isDoorsOpened) return;
 
             _isDoorsOpened = true;
+            
+            _elevatorBase.SetActive(true);
             _doorsAnimator.Play("Open", -1, 0f);
         }
     }
