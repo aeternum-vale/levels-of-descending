@@ -9,7 +9,7 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
     private const float FloorHeight = 3.99f;
-    private const int FloorCount = 6;
+    private const int FloorCount = 5;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
@@ -27,6 +27,17 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject playerGameObject;
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
+    private bool? IsPlayerGoingUp
+    {
+        get
+        {
+            if (_player.PrevLastGround1ColliderTouched == null) return null;
+
+            return _player.PrevLastGround1ColliderTouched.transform.position.y <
+                   _player.LastGround1ColliderTouched.transform.position.y;
+        }
+    }
+
     private void Start()
     {
         _highestFloorIndex = FloorCount - 1;
@@ -40,7 +51,7 @@ public class GameController : MonoBehaviour
                     .Find(GameConstants.ground1ColliderObjectName).gameObject);
         }
 
-        _floorsHalf = (int) Mathf.Floor(FloorCount / 2);
+        _floorsHalf = FloorCount / 2;
         _floors[_floorsHalf].SetFloorDrawnNumber(_fakeFloorNumber--);
 
         var localPosition = playerGameObject.transform.localPosition;
@@ -114,26 +125,16 @@ public class GameController : MonoBehaviour
 
     private void UpdateRealFloorNumber()
     {
-        if (_player.PrevLastGround1ColliderTouched)
-            _realFloorNumber += _player.PrevLastGround1ColliderTouched.transform.position.y <
-                                _player.LastGround1ColliderTouched.transform.position.y
-                ? 1
-                : -1;
+        if (IsPlayerGoingUp.HasValue)
+            _realFloorNumber += IsPlayerGoingUp.GetValueOrDefault() ? 1 : -1;
     }
 
     private void RearrangeFloors()
     {
-        var localPosition = playerGameObject.transform.localPosition;
+        var isPlayerGoingUpCopy = IsPlayerGoingUp;
+        if (!isPlayerGoingUpCopy.HasValue) return;
 
-        var distToHighestFloor = Mathf.Abs(localPosition.y -
-                                           _floors[_highestFloorIndex].transform.localPosition.y);
-        var distToLowestFloor =
-            Mathf.Abs(localPosition.y -
-                      _floors[LowestFloorIndex].transform.localPosition.y) +
-            FloorHeight;
-        var threshold = _floorsHalf * FloorHeight;
-
-        if (distToHighestFloor < threshold)
+        if (isPlayerGoingUpCopy.GetValueOrDefault())
         {
             _floors[LowestFloorIndex].transform.localPosition =
                 _floors[_highestFloorIndex].transform.localPosition + new Vector3(0, FloorHeight, 0);
@@ -141,7 +142,7 @@ public class GameController : MonoBehaviour
 
             _highestFloorIndex = LowestFloorIndex;
         }
-        else if (distToLowestFloor < threshold)
+        else
         {
             _floors[_highestFloorIndex].transform.localPosition =
                 _floors[LowestFloorIndex].transform.localPosition + new Vector3(0, -FloorHeight, 0);
