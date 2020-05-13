@@ -21,6 +21,8 @@ namespace SelectableObjectsModule.SpecificObjects
         {
         }
 
+        public event EventHandler CallIsDone;
+
         private void Start()
         {
             _connector = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR);
@@ -36,6 +38,15 @@ namespace SelectableObjectsModule.SpecificObjects
 
             _connector.Closed += OnConnectorOrPanelClosed;
             _panel.Closed += OnConnectorOrPanelClosed;
+
+            _button.Opened += OnButtonClicked;
+        }
+
+        private void OnButtonClicked(object sender, EventArgs e)
+        {
+            if (!_isWiresConnected) return;
+
+            CallIsDone?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnPanelClicked(object sender, SelectableObjectClickedEventArgs e)
@@ -46,9 +57,9 @@ namespace SelectableObjectsModule.SpecificObjects
             _button.gameObject.SetActive(true);
 
             _isButtonAdded = true;
-
             Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
                 EInventoryItemId.ELEVATOR_CALLER_BUTTON);
+            TryToSealConnectorAndPanel();
         }
 
         private void OnConnectorClicked(object s, SelectableObjectClickedEventArgs e)
@@ -71,6 +82,11 @@ namespace SelectableObjectsModule.SpecificObjects
         }
 
         private void OnConnectorOrPanelClosed(object s, EventArgs e)
+        {
+            TryToSealConnectorAndPanel();
+        }
+
+        private void TryToSealConnectorAndPanel()
         {
             if (_connector.IsOpened || _panel.IsOpened || !_isWiresConnected || !_isButtonAdded) return;
 

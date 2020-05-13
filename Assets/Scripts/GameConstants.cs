@@ -25,7 +25,7 @@ public enum ESwitchableObjectId
 
     ELEVATOR_CALLER_CONNECTOR,
     ELEVATOR_CALLER_PANEL,
-    ELEVATOR_CALLER_WIRES
+    ELEVATOR_CALLER_WIRES,
 }
 
 public enum EDoorAction
@@ -65,9 +65,9 @@ public static class GameConstants
             {ESwitchableObjectId.GARBAGE_CHUTE_DOOR, "garbage_chute/door"},
             {ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/hinge"},
 
-            {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator_caller/connector"},
-            {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator_caller/connector/panel"},
-            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator_caller/connector/panel/wires"}
+            {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator/caller/connector"},
+            {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator/caller/connector/panel"},
+            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator/caller/connector/panel/wires"},
         };
 
     public static readonly Dictionary<EInventoryItemId, string> inventoryObjectPaths =
