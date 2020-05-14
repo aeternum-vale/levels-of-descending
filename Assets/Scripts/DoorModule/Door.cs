@@ -16,7 +16,7 @@ namespace DoorModule
         private const string PeepholeName = "peephole";
         private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
 
-        private readonly EDoorAction[] _lastActions = new EDoorAction[GameConstants.dragonflyCode.Length];
+        private readonly EDoorAction?[] _lastActions = new EDoorAction?[GameConstants.dragonflyCode.Length];
         private int _lastActionsCursor;
 
         private DoorPushableDetail[] _pushableDetails;

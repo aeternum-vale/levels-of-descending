@@ -30,7 +30,6 @@ public enum ESwitchableObjectId
 
 public enum EDoorAction
 {
-    NONE,
     BELL,
     HANDLE
 }
