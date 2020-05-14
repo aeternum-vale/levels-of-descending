@@ -52,19 +52,21 @@ public class GameController : MonoBehaviour
         }
 
         _floorsHalf = FloorCount / 2;
-        _floors[_floorsHalf].SetFloorDrawnNumber(_fakeFloorNumber--);
+
+        var playerFloor = _floors[_floorsHalf];
+        playerFloor.SetFloorDrawnNumber(_fakeFloorNumber--);
 
         var localPosition = playerGameObject.transform.localPosition;
 
         localPosition = new Vector3(
             localPosition.x,
-            _floors[_floorsHalf].transform.localPosition.y,
+            playerFloor.transform.localPosition.y,
             localPosition.z
         );
 
         playerGameObject.transform.localPosition = localPosition;
 
-        //adGenerator = transform.parent.Find("AdGenerator").gameObject.GetComponent<AdGenerator>();
+        playerFloor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
     }
 
     private void Awake()
