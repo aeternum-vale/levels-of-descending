@@ -10,15 +10,24 @@ namespace SelectableObjectsModule.SpecificObjects
         private PushableObject _button;
         private SwitchableObject _commonWires;
         private SwitchableObject _connector;
+
         private GameObject _connectorWire1;
         private GameObject _connectorWire2;
-        private bool _isButtonAdded;
 
+        private bool _isButtonAdded;
         private bool _isWiresConnected;
         private SwitchableObject _panel;
 
         public void ReturnToInitState()
         {
+            _panel.gameObject.SetActive(false);
+            _connectorWire1.SetActive(true);
+            _connectorWire2.SetActive(true);
+
+            _button.gameObject.SetActive(false);
+
+            _isButtonAdded = false;
+            _isWiresConnected = false;
         }
 
         public event EventHandler CallIsDone;
