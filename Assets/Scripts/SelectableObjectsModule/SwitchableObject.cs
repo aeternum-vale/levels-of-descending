@@ -8,8 +8,8 @@ namespace SelectableObjectsModule
     [RequireComponent(typeof(Animator))]
     public class SwitchableObject : SelectableObject, IInitStateReturnable
     {
+        public static readonly int defaultSwitchStateNameHash = Animator.StringToHash("Switch");
         private static readonly int DirectionParamHash = Animator.StringToHash("Direction");
-        private static readonly int DefaultSwitchStateNameHash = Animator.StringToHash("Switch");
         private static readonly int IdleStateNameHash = Animator.StringToHash("Idle");
 
         private Animator _animator;
@@ -57,7 +57,7 @@ namespace SelectableObjectsModule
             if (hasValueOfNecessaryInventoryItem)
                 NecessaryInventoryItem = necessaryInventoryItem;
 
-            AnimationNameHash = DefaultSwitchStateNameHash;
+            AnimationNameHash = defaultSwitchStateNameHash;
 
             IsDependent = isDependent;
         }

@@ -173,8 +173,18 @@ public class GameController : MonoBehaviour
             floor.HideAllInventoryObjects();
             floor.ReturnAllObjectsToInitState();
             floor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
-        }
 
+            if (!inventory.Contains(EInventoryItemId.ELEVATOR_CALLER_PANEL))
+            {
+                floor.ShowInventoryObject(EInventoryItemId.ELEVATOR_CALLER_PANEL);
+            }
+        }
+        
+        ImplementFloorMarksAndFakeFloorNumber();
+    }
+
+    private void ImplementFloorMarksAndFakeFloorNumber()
+    {
         var nextFakeFloorNumber = _fakeFloorNumber + 1;
 
         var nextHighFloor = GetNextHigherFloor();
