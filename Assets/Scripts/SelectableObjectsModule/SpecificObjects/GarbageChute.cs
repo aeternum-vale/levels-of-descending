@@ -18,6 +18,7 @@ namespace SelectableObjectsModule.SpecificObjects
             _elevatorButtonPanel = SelectableObject.GetAsChild(gameObject, EInventoryItemId.ELEVATOR_CALLER_PANEL);
             _rigidDoor = transform.Find("rigid_garbage_chute_door").gameObject;
 
+            _garbageChuteHinge.OpenCondition = () => !_garbageChuteDoor.IsOpened;
             _garbageChuteHinge.Opened += OnUnhinged;
         }
 
