@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AdGeneratorModule;
 using FloorModule;
 using InventoryModule;
@@ -122,7 +123,7 @@ public class GameController : MonoBehaviour
         UpdateRealFloorNumber();
 
         RearrangeFloors();
-        UpdateEnvironment();
+        AllFloorsFullUpdate();
     }
 
     private void UpdateRealFloorNumber()
@@ -156,6 +157,7 @@ public class GameController : MonoBehaviour
 
     private void OnInventoryWasUpdated()
     {
+        UpdateInventoryObjectsPresence();
     }
 
     private void OnDragonflyCodeActivated()
@@ -163,24 +165,41 @@ public class GameController : MonoBehaviour
         if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
     }
 
-    private void UpdateEnvironment()
+    private void AllFloorsFullUpdate()
+    {
+        ForEachFloorExceptCurrent(floor =>
+        {
+            floor.ReturnAllObjectsToInitState();
+            floor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
+        });
+
+        UpdateInventoryObjectsPresence();
+        ImplementFloorMarksAndFakeFloorNumber();
+    }
+
+    private void UpdateInventoryObjectsPresence()
+    {
+        ForEachFloorExceptCurrent(floor =>
+        {
+            floor.HideAllInventoryObjects();
+
+            if (!inventory.Contains(EInventoryItemId.ELEVATOR_CALLER_PANEL))
+                floor.ShowInventoryObject(EInventoryItemId.ELEVATOR_CALLER_PANEL);
+
+            if (!inventory.Contains(EInventoryItemId.ELEVATOR_CALLER_BUTTON))
+                floor.ShowInventoryObject(EInventoryItemId.ELEVATOR_CALLER_BUTTON);
+        });
+    }
+
+    private void ForEachFloorExceptCurrent(Action<Floor> action)
     {
         foreach (var floor in _floors)
         {
             if (_player.LastGround1ColliderTouched && _player.LastGround1ColliderTouched == _ground1Colliders[floor])
                 continue;
 
-            floor.HideAllInventoryObjects();
-            floor.ReturnAllObjectsToInitState();
-            floor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
-
-            if (!inventory.Contains(EInventoryItemId.ELEVATOR_CALLER_PANEL))
-            {
-                floor.ShowInventoryObject(EInventoryItemId.ELEVATOR_CALLER_PANEL);
-            }
+            action.Invoke(floor);
         }
-        
-        ImplementFloorMarksAndFakeFloorNumber();
     }
 
     private void ImplementFloorMarksAndFakeFloorNumber()
