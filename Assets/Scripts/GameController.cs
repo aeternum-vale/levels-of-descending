@@ -28,17 +28,6 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject playerGameObject;
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
-    private bool? IsPlayerGoingUp
-    {
-        get
-        {
-            if (_player.PrevLastGround1ColliderTouched == null) return null;
-
-            return _player.PrevLastGround1ColliderTouched.transform.position.y <
-                   _player.LastGround1ColliderTouched.transform.position.y;
-        }
-    }
-
     private void Start()
     {
         _highestFloorIndex = FloorCount - 1;
@@ -79,29 +68,44 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.DragonflyCodeActivated, OnDragonflyCodeActivated);
     }
 
+    private bool IsFloorCurrent(Floor floor)
+    {
+        return _player.LastGround1ColliderTouched == _ground1Colliders[floor];
+    }
+
     private Floor GetNextHigherFloor()
     {
-        return GetSpecificFloor((i, floorCount) => (i + 1) % FloorCount);
+        var i = GetCurrentFloorIndex();
+        return _floors[(i + 1) % FloorCount];
     }
 
     private Floor GetNextLowerFloor()
     {
-        return GetSpecificFloor((i, floorCount) => i - 1 >= 0 ? i - 1 : FloorCount - 1);
+        var i = GetCurrentFloorIndex();
+        return _floors[i - 1 >= 0 ? i - 1 : FloorCount - 1];
     }
 
     private Floor GetCurrentFloor()
     {
-        return GetSpecificFloor((i, floorCount) => i);
+        return _floors[GetCurrentFloorIndex()];
     }
 
-    private Floor GetSpecificFloor(OnReachedCurrentIndexCallback cb)
+    private int GetCurrentFloorIndex()
     {
         for (var i = 0; i < _floors.Length; i++)
-            if (_player.LastGround1ColliderTouched == _ground1Colliders[_floors[i]])
-                return _floors[cb(i, FloorCount)];
-        return null;
+            if (IsFloorCurrent(_floors[i]))
+                return i;
+
+        throw new Exception("Can't compute current floor index");
     }
 
+    private bool? IsPlayerGoingUp()
+    {
+        if (_player.PrevLastGround1ColliderTouched == null) return null;
+
+        return _player.PrevLastGround1ColliderTouched.transform.position.y <
+               _player.LastGround1ColliderTouched.transform.position.y;
+    }
 
     private Floor GenerateRandomFloor(Vector3 position)
     {
@@ -128,13 +132,14 @@ public class GameController : MonoBehaviour
 
     private void UpdateRealFloorNumber()
     {
-        if (IsPlayerGoingUp.HasValue)
-            _realFloorNumber += IsPlayerGoingUp.GetValueOrDefault() ? 1 : -1;
+        var isPlayerGoingUpCopy = IsPlayerGoingUp();
+        if (isPlayerGoingUpCopy.HasValue)
+            _realFloorNumber += isPlayerGoingUpCopy.GetValueOrDefault() ? 1 : -1;
     }
 
     private void RearrangeFloors()
     {
-        var isPlayerGoingUpCopy = IsPlayerGoingUp;
+        var isPlayerGoingUpCopy = IsPlayerGoingUp();
         if (!isPlayerGoingUpCopy.HasValue) return;
 
         if (isPlayerGoingUpCopy.GetValueOrDefault())
@@ -195,7 +200,7 @@ public class GameController : MonoBehaviour
     {
         foreach (var floor in _floors)
         {
-            if (_player.LastGround1ColliderTouched && _player.LastGround1ColliderTouched == _ground1Colliders[floor])
+            if (IsFloorCurrent(floor))
                 continue;
 
             action.Invoke(floor);
@@ -234,6 +239,4 @@ public class GameController : MonoBehaviour
             }
         }
     }
-
-    private delegate int OnReachedCurrentIndexCallback(int i, int floorCount);
 }
