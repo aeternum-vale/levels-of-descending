@@ -16,9 +16,9 @@ namespace FloorModule
         private const string RightDoorBaseObjectName = "door_right";
         private const string LeftDoorObjectName = "left_door_prefab";
         private const string RightDoorObjectName = "right_door_prefab";
-        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
-        private static readonly int ActiveTextureNumber = Shader.PropertyToID("_ActiveTextureNumber");
-        private static readonly int FloorNumber = Shader.PropertyToID("_FloorNumber");
+        private static readonly int MainTexPropertyId = Shader.PropertyToID("_MainTex");
+        private static readonly int FloorNumberPropertyId = Shader.PropertyToID("_FloorNumber");
+        public static Texture2D LostRabbitAdTexture;
 
         private readonly Dictionary<EInventoryItemId, InventoryObject> _inventoryObjects =
             new Dictionary<EInventoryItemId, InventoryObject>();
@@ -26,13 +26,14 @@ namespace FloorModule
         private readonly Dictionary<EFloorMarkId, bool> _markStates = new Dictionary<EFloorMarkId, bool>
         {
             {EFloorMarkId.DRAGONFLY, false},
-            {EFloorMarkId.LOST_PET_SIGN, false}
+            {EFloorMarkId.RABBIT_AD, false}
         };
 
         private Material _adMaterial;
         private Material _frontWallMaterial;
         private Door _leftDoor;
         private Material _postboxPartMaterialWithDragonFly;
+        private Material _ePanelDoorMaterial;
 
         private IInitStateReturnable[] _returnableObjects;
         private Door _rightDoor;
@@ -62,6 +63,10 @@ namespace FloorModule
                 .GetComponent<MeshRenderer>().material;
             _adMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
                 .material;
+
+            _ePanelDoorMaterial = transform.Find("e-panel/right_door/r_door").GetComponent<MeshRenderer>().material;
+
+            LostRabbitAdTexture = Resources.Load<Texture2D>("Textures/rabbit");
         }
 
         public void ReturnAllObjectsToInitState()
@@ -91,7 +96,7 @@ namespace FloorModule
 
         public void SetFloorDrawnNumber(int number)
         {
-            _frontWallMaterial.SetFloat(FloorNumber, number);
+            _frontWallMaterial.SetFloat(FloorNumberPropertyId, number);
         }
 
         public void EmergeScalpel()
@@ -110,9 +115,14 @@ namespace FloorModule
                     _leftDoor.MarkWithDragonfly();
                     break;
 
-                case EFloorMarkId.LOST_PET_SIGN:
-                    _adMaterial.SetFloat(ActiveTextureNumber, 1f);
+                case EFloorMarkId.RABBIT_AD:
+                    _adMaterial.SetTexture(MainTexPropertyId, LostRabbitAdTexture);
                     break;
+                
+                case EFloorMarkId.RABBIT_SYMBOL:
+                    _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
+                    break;
+                    
             }
         }
 
@@ -126,6 +136,10 @@ namespace FloorModule
                     _postboxPartMaterialWithDragonFly.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
                     _leftDoor.UnmarkWithDragonfly();
                     break;
+
+                case EFloorMarkId.RABBIT_SYMBOL:
+                    _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
+                    break;
             }
         }
 
@@ -136,7 +150,7 @@ namespace FloorModule
 
         public void SetFrontWallAd(Texture2D texture)
         {
-            _adMaterial.SetTexture(MainTex, texture);
+            _adMaterial.SetTexture(MainTexPropertyId, texture);
         }
 
         public void UpdateDoors()

@@ -38,7 +38,8 @@ public enum EDoorAction
 public enum EFloorMarkId
 {
     DRAGONFLY,
-    LOST_PET_SIGN
+    RABBIT_AD,
+    RABBIT_SYMBOL
 }
 
 public static class Events
@@ -114,12 +115,21 @@ public static class GameConstants
             }
         },
         {
-            EFloorMarkId.LOST_PET_SIGN,
+            EFloorMarkId.RABBIT_AD,
             new FloorMark
             {
-                FirstFloor = 11, Frequency = 5,
+                FirstFloor = 8, Frequency = 5,
                 AssociatedInventoryItems = new[]
-                    {EInventoryItemId.E_PANEL_KEY, EInventoryItemId.SCREWDRIVER}
+                    {EInventoryItemId.E_PANEL_KEY}
+            }
+        },
+        {
+            EFloorMarkId.RABBIT_SYMBOL,
+            new FloorMark
+            {
+                FirstFloor = 9, Frequency = 7,
+                AssociatedInventoryItems = new[]
+                    {EInventoryItemId.SCREWDRIVER}
             }
         }
     };
