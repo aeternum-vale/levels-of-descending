@@ -17,14 +17,13 @@ namespace FloorModule
         private const string LeftDoorObjectName = "left_door_prefab";
         private const string RightDoorObjectName = "right_door_prefab";
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
-        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
         private static readonly int ActiveTextureNumber = Shader.PropertyToID("_ActiveTextureNumber");
         private static readonly int FloorNumber = Shader.PropertyToID("_FloorNumber");
 
         private readonly Dictionary<EInventoryItemId, InventoryObject> _inventoryObjects =
             new Dictionary<EInventoryItemId, InventoryObject>();
 
-        private readonly Dictionary<EFloorMarkId, bool> _markStatesDict = new Dictionary<EFloorMarkId, bool>
+        private readonly Dictionary<EFloorMarkId, bool> _markStates = new Dictionary<EFloorMarkId, bool>
         {
             {EFloorMarkId.DRAGONFLY, false},
             {EFloorMarkId.LOST_PET_SIGN, false}
@@ -102,12 +101,12 @@ namespace FloorModule
 
         public void SetMark(EFloorMarkId id)
         {
-            _markStatesDict[id] = true;
+            _markStates[id] = true;
 
             switch (id)
             {
                 case EFloorMarkId.DRAGONFLY:
-                    _postboxPartMaterialWithDragonFly.SetFloat(IsTitleOn, 1f);
+                    _postboxPartMaterialWithDragonFly.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
                     _leftDoor.MarkWithDragonfly();
                     break;
 
@@ -119,12 +118,12 @@ namespace FloorModule
 
         public void ResetMark(EFloorMarkId id)
         {
-            _markStatesDict[id] = false;
+            _markStates[id] = false;
 
             switch (id)
             {
                 case EFloorMarkId.DRAGONFLY:
-                    _postboxPartMaterialWithDragonFly.SetFloat(IsTitleOn, 0f);
+                    _postboxPartMaterialWithDragonFly.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
                     _leftDoor.UnmarkWithDragonfly();
                     break;
             }
@@ -132,7 +131,7 @@ namespace FloorModule
 
         public void ResetAllMarks()
         {
-            foreach (var key in _markStatesDict.Keys.ToList()) ResetMark(key);
+            foreach (var key in _markStates.Keys.ToList()) ResetMark(key);
         }
 
         public void SetFrontWallAd(Texture2D texture)

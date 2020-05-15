@@ -14,32 +14,36 @@ namespace DoorModule
         private const string DetailsName = "details";
         private const string NameplateName = "nameplate";
         private const string PeepholeName = "peephole";
-        private static readonly int IsTitleOn = Shader.PropertyToID("_IsTitleOn");
 
         private readonly EDoorAction?[] _lastActions = new EDoorAction?[GameConstants.dragonflyCode.Length];
+        private GameObject _bellButton;
+
+        private GameObject _handle;
         private int _lastActionsCursor;
+        private GameObject _nameplate;
+
+        private Material _nameplateMaterial;
+        private GameObject _peephole;
 
         private DoorPushableDetail[] _pushableDetails;
-        public GameObject DoorBase { get; private set; }
-        public GameObject Details { get; private set; }
-        public GameObject Handle { get; private set; }
-        public GameObject StaticDetails { get; private set; }
-        public GameObject BellButton { get; private set; }
-        public GameObject Nameplate { get; private set; }
-        public GameObject Peephole { get; private set; }
+        private GameObject _staticDetails;
+        protected GameObject Details;
+        protected GameObject DoorBase;
 
-        public bool IsDragonflyMarked { get; private set; }
+        private bool IsDragonflyMarked { get; set; }
 
         private void Awake()
         {
             DoorBase = transform.Find(DoorBaseName).gameObject;
             Details = transform.Find(DetailsName).gameObject;
-            Handle = Details.transform.Find(HandleName).gameObject;
-            Nameplate = Details.transform.Find(NameplateName).gameObject;
-            Peephole = Details.transform.Find(PeepholeName).gameObject;
+            _handle = Details.transform.Find(HandleName).gameObject;
+            _nameplate = Details.transform.Find(NameplateName).gameObject;
+            _peephole = Details.transform.Find(PeepholeName).gameObject;
 
-            StaticDetails = transform.Find(StaticDetailsName).gameObject;
-            BellButton = StaticDetails.transform.Find(BellButtonName).gameObject;
+            _staticDetails = transform.Find(StaticDetailsName).gameObject;
+            _bellButton = _staticDetails.transform.Find(BellButtonName).gameObject;
+
+            _nameplateMaterial = _nameplate.GetComponent<MeshRenderer>().material;
 
             _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
 
@@ -66,17 +70,17 @@ namespace DoorModule
 
         public void MarkWithDragonfly()
         {
-            Nameplate.SetActive(true);
-            Peephole.SetActive(false);
-            Nameplate.GetComponent<MeshRenderer>().material.SetFloat(IsTitleOn, 1f);
+            _nameplate.SetActive(true);
+            _peephole.SetActive(false);
+            _nameplateMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
             IsDragonflyMarked = true;
         }
 
         public void UnmarkWithDragonfly()
         {
-            Nameplate.SetActive(false);
-            Peephole.SetActive(true);
-            Nameplate.GetComponent<MeshRenderer>().material.SetFloat(IsTitleOn, 0f);
+            _nameplate.SetActive(false);
+            _peephole.SetActive(true);
+            _nameplateMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
             IsDragonflyMarked = false;
         }
 

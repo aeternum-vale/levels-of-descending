@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using FloorModule;
+using UnityEngine;
 
 public enum EInventoryItemId
 {
@@ -25,7 +26,7 @@ public enum ESwitchableObjectId
 
     ELEVATOR_CALLER_CONNECTOR,
     ELEVATOR_CALLER_PANEL,
-    ELEVATOR_CALLER_WIRES,
+    ELEVATOR_CALLER_WIRES
 }
 
 public enum EDoorAction
@@ -66,7 +67,7 @@ public static class GameConstants
 
             {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator/caller/connector"},
             {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator/caller/connector/panel"},
-            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator/caller/connector/panel/wires"},
+            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator/caller/connector/panel/wires"}
         };
 
     public static readonly Dictionary<EInventoryItemId, string> inventoryObjectPaths =
@@ -89,6 +90,8 @@ public static class GameConstants
     public static readonly string ground2ColliderObjectName = "ground2";
     public static readonly string stairs1ColliderObjectName = "stairs1";
     public static readonly string stairs2ColliderObjectName = "stairs2";
+
+    public static readonly int isPaintingOnPropertyId = Shader.PropertyToID("_IsPaintingOn");
 
     public static readonly EDoorAction[] dragonflyCode =
     {
