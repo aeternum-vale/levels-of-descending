@@ -9,7 +9,7 @@
 
         _RimColor("Rim Color", Color) = (0.26,0.19,0.16,0.0)
         _RimPower("Rim Power", Range(0.5,8.0)) = 3.0
-        [MaterialToggle] _IsSelected("Is Enabled", Float) = 0
+        [MaterialToggle] _IsRimLightEnabled("Is Rim Light Enabled", Float) = 0
     }
     SubShader
     {
@@ -36,7 +36,7 @@
         fixed4 _Color;
         float4 _RimColor;
         float _RimPower;
-        int _IsSelected;
+        int _IsRimLightEnabled;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
         // See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
@@ -55,7 +55,7 @@
             o.Smoothness = _Glossiness;
             o.Alpha = c.a;
 
-            if (_IsSelected) {
+            if (_IsRimLightEnabled) {
                 half rim = 1.0 - saturate(dot(normalize(IN.viewDir), o.Normal));
                 o.Emission = _RimColor.rgb * pow(rim, _RimPower);
             }

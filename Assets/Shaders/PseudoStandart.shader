@@ -13,9 +13,9 @@
 		_EmissionColor("Emission Color", Color) = (0,0,0)
 
 		_DetailAlbedoMap("Detail Albedo x2", 2D) = "grey" {}
-		 _DetailNormalMapScale("Detail Normal Map Scale", Float) = 1
-		 [Normal]  _DetailNormalMap("Detail Normal Map", 2D) = "bump" { }
-
+		_DetailNormalMapScale("Detail Normal Map Scale", Float) = 1
+		[Normal] _DetailNormalMap("Detail Normal Map", 2D) = "bump" { }
+        [MaterialToggle] _IsDetailsProvided("Is Details Provided", Float) = 0
 	}
 		SubShader
 	{
@@ -50,13 +50,10 @@
 		sampler2D _BumpMap;
 		sampler2D _DetailAlbedoMap;
 		sampler2D _DetailNormalMap;
+		
+		int _IsDetailsProvided;
 
-
-		// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
-		// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
-		// #pragma instancing_options assumeuniformscaling
 		UNITY_INSTANCING_BUFFER_START(Props)
-			// put more per-instance properties here
 		UNITY_INSTANCING_BUFFER_END(Props)
 
 		void surf(Input IN, inout SurfaceOutputStandard o)
@@ -64,7 +61,7 @@
 			fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
 			fixed4 sec_c = tex2D(_DetailAlbedoMap, IN.uv_DetailAlbedoMap);
 
-			o.Albedo = c.rgb * sec_c.rgb;
+			o.Albedo = c.rgb * (_IsDetailsProvided ? sec_c.rgb : 1);
 
 			float3 normal_map = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
 			normal_map *= float3(_BumpScale, _BumpScale, 1);
@@ -72,7 +69,7 @@
 			float3 detail_normal_map = UnpackNormal(tex2D(_DetailNormalMap, IN.uv_DetailNormalMap));
 			detail_normal_map *= float3(_DetailNormalMapScale, _DetailNormalMapScale, 1);
 
-			o.Normal = normal_map + detail_normal_map;
+			o.Normal = normal_map + (_IsDetailsProvided ? detail_normal_map : 0);
 
 			o.Metallic = _Metallic;
 			o.Smoothness = _Glossiness;

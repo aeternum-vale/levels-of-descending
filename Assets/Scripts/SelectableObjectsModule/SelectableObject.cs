@@ -8,7 +8,7 @@ namespace SelectableObjectsModule
 {
     public class SelectableObject : MonoBehaviour
     {
-        private static readonly int IsSelected = Shader.PropertyToID("_IsSelected");
+        private static readonly int IsRimLightEnabledPropertyId = Shader.PropertyToID("_IsRimLightEnabled");
 
         private readonly Dictionary<GameObject, Material> _materialsCache = new Dictionary<GameObject, Material>();
         [SerializeField] private bool hasValueOfMaxDistanceToSelect;
@@ -80,12 +80,12 @@ namespace SelectableObjectsModule
 
         private static void ApplySelectedStateToMaterial(Material mat)
         {
-            mat.SetFloat(IsSelected, 1f);
+            mat.SetFloat(IsRimLightEnabledPropertyId, 1f);
         }
 
         private static void ApplyNormalStateToMaterial(Material mat)
         {
-            mat.SetFloat(IsSelected, 0f);
+            mat.SetFloat(IsRimLightEnabledPropertyId, 0f);
         }
 
         public static string GetPath(ESwitchableObjectId id)

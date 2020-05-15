@@ -1,4 +1,4 @@
-﻿Shader "Custom/PseudoStandartWithRimLight"
+﻿Shader "Custom/PseudoStandartWithPainting"
 {
 	Properties
 	{
@@ -15,12 +15,11 @@
 		_DetailAlbedoMap("Detail Albedo x2", 2D) = "grey" {}
 		_DetailNormalMapScale("Detail Normal Map Scale", Float) = 1
 		[Normal] _DetailNormalMap("Detail Normal Map", 2D) = "bump" { }
-        [MaterialToggle] _IsDetailsProvided("Is Details Provided", Float) = 0
+		[MaterialToggle] _IsDetailsProvided("Is Details Provided", Float) = 0
 
-		_RimColor("Rim Color", Color) = (0.26,0.19,0.16,0.0)
-		_RimPower("Rim Power", Range(0.5,8.0)) = 3.0
-		[MaterialToggle] _IsRimLightEnabled("Is Rim Light Enabled", Float) = 0
-
+		_PaintingTex("Painting Texture", 2D) = "white" {}
+		_PaintingPower("Painting Power", Range(0,1)) = 1.0
+		[MaterialToggle] _IsPaintingOn("Is Painting On", Float) = 0
 	}
 		SubShader
 		{
@@ -38,9 +37,9 @@
 			{
 				float2 uv_MainTex;
 				float2 uv_BumpMap;
-			    float2 uv_DetailAlbedoMap;
-			    float2 uv_DetailNormalMap;
-				float3 viewDir;
+				float2 uv_DetailAlbedoMap;
+				float2 uv_DetailNormalMap;
+				float2 uv_PaintingTex;
 			};
 
 			half _Glossiness;
@@ -48,6 +47,7 @@
 
 			half _BumpScale;
 			half _DetailNormalMapScale;
+			half _PaintingPower;
 
 			fixed4 _Color;
 			fixed4 _EmissionColor;
@@ -55,13 +55,11 @@
 			sampler2D _MainTex;
 			sampler2D _BumpMap;
 			sampler2D _DetailAlbedoMap;
-            sampler2D _DetailNormalMap;
+			sampler2D _DetailNormalMap;
+			sampler2D _PaintingTex;
+			int _IsPaintingOn;
             
             int _IsDetailsProvided;
-
-			float4 _RimColor;
-			float _RimPower;
-			int _IsRimLightEnabled;
 
 			UNITY_INSTANCING_BUFFER_START(Props)
 			UNITY_INSTANCING_BUFFER_END(Props)
@@ -70,25 +68,24 @@
 			{
 				fixed4 c = tex2D(_MainTex, IN.uv_MainTex) * _Color;
 				fixed4 sec_c = tex2D(_DetailAlbedoMap, IN.uv_DetailAlbedoMap);
+				fixed4 painting_c = tex2D(_PaintingTex, IN.uv_PaintingTex);
 
 			    o.Albedo = c.rgb * (_IsDetailsProvided ? sec_c.rgb : 1);
+				o.Albedo = o.Albedo - (_IsPaintingOn ? _PaintingPower * painting_c.a : 0);
 
 				float3 normal_map = UnpackNormal(tex2D(_BumpMap, IN.uv_BumpMap));
 				normal_map *= float3(_BumpScale, _BumpScale, 1);
-				
-				float3 detail_normal_map = UnpackNormal(tex2D(_DetailNormalMap, IN.uv_DetailNormalMap));
-			    detail_normal_map *= float3(_DetailNormalMapScale, _DetailNormalMapScale, 1);
 
-				o.Normal = normal_map + (_IsDetailsProvided ? detail_normal_map : 0);
+				float3 detail_normal_map = UnpackNormal(tex2D(_DetailNormalMap, IN.uv_DetailNormalMap));
+				detail_normal_map *= float3(_DetailNormalMapScale, _DetailNormalMapScale, 1);
+
+			    o.Normal = normal_map + (_IsDetailsProvided ? detail_normal_map : 0);
 
 				o.Metallic = _Metallic;
 				o.Smoothness = _Glossiness;
-				o.Alpha = c.a;
 
-				if (_IsRimLightEnabled) {
-					half rim = 1.0 - saturate(dot(normalize(IN.viewDir), o.Normal));
-					o.Emission = _RimColor.rgb * pow(rim, _RimPower);
-				}
+				o.Emission = _EmissionColor;
+				o.Alpha = c.a;
 			}
 			ENDCG
 		}
