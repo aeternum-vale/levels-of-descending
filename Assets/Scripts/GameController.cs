@@ -193,6 +193,9 @@ public class GameController : MonoBehaviour
 
             if (!inventory.Contains(EInventoryItemId.ELEVATOR_CALLER_BUTTON))
                 floor.ShowInventoryObject(EInventoryItemId.ELEVATOR_CALLER_BUTTON);
+            
+            if (!inventory.Contains(EInventoryItemId.INSULATING_TAPE))
+                floor.ShowInventoryObject(EInventoryItemId.INSULATING_TAPE);
         });
     }
 
