@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
+using AdGeneratorModule;
 using DoorModule;
 using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
@@ -41,6 +42,8 @@ namespace FloorModule
         private Scalpel _scalpel;
 
         [SerializeField] private DoorFactory doorFactory;
+
+        public AdGenerator AdGenerator { get; set; }
 
         private void Start()
         {
@@ -148,9 +151,11 @@ namespace FloorModule
             foreach (var key in _markStates.Keys.ToList()) ResetMark(key);
         }
 
-        public void SetFrontWallAd(Texture2D texture)
+        public void SetFrontWallRandomAd()
         {
-            _adMaterial.SetTexture(MainTexPropertyId, texture);
+            if (AdGenerator == null) throw new Exception("AdGenerator is not provided to the floor");
+
+            _adMaterial.SetTexture(MainTexPropertyId, AdGenerator.GetRandomAdTexture());
         }
 
         public void UpdateDoors()

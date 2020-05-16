@@ -57,7 +57,7 @@ public class GameController : MonoBehaviour
 
         playerGameObject.transform.localPosition = localPosition;
 
-        playerFloor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
+        playerFloor.SetFrontWallRandomAd();
     }
 
     private void Awake()
@@ -111,6 +111,7 @@ public class GameController : MonoBehaviour
     private Floor GenerateRandomFloor(Vector3 position)
     {
         var floor = Instantiate(floorPrefab).GetComponent<Floor>();
+        floor.AdGenerator = adGenerator;
         floor.transform.position = position;
         floor.UpdateDoors();
         return floor;
@@ -176,7 +177,7 @@ public class GameController : MonoBehaviour
         ForEachFloorExceptCurrent(floor =>
         {
             floor.ReturnAllObjectsToInitState();
-            floor.SetFrontWallAd(adGenerator.GetRandomAdTexture());
+            floor.SetFrontWallRandomAd();
         });
 
         UpdateInventoryObjectsPresence();
