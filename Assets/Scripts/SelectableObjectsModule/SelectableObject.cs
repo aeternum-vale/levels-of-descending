@@ -112,6 +112,11 @@ namespace SelectableObjectsModule
         {
             return parent.transform.Find(GetName(id)).GetComponent<SwitchableObject>();
         }
+        
+        public static SwitchableObject GetAsChildByPath(GameObject parent, ESwitchableObjectId id)
+        {
+            return parent.transform.Find(GetPath(id)).GetComponent<SwitchableObject>();
+        }
 
         public static InventoryObject GetAsChild(GameObject parent, EInventoryItemId id)
         {

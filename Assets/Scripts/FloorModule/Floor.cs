@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using AdGeneratorModule;
@@ -27,18 +28,19 @@ namespace FloorModule
         private readonly Dictionary<EFloorMarkId, bool> _markStates = new Dictionary<EFloorMarkId, bool>
         {
             {EFloorMarkId.DRAGONFLY, false},
-            {EFloorMarkId.RABBIT_AD, false}
+            {EFloorMarkId.RABBIT_AD, false},
+            {EFloorMarkId.RABBIT_SYMBOL, false}
         };
 
         private Material _adMaterial;
+        private SwitchableObject _ePanelDoor;
+        private Material _ePanelDoorMaterial;
         private Material _frontWallMaterial;
         private Door _leftDoor;
+        private SwitchableObject _postboxDoor;
         private Material _postboxPartMaterialWithDragonFly;
-        private Material _ePanelDoorMaterial;
-
         private IInitStateReturnable[] _returnableObjects;
         private Door _rightDoor;
-
         private Scalpel _scalpel;
 
         [SerializeField] private DoorFactory doorFactory;
@@ -52,12 +54,16 @@ namespace FloorModule
             _leftDoor = transform.Find("left_door_prefab").GetComponent<Door>();
             _rightDoor = transform.Find("right_door_prefab").GetComponent<Door>();
             _scalpel = SelectableObject.GetAsChild<Scalpel>(gameObject, EInventoryItemId.SCALPEL);
-
+            _ePanelDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.E_PANEL);
+            _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_DOOR);
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true);
 
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
                 .ForEach(io => _inventoryObjects.Add(io.objectId, io));
+
+            _ePanelDoor.OpenCondition = () => _markStates[EFloorMarkId.RABBIT_SYMBOL];
+            _postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
         }
 
         private void Awake()
@@ -121,11 +127,10 @@ namespace FloorModule
                 case EFloorMarkId.RABBIT_AD:
                     _adMaterial.SetTexture(MainTexPropertyId, LostRabbitAdTexture);
                     break;
-                
+
                 case EFloorMarkId.RABBIT_SYMBOL:
                     _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
                     break;
-                    
             }
         }
 
