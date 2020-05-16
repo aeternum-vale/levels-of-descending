@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AdGeneratorModule;
 using FloorModule;
 using InventoryModule;
@@ -193,7 +194,7 @@ public class GameController : MonoBehaviour
 
             if (!inventory.Contains(EInventoryItemId.ELEVATOR_CALLER_BUTTON))
                 floor.ShowInventoryObject(EInventoryItemId.ELEVATOR_CALLER_BUTTON);
-            
+
             if (!inventory.Contains(EInventoryItemId.INSULATING_TAPE))
                 floor.ShowInventoryObject(EInventoryItemId.INSULATING_TAPE);
         });
@@ -225,20 +226,25 @@ public class GameController : MonoBehaviour
 
         foreach (var floorMarkKeyValuePair in GameConstants.floorMarks)
         {
-            var id = floorMarkKeyValuePair.Key;
-            var floorMarkValue = floorMarkKeyValuePair.Value;
+            EFloorMarkId id = floorMarkKeyValuePair.Key;
+            FloorMark floorMarkValue = floorMarkKeyValuePair.Value;
 
             if (!floorMarkValue.IsFloorMarked(nextFakeFloorNumber)) continue;
+
+            bool playerHaveAllAssociatedInventoryItems =
+                floorMarkValue.AssociatedInventoryItems.All(itemId => inventory.Contains(itemId));
+            
+            if (playerHaveAllAssociatedInventoryItems) continue;
 
             nextHighFloor.SetMark(id);
             nextLowFloor.SetMark(id);
 
-            foreach (var inventoryItem in floorMarkValue.AssociatedInventoryItems)
+            foreach (var inventoryItemId in floorMarkValue.AssociatedInventoryItems)
             {
-                if (inventory.Contains(inventoryItem)) continue;
+                if (inventory.Contains(inventoryItemId)) continue;
 
-                nextHighFloor.ShowInventoryObject(inventoryItem);
-                nextLowFloor.ShowInventoryObject(inventoryItem);
+                nextHighFloor.ShowInventoryObject(inventoryItemId);
+                nextLowFloor.ShowInventoryObject(inventoryItemId);
             }
         }
     }
