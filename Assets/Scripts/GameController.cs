@@ -127,7 +127,6 @@ public class GameController : MonoBehaviour
         _fakeFloorNumber++;
 
         UpdateRealFloorNumber();
-
         RearrangeFloors();
         AllFloorsFullUpdate();
     }

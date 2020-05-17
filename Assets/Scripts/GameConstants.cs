@@ -109,16 +109,16 @@ public static class GameConstants
             EFloorMarkId.DRAGONFLY,
             new FloorMark
             {
-                FirstFloor = 9, Frequency = 10,
+                FirstFloor = 9, Frequency = 3,
                 AssociatedInventoryItems = new[]
-                    {EInventoryItemId.POSTBOX_KEY, EInventoryItemId.LETTER}
+                    {EInventoryItemId.POSTBOX_KEY, EInventoryItemId.LETTER, EInventoryItemId.SCALPEL}
             }
         },
         {
             EFloorMarkId.RABBIT_AD,
             new FloorMark
             {
-                FirstFloor = 8, Frequency = 5,
+                FirstFloor = 8, Frequency = 4,
                 AssociatedInventoryItems = new[]
                     {EInventoryItemId.E_PANEL_KEY}
             }
@@ -127,7 +127,7 @@ public static class GameConstants
             EFloorMarkId.RABBIT_SYMBOL,
             new FloorMark
             {
-                FirstFloor = 9, Frequency = 7,
+                FirstFloor = 9, Frequency = 5,
                 AssociatedInventoryItems = new[]
                     {EInventoryItemId.SCREWDRIVER}
             }

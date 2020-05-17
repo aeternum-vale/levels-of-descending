@@ -39,7 +39,7 @@ namespace FloorModule
         private Door _leftDoor;
         private SwitchableObject _postboxDoor;
         private Material _postboxPartMaterialWithDragonFly;
-        private IInitStateReturnable[] _returnableObjects;
+        private List<IInitStateReturnable> _returnableObjects;
         private Door _rightDoor;
         private Scalpel _scalpel;
 
@@ -56,7 +56,7 @@ namespace FloorModule
             _scalpel = SelectableObject.GetAsChild<Scalpel>(gameObject, EInventoryItemId.SCALPEL);
             _ePanelDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.E_PANEL);
             _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_DOOR);
-            _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true);
+            _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
 
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
@@ -80,7 +80,7 @@ namespace FloorModule
 
         public void ReturnAllObjectsToInitState()
         {
-            _returnableObjects.ToList().ForEach(returnable => returnable.ReturnToInitState());
+            _returnableObjects.ForEach(returnable => returnable.ReturnToInitState());
         }
 
         private void SetActivityOfInventoryObject(EInventoryItemId id, bool active)

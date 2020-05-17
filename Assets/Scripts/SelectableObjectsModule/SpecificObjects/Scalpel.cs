@@ -16,7 +16,6 @@ namespace SelectableObjectsModule.SpecificObjects
 
         public void Emerge()
         {
-            gameObject.SetActive(true);
             _anim.SetTrigger(Active);
         }
 
