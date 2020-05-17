@@ -247,6 +247,7 @@ public class GameController : MonoBehaviour
                 nextHighFloor.ShowInventoryObject(inventoryItemId);
                 nextLowFloor.ShowInventoryObject(inventoryItemId);
             }
+            return;
         }
     }
 }
