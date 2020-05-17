@@ -18,7 +18,9 @@ namespace SelectableObjectsModule.SpecificObjects
         private bool _isWiresConnected;
         private SwitchableObject _panel;
 
-        public void ReturnToInitState()
+        public int InitStateSafeDistanceToPlayer { get; set; }
+
+        public void ReturnToInitState(int floorDistanceToPlayer)
         {
             _panel.gameObject.SetActive(false);
             _connectorWire1.SetActive(true);

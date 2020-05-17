@@ -2,6 +2,7 @@
 {
     public interface IInitStateReturnable
     {
-        void ReturnToInitState();
+        int InitStateSafeDistanceToPlayer { get; set; }
+        void ReturnToInitState(int floorDistanceToPlayer);
     }
 }

@@ -34,8 +34,12 @@ namespace SelectableObjectsModule
 
         public int AnimationNameHash { get; set; }
 
-        public void ReturnToInitState()
+        public int InitStateSafeDistanceToPlayer { get; set; } = 1;
+
+        public void ReturnToInitState(int floorDistanceToPlayer)
         {
+            if (floorDistanceToPlayer < InitStateSafeDistanceToPlayer) return;
+
             Close(true);
             IsSealed = false;
             IsGlowingEnabled = true;
@@ -58,7 +62,6 @@ namespace SelectableObjectsModule
                 NecessaryInventoryItem = necessaryInventoryItem;
 
             AnimationNameHash = defaultSwitchStateNameHash;
-
             IsDependent = isDependent;
         }
 

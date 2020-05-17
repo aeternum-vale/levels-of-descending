@@ -78,9 +78,9 @@ namespace FloorModule
             LostRabbitAdTexture = Resources.Load<Texture2D>("Textures/rabbit");
         }
 
-        public void ReturnAllObjectsToInitState()
+        public void ReturnAllObjectsToInitState(int floorDistanceToPlayer)
         {
-            _returnableObjects.ForEach(returnable => returnable.ReturnToInitState());
+            _returnableObjects.ForEach(returnable => returnable.ReturnToInitState(floorDistanceToPlayer));
         }
 
         private void SetActivityOfInventoryObject(EInventoryItemId id, bool active)

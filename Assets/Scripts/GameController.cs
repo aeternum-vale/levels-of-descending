@@ -100,6 +100,20 @@ public class GameController : MonoBehaviour
         throw new Exception("Can't compute current floor index");
     }
 
+    private int GetFloorIndex(Floor floor)
+    {
+        for (var i = 0; i < _floors.Length; i++)
+            if (_floors[i] == floor)
+                return i;
+        throw new Exception("Can't compute provided floor index");
+    }
+
+    private int GetFloorDistanceToPlayer(Floor floor)
+    {
+        var dist = Math.Abs(GetFloorIndex(floor) - GetCurrentFloorIndex());
+        return Math.Min(dist, FloorCount - dist);
+    }
+
     private bool? IsPlayerGoingUp()
     {
         if (_player.PrevLastGround1ColliderTouched == null) return null;
@@ -175,7 +189,7 @@ public class GameController : MonoBehaviour
     {
         ForEachFloorExceptCurrent(floor =>
         {
-            floor.ReturnAllObjectsToInitState();
+            floor.ReturnAllObjectsToInitState(GetFloorDistanceToPlayer(floor));
             floor.SetFrontWallRandomAd();
         });
 
@@ -226,14 +240,14 @@ public class GameController : MonoBehaviour
 
         foreach (var floorMarkKeyValuePair in GameConstants.floorMarks)
         {
-            EFloorMarkId id = floorMarkKeyValuePair.Key;
-            FloorMark floorMarkValue = floorMarkKeyValuePair.Value;
+            var id = floorMarkKeyValuePair.Key;
+            var floorMarkValue = floorMarkKeyValuePair.Value;
 
             if (!floorMarkValue.IsFloorMarked(nextFakeFloorNumber)) continue;
 
-            bool playerHaveAllAssociatedInventoryItems =
+            var playerHaveAllAssociatedInventoryItems =
                 floorMarkValue.AssociatedInventoryItems.All(itemId => inventory.Contains(itemId));
-            
+
             if (playerHaveAllAssociatedInventoryItems) continue;
 
             nextHighFloor.SetMark(id);
@@ -246,6 +260,7 @@ public class GameController : MonoBehaviour
                 nextHighFloor.ShowInventoryObject(inventoryItemId);
                 nextLowFloor.ShowInventoryObject(inventoryItemId);
             }
+
             return;
         }
     }

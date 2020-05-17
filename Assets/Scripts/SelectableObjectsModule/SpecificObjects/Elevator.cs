@@ -9,10 +9,12 @@ namespace SelectableObjectsModule.SpecificObjects
         private ElevatorCaller _caller;
         private Animator _doorsAnimator;
         private GameObject _elevatorBase;
-        
+
         private bool _isDoorsOpened;
 
-        public void ReturnToInitState()
+        public int InitStateSafeDistanceToPlayer { get; set; }
+
+        public void ReturnToInitState(int floorDistanceToPlayer)
         {
             _doorsAnimator.Play("Idle", -1, 1f);
         }
@@ -31,7 +33,7 @@ namespace SelectableObjectsModule.SpecificObjects
             if (_isDoorsOpened) return;
 
             _isDoorsOpened = true;
-            
+
             _elevatorBase.SetActive(true);
             _doorsAnimator.Play("Open", -1, 0f);
         }

@@ -15,9 +15,12 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private Vector3 _doorRigidbodyInitPosition;
         private Quaternion _doorRigidbodyInitRotation;
+        public int InitStateSafeDistanceToPlayer { get; set; } = 2;
 
-        public void ReturnToInitState()
+        public void ReturnToInitState(int floorDistanceToPlayer)
         {
+            if (floorDistanceToPlayer < InitStateSafeDistanceToPlayer) return;
+
             _garbageChuteDoor.AnimationNameHash = SwitchableObject.defaultSwitchStateNameHash;
             _garbageChuteDoor.OpenAnimationCompleted -= OnGarbageChuteDoorOpenAnimationCompleted;
             _elevatorButtonPanel.IsGrabable = false;
@@ -39,6 +42,9 @@ namespace SelectableObjectsModule.SpecificObjects
             _garbageChuteHinge = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE);
             _elevatorButtonPanel = SelectableObject.GetAsChild(gameObject, EInventoryItemId.ELEVATOR_CALLER_PANEL);
             _doorRigidbody = transform.Find("rigid_garbage_chute_door").GetComponent<Rigidbody>();
+
+            _garbageChuteDoor.InitStateSafeDistanceToPlayer = InitStateSafeDistanceToPlayer;
+            _garbageChuteHinge.InitStateSafeDistanceToPlayer = InitStateSafeDistanceToPlayer;
 
             var doorRigidbodyGameObject = _doorRigidbody.gameObject;
 
