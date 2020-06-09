@@ -30,6 +30,7 @@ using System.Linq;
 
 namespace Plugins
 {
+    
     public enum MessengerMode
     {
         DONT_REQUIRE_LISTENER,
