@@ -1,5 +1,5 @@
-﻿half _Glossiness;
-half _Metallic;
+﻿half _Metallic;
+half _Glossiness;
 
 half _BumpScale;
 half _DetailNormalMapScale;
@@ -8,11 +8,17 @@ fixed4 _Color;
 fixed4 _EmissionColor;
 
 sampler2D _MainTex;
+
+sampler2D _MetallicMap;
+sampler2D _OcclusionMap;
+
 sampler2D _BumpMap;
 sampler2D _DetailAlbedoMap;
 sampler2D _DetailNormalMap;
 
 int _IsDetailsProvided;
+int _IsOcclusionMapProvided;
+int _IsMetallicMapProvided;
 
 void PseudoStandartSurf(Input IN, inout SurfaceOutputStandard o)
 {
@@ -29,8 +35,10 @@ void PseudoStandartSurf(Input IN, inout SurfaceOutputStandard o)
 
     o.Normal = normal_map + (_IsDetailsProvided ? detail_normal_map : 0);
 
-    o.Metallic = _Metallic;
-    o.Smoothness = _Glossiness;
+    fixed4 metallic_map = tex2D(_MetallicMap, IN.uv_MainTex);
+    o.Metallic = _IsMetallicMapProvided ? metallic_map : _Metallic;
+    o.Smoothness = _IsMetallicMapProvided ? metallic_map.a * _Glossiness : _Glossiness;
+    o.Occlusion = _IsOcclusionMapProvided ? tex2D(_OcclusionMap, IN.uv_MainTex) : 1;
 
     o.Emission = _EmissionColor;
     o.Alpha = c.a;
