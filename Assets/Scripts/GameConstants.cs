@@ -17,7 +17,8 @@ public enum EInventoryItemId
 public enum ESwitchableObjectId
 {
     PAD,
-    POSTBOX_DOOR,
+    POSTBOX_LEFT_DOOR,
+    POSTBOX_RIGHT_DOOR,
     E_PANEL,
     AD,
     AD_COVERING,
@@ -59,7 +60,8 @@ public static class GameConstants
         new Dictionary<ESwitchableObjectId, string>
         {
             {ESwitchableObjectId.PAD, "pad"},
-            {ESwitchableObjectId.POSTBOX_DOOR, "postbox/postbox_door"},
+            {ESwitchableObjectId.POSTBOX_LEFT_DOOR, "postbox/left_door"},
+            {ESwitchableObjectId.POSTBOX_RIGHT_DOOR, "postbox/right_door"},
             {ESwitchableObjectId.E_PANEL, "e-panel/right_door"},
             {ESwitchableObjectId.AD, "bulletin_board_elevator/ad"},
             {ESwitchableObjectId.AD_COVERING, "bulletin_board_elevator/covering"},

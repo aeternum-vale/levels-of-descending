@@ -38,7 +38,7 @@ namespace FloorModule
         private Material _frontWallMaterial;
         private Door _leftDoor;
         private SwitchableObject _postboxDoor;
-        private Material _postboxPartMaterialWithDragonFly;
+        private Material _postboxBaseMaterial;
         private List<IInitStateReturnable> _returnableObjects;
         private Door _rightDoor;
         private Scalpel _scalpel;
@@ -49,13 +49,13 @@ namespace FloorModule
 
         private void Start()
         {
-            _postboxPartMaterialWithDragonFly =
-                transform.Find("postbox/Cube.003").GetComponent<MeshRenderer>().material;
+            _postboxBaseMaterial =
+                transform.Find("postbox/base").GetComponent<MeshRenderer>().material;
             _leftDoor = transform.Find("left_door_prefab").GetComponent<Door>();
             _rightDoor = transform.Find("right_door_prefab").GetComponent<Door>();
             _scalpel = SelectableObject.GetAsChild<Scalpel>(gameObject, EInventoryItemId.SCALPEL);
             _ePanelDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.E_PANEL);
-            _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_DOOR);
+            _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_LEFT_DOOR);
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
 
             transform.GetComponentsInChildren<InventoryObject>(true)
@@ -73,7 +73,7 @@ namespace FloorModule
             _adMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
                 .material;
 
-            _ePanelDoorMaterial = transform.Find("e-panel/right_door/r_door").GetComponent<MeshRenderer>().material;
+            _ePanelDoorMaterial = transform.Find("e-panel/right_door").GetComponent<MeshRenderer>().material;
 
             LostRabbitAdTexture = Resources.Load<Texture2D>("Textures/rabbit");
         }
@@ -120,7 +120,7 @@ namespace FloorModule
             switch (id)
             {
                 case EFloorMarkId.DRAGONFLY:
-                    _postboxPartMaterialWithDragonFly.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
+                    _postboxBaseMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
                     _leftDoor.MarkWithDragonfly();
                     break;
 
@@ -141,7 +141,7 @@ namespace FloorModule
             switch (id)
             {
                 case EFloorMarkId.DRAGONFLY:
-                    _postboxPartMaterialWithDragonFly.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
+                    _postboxBaseMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
                     _leftDoor.UnmarkWithDragonfly();
                     break;
 

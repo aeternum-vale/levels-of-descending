@@ -19,7 +19,7 @@ namespace InventoryModule
         private readonly Dictionary<EInventoryItemId, InventoryItemData> _itemsData =
             new Dictionary<EInventoryItemId, InventoryItemData>
             {
-                [EInventoryItemId.POSTBOX_KEY] = new InventoryItemData(),
+                [EInventoryItemId.POSTBOX_KEY] = new InventoryItemData {IsInStock = true},
                 [EInventoryItemId.LETTER] = new InventoryItemData(),
                 [EInventoryItemId.SCALPEL] = new InventoryItemData(),
                 [EInventoryItemId.E_PANEL_KEY] = new InventoryItemData {IsInStock = true},
@@ -190,7 +190,7 @@ namespace InventoryModule
         public void OnInventorySwitchToNextItem()
         {
             if (!IsInventoryModeOn || _isTransition || ArrayOfAvailableItemsIds.Length <= 1) return;
-            
+
             StartCoroutine(SwitchToNextItem());
         }
 

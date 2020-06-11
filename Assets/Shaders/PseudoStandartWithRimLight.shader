@@ -10,7 +10,11 @@
 
 		_Glossiness("Smoothness", Range(0,1)) = 0.5
 		_Metallic("Metallic", Range(0,1)) = 0.0
+		_MetallicMap("Metallic Map", 2D) = "white" {}
+		[MaterialToggle] _IsMetallicMapProvided("Is Metallic Map Provided", Float) = 0
 		_EmissionColor("Emission Color", Color) = (0,0,0)
+		_OcclusionMap("Occlusion Map", 2D) = "white" {}
+		[MaterialToggle] _IsOcclusionMapProvided("Is Occlusion Map Provided", Float) = 0
 
 		_DetailAlbedoMap("Detail Albedo x2", 2D) = "grey" {}
 		_DetailNormalMapScale("Detail Normal Map Scale", Float) = 1
