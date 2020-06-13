@@ -16,11 +16,6 @@
 		_OcclusionMap("Occlusion Map", 2D) = "white" {}
 		[MaterialToggle] _IsOcclusionMapProvided("Is Occlusion Map Provided", Float) = 0
 
-		_DetailAlbedoMap("Detail Albedo x2", 2D) = "grey" {}
-		_DetailNormalMapScale("Detail Normal Map Scale", Float) = 1
-		[Normal] _DetailNormalMap("Detail Normal Map", 2D) = "bump" { }
-        [MaterialToggle] _IsDetailsProvided("Is Details Provided", Float) = 0
-
 		_PaintingTex("Painting Texture", 2D) = "white" {}
 		_PaintingPower("Painting Power", Range(0,1)) = 1.0
 		[MaterialToggle] _IsPaintingOn("Is Painting On", Float) = 0
@@ -41,8 +36,6 @@
 			{
 				float2 uv_MainTex;
 				float2 uv_BumpMap;
-				float2 uv_DetailAlbedoMap;
-				float2 uv_DetailNormalMap;
 				float2 uv_PaintingTex;
 			};
 			

@@ -15,11 +15,6 @@
 		_EmissionColor("Emission Color", Color) = (0,0,0)
 		_OcclusionMap("Occlusion Map", 2D) = "white" {}
 		[MaterialToggle] _IsOcclusionMapProvided("Is Occlusion Map Provided", Float) = 0
-
-		_DetailAlbedoMap("Detail Albedo x2", 2D) = "grey" {}
-		_DetailNormalMapScale("Detail Normal Map Scale", Float) = 1
-		[Normal] _DetailNormalMap("Detail Normal Map", 2D) = "bump" { }
-        [MaterialToggle] _IsDetailsProvided("Is Details Provided", Float) = 0
 	}
 	SubShader
 	{
@@ -37,8 +32,6 @@
 		{
 			float2 uv_MainTex;
 			float2 uv_BumpMap;
-			float2 uv_DetailAlbedoMap;
-			float2 uv_DetailNormalMap;
 		};
 		
 		#include "CGIncludes/PseudoStandartInc.cginc"
