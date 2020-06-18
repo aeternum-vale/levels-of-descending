@@ -64,8 +64,9 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnGarbageChuteDoorOpenAnimationCompleted(object sender, EventArgs e)
         {
+            _garbageChuteDoor.gameObject.SetActive(false);
             _doorRigidbody.gameObject.SetActive(true);
-            _garbageChuteDoor.IsGlowingEnabled = false;
+            //_garbageChuteDoor.IsGlowingEnabled = false;
         }
     }
 }
