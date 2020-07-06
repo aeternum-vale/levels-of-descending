@@ -212,8 +212,7 @@ namespace InventoryModule
 
             Graphics.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), _backgroundTexture, new Rect(0, 1, 1, -1),
                 0,
-                0, 0, 0,
-                new Color(.5f, .5f, .5f, 1f));
+                0, 0, 0, new Color(.5f, .5f, .5f, 1f));
 
             Graphics.DrawTexture(new Rect(
                     (1 - _currentTransitionOpacity) * TransitionXOffset * (_isTransitionOut ? 1 : -1),
