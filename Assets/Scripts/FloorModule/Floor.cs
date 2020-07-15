@@ -50,7 +50,7 @@ namespace FloorModule
         private void Start()
         {
             _postboxBaseMaterial =
-                transform.Find("postbox/base").GetComponent<MeshRenderer>().material;
+                transform.Find("postbox/postbox-base").GetComponent<MeshRenderer>().material;
             _leftDoor = transform.Find("left_door_prefab").GetComponent<Door>();
             _rightDoor = transform.Find("right_door_prefab").GetComponent<Door>();
             _scalpel = SelectableObject.GetAsChild<Scalpel>(gameObject, EInventoryItemId.SCALPEL);
