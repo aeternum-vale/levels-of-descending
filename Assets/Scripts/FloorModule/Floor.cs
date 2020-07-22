@@ -63,7 +63,7 @@ namespace FloorModule
                 .ForEach(io => _inventoryObjects.Add(io.objectId, io));
 
             _ePanelDoor.OpenCondition = () => _markStates[EFloorMarkId.RABBIT_SYMBOL];
-            _postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
+            //_postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
         }
 
         private void Awake()
