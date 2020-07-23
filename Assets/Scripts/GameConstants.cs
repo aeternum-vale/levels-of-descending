@@ -65,8 +65,8 @@ public static class GameConstants
             {ESwitchableObjectId.E_PANEL, "e-panel/right_door"},
             {ESwitchableObjectId.AD, "bulletin_board_elevator/ad"},
             {ESwitchableObjectId.AD_COVERING, "bulletin_board_elevator/covering"},
-            {ESwitchableObjectId.GARBAGE_CHUTE_DOOR, "garbage_chute/door"},
-            {ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/hinge"},
+            {ESwitchableObjectId.GARBAGE_CHUTE_DOOR, "garbage_chute/gc-door"},
+            {ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/gc-hinge"},
 
             {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator/caller/connector"},
             {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator/caller/connector/panel"},

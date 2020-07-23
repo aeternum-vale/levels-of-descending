@@ -46,7 +46,8 @@ namespace FloorModule
         [SerializeField] private DoorFactory doorFactory;
 
         public AdGenerator AdGenerator { get; set; }
-
+        private TextureProjectorController _textureProjectorController;
+        
         private void Start()
         {
             _postboxBaseMaterial =
@@ -58,16 +59,19 @@ namespace FloorModule
             _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_LEFT_DOOR);
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
 
+
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
                 .ForEach(io => _inventoryObjects.Add(io.objectId, io));
 
             _ePanelDoor.OpenCondition = () => _markStates[EFloorMarkId.RABBIT_SYMBOL];
-            //_postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
+            _postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
         }
 
         private void Awake()
         {
+            _textureProjectorController = transform.Find("TextureProjectorController").GetComponent<TextureProjectorController>();
+
             _frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
                 .GetComponent<MeshRenderer>().material;
             _adMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
@@ -183,6 +187,11 @@ namespace FloorModule
             var transformValue = transform;
             leftDoor.transform.SetParent(transformValue);
             rightDoor.transform.SetParent(transformValue);
+        }
+
+        public void GenerateRandomTextureProjectors()
+        {
+            _textureProjectorController.GenerateRandomTextureProjectors();
         }
     }
 }

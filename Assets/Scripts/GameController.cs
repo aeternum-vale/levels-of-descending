@@ -58,6 +58,7 @@ public class GameController : MonoBehaviour
         playerGameObject.transform.localPosition = localPosition;
 
         playerFloor.SetFrontWallRandomAd();
+        playerFloor.GenerateRandomTextureProjectors();
     }
 
     private void Awake()
