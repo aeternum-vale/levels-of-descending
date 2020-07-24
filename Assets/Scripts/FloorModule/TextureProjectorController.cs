@@ -68,7 +68,7 @@ namespace FloorModule
                 [TextureProjectorId.DIRT_3] = new TextureProjectorScheme()
                 {
                     Prefab = dirt3ProjectorPrefab,
-                    Ranges = new []
+                    Ranges = new[]
                     {
                         new TextureProjectorRange()
                         {
@@ -84,7 +84,7 @@ namespace FloorModule
                 [TextureProjectorId.FOOTPRINTS_1] = new TextureProjectorScheme()
                 {
                     Prefab = footpreints1ProjectorPrefab,
-                    Ranges = new []
+                    Ranges = new[]
                     {
                         new TextureProjectorRange()
                         {
@@ -137,10 +137,11 @@ namespace FloorModule
                     }
 
                     Projector projectorComponent = projInstance.GetComponent<Projector>();
+                    Projector projectorPrefabComponent = projPrefab.GetComponent<Projector>();
                     TextureProjectorRange range = scheme.Ranges[Random.Range(0, scheme.Ranges.Length)];
 
-                    Vector3 oldPos = projInstance.transform.localPosition;
-                    Vector3 oldRotation = projInstance.transform.eulerAngles;
+                    Vector3 oldPos = projPrefab.transform.localPosition;
+                    Vector3 oldRotation = projPrefab.transform.eulerAngles;
 
                     projInstance.transform.localPosition =
                         new Vector3(
@@ -166,17 +167,15 @@ namespace FloorModule
                                 ? Random.Range(range.RotationZ.Value.x, range.RotationZ.Value.y)
                                 : oldRotation.z);
 
-                    if (range.FieldOfView.HasValue)
-                    {
-                        projectorComponent.fieldOfView =
-                            Random.Range(range.FieldOfView.Value.x, range.FieldOfView.Value.y);
-                    }
 
-                    if (range.AspectRatio.HasValue)
-                    {
-                        projectorComponent.aspectRatio =
-                            Random.Range(range.AspectRatio.Value.x, range.AspectRatio.Value.y);
-                    }
+                    projectorComponent.fieldOfView = range.FieldOfView.HasValue
+                        ? Random.Range(range.FieldOfView.Value.x, range.FieldOfView.Value.y)
+                        : projectorPrefabComponent.fieldOfView;
+
+
+                    projectorComponent.aspectRatio = range.AspectRatio.HasValue
+                        ? Random.Range(range.AspectRatio.Value.x, range.AspectRatio.Value.y)
+                        : projectorPrefabComponent.aspectRatio;
                 }
             }
         }

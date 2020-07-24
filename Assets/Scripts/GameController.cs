@@ -109,10 +109,10 @@ public class GameController : MonoBehaviour
         throw new Exception("Can't compute provided floor index");
     }
 
-    private int GetFloorDistanceToPlayer(Floor floor)
+    private byte GetFloorDistanceToPlayer(Floor floor)
     {
         var dist = Math.Abs(GetFloorIndex(floor) - GetCurrentFloorIndex());
-        return Math.Min(dist, FloorCount - dist);
+        return (byte) Math.Min(dist, FloorCount - dist);
     }
 
     private bool? IsPlayerGoingUp()
@@ -190,8 +190,22 @@ public class GameController : MonoBehaviour
     {
         ForEachFloorExceptCurrent(floor =>
         {
-            floor.ReturnAllObjectsToInitState(GetFloorDistanceToPlayer(floor));
-            floor.SetFrontWallRandomAd();
+            byte floorDistanceToPlayer = GetFloorDistanceToPlayer(floor);
+
+            if (floorDistanceToPlayer > 0 && floorDistanceToPlayer <= 2)
+            {
+                floor.ReturnAllObjectsToInitState(floorDistanceToPlayer);
+
+                if (floorDistanceToPlayer == 2)
+                {
+                    floor.GenerateRandomTextureProjectors();
+                }
+
+                if (floorDistanceToPlayer == 1)
+                {
+                    floor.SetFrontWallRandomAd();
+                }
+            }
         });
 
         UpdateInventoryObjectsPresence();
