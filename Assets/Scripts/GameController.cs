@@ -192,19 +192,18 @@ public class GameController : MonoBehaviour
         {
             byte floorDistanceToPlayer = GetFloorDistanceToPlayer(floor);
 
-            if (floorDistanceToPlayer > 0 && floorDistanceToPlayer <= 2)
+            if (floorDistanceToPlayer <= 0 || floorDistanceToPlayer > 2) return;
+                
+            floor.ReturnAllObjectsToInitState(floorDistanceToPlayer);
+
+            if (floorDistanceToPlayer == 2)
             {
-                floor.ReturnAllObjectsToInitState(floorDistanceToPlayer);
+                floor.GenerateRandomTextureProjectors();
+            }
 
-                if (floorDistanceToPlayer == 2)
-                {
-                    floor.GenerateRandomTextureProjectors();
-                }
-
-                if (floorDistanceToPlayer == 1)
-                {
-                    floor.SetFrontWallRandomAd();
-                }
+            if (floorDistanceToPlayer == 1)
+            {
+                floor.SetFrontWallRandomAd();
             }
         });
 
