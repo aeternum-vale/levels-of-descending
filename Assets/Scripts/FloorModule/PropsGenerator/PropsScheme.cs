@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 
-namespace FloorModule
+namespace FloorModule.PropsGenerator
 {
-    public struct TextureProjectorScheme
+    public class PropsScheme
     {
         public GameObject Prefab;
-        public TextureProjectorRange[] Ranges;
+        public PropsRange[] Ranges;
         public Vector2Int AmountRange;
     }
 }

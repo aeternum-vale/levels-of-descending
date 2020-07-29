@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-namespace FloorModule
+namespace FloorModule.PropsGenerator
 {
-    public struct TextureProjectorRange
+    public class PropsRange
     {
         public Vector2? PositionX;
         public Vector2? PositionY;
@@ -11,8 +11,5 @@ namespace FloorModule
         public Vector2? RotationX;
         public Vector2? RotationY;
         public Vector2? RotationZ;
-
-        public Vector2? FieldOfView;
-        public Vector2? AspectRatio;
     }
 }

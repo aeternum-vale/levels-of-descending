@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AdGeneratorModule;
 using DoorModule;
+using FloorModule.PropsGenerator;
 using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
 using SelectableObjectsModule.Utilities;
@@ -46,7 +47,7 @@ namespace FloorModule
         [SerializeField] private DoorFactory doorFactory;
 
         public AdGenerator AdGenerator { get; set; }
-        private TextureProjectorController _textureProjectorController;
+        private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
         
         private void Start()
         {
@@ -70,7 +71,7 @@ namespace FloorModule
 
         private void Awake()
         {
-            _textureProjectorController = transform.Find("TextureProjectorController").GetComponent<TextureProjectorController>();
+            _textureProjectorPropsGenerator = transform.Find("TextureProjectorController").GetComponent<TextureProjectorPropsGenerator>();
 
             _frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
                 .GetComponent<MeshRenderer>().material;
@@ -191,7 +192,7 @@ namespace FloorModule
 
         public void GenerateRandomTextureProjectors()
         {
-            _textureProjectorController.GenerateRandomTextureProjectors();
+            _textureProjectorPropsGenerator.GenerateProps();
         }
     }
 }
