@@ -17,8 +17,8 @@ namespace FloorModule.PropsGenerator
         [SerializeField] private GameObject garbageBagPrefab;
         [SerializeField] private GameObject canPrefab;
         [SerializeField] private GameObject crumpledPaperPrefab;
-        [SerializeField] private GameObject bottleBagPrefab;
-        [SerializeField] private GameObject cigaretteBagPrefab;
+        [SerializeField] private GameObject bottlePrefab;
+        [SerializeField] private GameObject cigarettePrefab;
 
         protected override void InitSchemes()
         {
@@ -27,6 +27,7 @@ namespace FloorModule.PropsGenerator
                 [(byte) GarbageId.GARBAGE_BAG] = new PropsScheme()
                 {
                     Prefab = garbageBagPrefab,
+                    AmountRange = new Vector2Int(3, 8),
                     Ranges = new[]
                     {
                         new PropsRange()
@@ -34,8 +35,21 @@ namespace FloorModule.PropsGenerator
                             PositionX = new Vector2(-3.162f, -2.595f),
                             PositionZ = new Vector2(1.657f, 1.657f)
                         }
-                    },
-                    AmountRange = new Vector2Int(3, 8)
+                    }
+                },
+                [(byte) GarbageId.CIGARETTE] = new PropsScheme()
+                {
+                    Prefab = cigarettePrefab,
+                    AmountRange = new Vector2Int(10, 50),
+                    Ranges = new []
+                    {
+                        new PropsRange()
+                        {
+                            PositionX = new Vector2(-2.6f,-1.685f),
+                            PositionZ = new Vector2(0.74f,-0.217f),
+                            RotationY = new Vector2(0, 359)
+                        }
+                    }
                 }
             };
         }

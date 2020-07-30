@@ -9,9 +9,10 @@ namespace FloorModule.PropsGenerator
     public abstract class PropsGenerator : MonoBehaviour
     {
         private const byte AttemptNumber = 5;
+        private readonly List<BoxCollider> _allColliders = new List<BoxCollider>();
 
-        private readonly Dictionary<byte, GameObject[]> _instances =
-            new Dictionary<byte, GameObject[]>();
+        private readonly Dictionary<byte, PropInstance[]> _instances =
+            new Dictionary<byte, PropInstance[]>();
 
         protected Dictionary<byte, PropsScheme> Schemes;
 
@@ -36,28 +37,36 @@ namespace FloorModule.PropsGenerator
 
                 int amount = Random.Range(scheme.AmountRange.x, scheme.AmountRange.y + 1);
 
-                if (!_instances.ContainsKey(id))
-                    _instances.Add(id, new GameObject[scheme.AmountRange.y]);
+                if (_instances.ContainsKey(id))
+                    _instances[id].ToList().ForEach(inst => inst.GameObject?.SetActive(false));
+                else
+                    _instances.Add(id, new PropInstance[scheme.AmountRange.y]);
 
                 bool outOfAttempts = false;
 
                 for (int currentInstanceIndex = 0; currentInstanceIndex < _instances[id].Length; currentInstanceIndex++)
                 {
-                    GameObject currentInstance = _instances[id][currentInstanceIndex];
-
                     if (currentInstanceIndex > amount - 1 || outOfAttempts)
-                    {
-                        if (currentInstance)
-                            currentInstance.SetActive(false);
+                        break;
 
-                        continue;
-                    }
+                    GameObject currentInstance = _instances[id][currentInstanceIndex].GameObject;
+                    BoxCollider currentInstanceCollider;
 
                     if (!currentInstance)
                     {
                         currentInstance = Instantiate(prefab, transform);
-                        _instances[id][currentInstanceIndex] = currentInstance;
+                        currentInstanceCollider = currentInstance.GetComponent<BoxCollider>();
+
+                        _instances[id][currentInstanceIndex].GameObject = currentInstance;
+                        _instances[id][currentInstanceIndex].BoxCollider = currentInstanceCollider;
+                        _allColliders.Add(currentInstanceCollider);
                     }
+                    else
+                    {
+                        currentInstanceCollider = _instances[id][currentInstanceIndex].BoxCollider;
+                    }
+
+                    currentInstance.SetActive(true);
 
                     byte attemptCount = 0;
                     while (true)
@@ -94,37 +103,37 @@ namespace FloorModule.PropsGenerator
 
                         ApplyAdditionalSettingsToProp(currentInstance, prefab, range);
 
-                        if (IntersectionTest())
+                        if (IntersectionTest(currentInstanceCollider))
                         {
                             if (attemptCount < AttemptNumber) continue;
 
-                            outOfAttempts = true;
                             currentInstance.SetActive(false);
-                            break;
+                            outOfAttempts = true;
                         }
 
-                        currentInstance.SetActive(true);
                         break;
                     }
                 }
             }
         }
 
-        private bool IntersectionTest()
+        private bool IntersectionTest(BoxCollider testingCollider)
         {
-            var colliders = transform.GetComponentsInChildren<BoxCollider>();
-
-            if (colliders.Length == 0)
+            if (testingCollider == null || _allColliders.Count == 0)
                 return false;
 
-            return (from collider1 in colliders
-                from collider2 in colliders
-                where collider1 != collider2
-                where collider1.bounds.Intersects(collider2.bounds)
-                select collider1).Any();
+            return _allColliders
+                .Where(boxCollider => boxCollider != testingCollider)
+                .Any(boxCollider => boxCollider.bounds.Intersects(testingCollider.bounds));
         }
 
         protected abstract void ApplyAdditionalSettingsToProp(GameObject currentInstance, GameObject prefab,
             PropsRange range);
+
+        private struct PropInstance
+        {
+            public GameObject GameObject;
+            public BoxCollider BoxCollider;
+        }
     }
 }
