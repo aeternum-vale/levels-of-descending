@@ -7,7 +7,7 @@ namespace FloorModule.PropsGenerator
 {
     public class TextureProjectorPropsGenerator : PropsGenerator
     {
-        enum TextureProjectorId : byte
+        private enum TextureProjectorId : byte
         {
             DIRT_1 = 0,
             DIRT_2,
@@ -21,7 +21,7 @@ namespace FloorModule.PropsGenerator
         [SerializeField] private GameObject dirt3ProjectorPrefab;
         [SerializeField] private GameObject footprints1ProjectorPrefab;
 
-        protected override void InitScheme()
+        protected override void InitSchemes()
         {
             Schemes = new Dictionary<byte, PropsScheme>
             {

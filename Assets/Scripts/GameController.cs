@@ -58,7 +58,7 @@ public class GameController : MonoBehaviour
         playerGameObject.transform.localPosition = localPosition;
 
         playerFloor.SetFrontWallRandomAd();
-        playerFloor.GenerateRandomTextureProjectors();
+        playerFloor.GenerateRandomTextureProjectorsAndGarbageProps();
     }
 
     private void Awake()
@@ -198,7 +198,7 @@ public class GameController : MonoBehaviour
 
             if (floorDistanceToPlayer == 2)
             {
-                floor.GenerateRandomTextureProjectors();
+                floor.GenerateRandomTextureProjectorsAndGarbageProps();
             }
 
             if (floorDistanceToPlayer == 1)

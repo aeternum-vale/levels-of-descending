@@ -48,6 +48,7 @@ namespace FloorModule
 
         public AdGenerator AdGenerator { get; set; }
         private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
+        private GarbagePropsGenerator _garbagePropsGenerator;
         
         private void Start()
         {
@@ -59,8 +60,7 @@ namespace FloorModule
             _ePanelDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.E_PANEL);
             _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_LEFT_DOOR);
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
-
-
+            
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
                 .ForEach(io => _inventoryObjects.Add(io.objectId, io));
@@ -71,8 +71,9 @@ namespace FloorModule
 
         private void Awake()
         {
-            _textureProjectorPropsGenerator = transform.Find("TextureProjectorController").GetComponent<TextureProjectorPropsGenerator>();
-
+            _textureProjectorPropsGenerator = transform.GetComponentInChildren<TextureProjectorPropsGenerator>();
+            _garbagePropsGenerator = transform.GetComponentInChildren<GarbagePropsGenerator>();
+            
             _frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
                 .GetComponent<MeshRenderer>().material;
             _adMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
@@ -190,9 +191,10 @@ namespace FloorModule
             rightDoor.transform.SetParent(transformValue);
         }
 
-        public void GenerateRandomTextureProjectors()
+        public void GenerateRandomTextureProjectorsAndGarbageProps()
         {
             _textureProjectorPropsGenerator.GenerateProps();
+            _garbagePropsGenerator.GenerateProps();
         }
     }
 }
