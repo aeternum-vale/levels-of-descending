@@ -20,6 +20,15 @@ namespace FloorModule.PropsGenerator
         [SerializeField] private GameObject bottlePrefab;
         [SerializeField] private GameObject cigarettePrefab;
 
+        private PropsRange _firstFloorRange =
+            new PropsRange()
+            {
+                PositionY = new Vector2(-1.2f, -1.2f),
+                PositionX = new Vector2(-3.3f, -0.622f),
+                PositionZ = new Vector2(-1.635f, 1.677f),
+                RotationY = new Vector2(0, 359)
+            };
+
         protected override void InitSchemes()
         {
             Schemes = new Dictionary<byte, PropsScheme>
@@ -27,28 +36,63 @@ namespace FloorModule.PropsGenerator
                 [(byte) GarbageId.GARBAGE_BAG] = new PropsScheme()
                 {
                     Prefab = garbageBagPrefab,
-                    AmountRange = new Vector2Int(3, 8),
+                    AmountRange = new Vector2Int(3, 20),
                     Ranges = new[]
                     {
                         new PropsRange()
                         {
                             PositionX = new Vector2(-3.162f, -2.595f),
-                            PositionZ = new Vector2(1.657f, 1.657f)
-                        }
+                            PositionZ = new Vector2(1.657f, 1.657f),
+                            RotationY = new Vector2(0, 359)
+                        },
+                        _firstFloorRange
+                    }
+                },
+                [(byte) GarbageId.BOTTLE] = new PropsScheme()
+                {
+                    Prefab = bottlePrefab,
+                    AmountRange = new Vector2Int(20, 100),
+                    Ranges = new[]
+                    {
+                        new PropsRange()
+                        {
+                            PositionX = new Vector2(3.64f, 3.9f),
+                            PositionZ = new Vector2(0.39f, -0.34f),
+                        },
+                        new PropsRange()
+                        {
+                            PositionY = new Vector2(0.817f, 0.817f),
+                            PositionX = new Vector2(3.559f, 3.155f),
+                            PositionZ = new Vector2(1.679f, -1.098f),
+                        },
+                        _firstFloorRange
                     }
                 },
                 [(byte) GarbageId.CIGARETTE] = new PropsScheme()
                 {
                     Prefab = cigarettePrefab,
                     AmountRange = new Vector2Int(10, 50),
-                    Ranges = new []
+                    Ranges = new[]
                     {
-                        new PropsRange()
-                        {
-                            PositionX = new Vector2(-2.6f,-1.685f),
-                            PositionZ = new Vector2(0.74f,-0.217f),
-                            RotationY = new Vector2(0, 359)
-                        }
+                        _firstFloorRange
+                    }
+                },
+                [(byte) GarbageId.CRUMPLED_PAPER] = new PropsScheme()
+                {
+                    Prefab = crumpledPaperPrefab,
+                    AmountRange = new Vector2Int(20, 100),
+                    Ranges = new[]
+                    {
+                        _firstFloorRange
+                    }
+                },
+                [(byte) GarbageId.CAN] = new PropsScheme()
+                {
+                    Prefab = canPrefab,
+                    AmountRange = new Vector2Int(20, 100),
+                    Ranges = new[]
+                    {
+                        _firstFloorRange
                     }
                 }
             };

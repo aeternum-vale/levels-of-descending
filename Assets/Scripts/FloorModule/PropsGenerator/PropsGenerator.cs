@@ -8,7 +8,7 @@ namespace FloorModule.PropsGenerator
 {
     public abstract class PropsGenerator : MonoBehaviour
     {
-        private const byte AttemptNumber = 5;
+        private const byte AttemptNumber = 50;
         private readonly List<BoxCollider> _allColliders = new List<BoxCollider>();
 
         private readonly Dictionary<byte, PropInstance[]> _instances =
@@ -123,7 +123,7 @@ namespace FloorModule.PropsGenerator
                 return false;
 
             return _allColliders
-                .Where(boxCollider => boxCollider != testingCollider)
+                .Where(boxCollider => boxCollider != null && boxCollider != testingCollider)
                 .Any(boxCollider => boxCollider.bounds.Intersects(testingCollider.bounds));
         }
 

@@ -34,7 +34,7 @@ public class GameController : MonoBehaviour
         _highestFloorIndex = FloorCount - 1;
         _floors = new Floor[FloorCount];
 
-        for (var i = 0; i < FloorCount; i++)
+        for (int i = 0; i < FloorCount; i++)
         {
             _floors[i] = GenerateRandomFloor(floorPrefab.transform.position + new Vector3(0, FloorHeight * i, 0));
             _ground1Colliders.Add(_floors[i],
@@ -44,21 +44,23 @@ public class GameController : MonoBehaviour
 
         _floorsHalf = FloorCount / 2;
 
-        var playerFloor = _floors[_floorsHalf];
-        playerFloor.SetFloorDrawnNumber(_fakeFloorNumber--);
+        Floor initPlayerFloor = _floors[_floorsHalf];
+        initPlayerFloor.SetFloorDrawnNumber(_fakeFloorNumber--);
 
-        var localPosition = playerGameObject.transform.localPosition;
+        Vector3 localPosition = playerGameObject.transform.localPosition;
 
         localPosition = new Vector3(
             localPosition.x,
-            playerFloor.transform.localPosition.y,
+            initPlayerFloor.transform.localPosition.y,
             localPosition.z
         );
 
         playerGameObject.transform.localPosition = localPosition;
 
-        playerFloor.SetFrontWallRandomAd();
-        playerFloor.GenerateRandomTextureProjectorsAndGarbageProps();
+        initPlayerFloor.SetFrontWallRandomAd();
+        
+        foreach (Floor floor in _floors)
+            floor.GenerateRandomTextureProjectorsAndGarbageProps();
     }
 
     private void Awake()
@@ -77,13 +79,13 @@ public class GameController : MonoBehaviour
 
     private Floor GetNextHigherFloor()
     {
-        var i = GetCurrentFloorIndex();
+        int i = GetCurrentFloorIndex();
         return _floors[(i + 1) % FloorCount];
     }
 
     private Floor GetNextLowerFloor()
     {
-        var i = GetCurrentFloorIndex();
+        int i = GetCurrentFloorIndex();
         return _floors[i - 1 >= 0 ? i - 1 : FloorCount - 1];
     }
 
@@ -94,7 +96,7 @@ public class GameController : MonoBehaviour
 
     private int GetCurrentFloorIndex()
     {
-        for (var i = 0; i < _floors.Length; i++)
+        for (int i = 0; i < _floors.Length; i++)
             if (IsFloorCurrent(_floors[i]))
                 return i;
 
@@ -103,7 +105,7 @@ public class GameController : MonoBehaviour
 
     private int GetFloorIndex(Floor floor)
     {
-        for (var i = 0; i < _floors.Length; i++)
+        for (int i = 0; i < _floors.Length; i++)
             if (_floors[i] == floor)
                 return i;
         throw new Exception("Can't compute provided floor index");
@@ -111,7 +113,7 @@ public class GameController : MonoBehaviour
 
     private byte GetFloorDistanceToPlayer(Floor floor)
     {
-        var dist = Math.Abs(GetFloorIndex(floor) - GetCurrentFloorIndex());
+        int dist = Math.Abs(GetFloorIndex(floor) - GetCurrentFloorIndex());
         return (byte) Math.Min(dist, FloorCount - dist);
     }
 
@@ -125,7 +127,7 @@ public class GameController : MonoBehaviour
 
     private Floor GenerateRandomFloor(Vector3 position)
     {
-        var floor = Instantiate(floorPrefab).GetComponent<Floor>();
+        Floor floor = Instantiate(floorPrefab).GetComponent<Floor>();
         floor.AdGenerator = adGenerator;
         floor.transform.position = position;
         floor.UpdateDoors();
@@ -143,7 +145,7 @@ public class GameController : MonoBehaviour
 
         UpdateRealFloorNumber();
         RearrangeFloors();
-        AllFloorsFullUpdate();
+        FloorsSelectiveUpdate();
     }
 
     private void UpdateRealFloorNumber()
@@ -186,14 +188,14 @@ public class GameController : MonoBehaviour
         if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
     }
 
-    private void AllFloorsFullUpdate()
+    private void FloorsSelectiveUpdate()
     {
         ForEachFloorExceptCurrent(floor =>
         {
             byte floorDistanceToPlayer = GetFloorDistanceToPlayer(floor);
 
             if (floorDistanceToPlayer <= 0 || floorDistanceToPlayer > 2) return;
-                
+
             floor.ReturnAllObjectsToInitState(floorDistanceToPlayer);
 
             if (floorDistanceToPlayer == 2)
@@ -230,7 +232,7 @@ public class GameController : MonoBehaviour
 
     private void ForEachFloorExceptCurrent(Action<Floor> action)
     {
-        foreach (var floor in _floors)
+        foreach (Floor floor in _floors)
         {
             if (IsFloorCurrent(floor))
                 continue;
@@ -241,10 +243,10 @@ public class GameController : MonoBehaviour
 
     private void ImplementFloorMarksAndFakeFloorNumber()
     {
-        var nextFakeFloorNumber = _fakeFloorNumber + 1;
+        int nextFakeFloorNumber = _fakeFloorNumber + 1;
 
-        var nextHighFloor = GetNextHigherFloor();
-        var nextLowFloor = GetNextLowerFloor();
+        Floor nextHighFloor = GetNextHigherFloor();
+        Floor nextLowFloor = GetNextLowerFloor();
 
         nextHighFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
         nextLowFloor.SetFloorDrawnNumber(nextFakeFloorNumber);
@@ -254,12 +256,12 @@ public class GameController : MonoBehaviour
 
         foreach (var floorMarkKeyValuePair in GameConstants.floorMarks)
         {
-            var id = floorMarkKeyValuePair.Key;
-            var floorMarkValue = floorMarkKeyValuePair.Value;
+            EFloorMarkId id = floorMarkKeyValuePair.Key;
+            FloorMark floorMarkValue = floorMarkKeyValuePair.Value;
 
             if (!floorMarkValue.IsFloorMarked(nextFakeFloorNumber)) continue;
 
-            var playerHaveAllAssociatedInventoryItems =
+            bool playerHaveAllAssociatedInventoryItems =
                 floorMarkValue.AssociatedInventoryItems.All(itemId => inventory.Contains(itemId));
 
             if (playerHaveAllAssociatedInventoryItems) continue;
@@ -267,7 +269,7 @@ public class GameController : MonoBehaviour
             nextHighFloor.SetMark(id);
             nextLowFloor.SetMark(id);
 
-            foreach (var inventoryItemId in floorMarkValue.AssociatedInventoryItems)
+            foreach (EInventoryItemId inventoryItemId in floorMarkValue.AssociatedInventoryItems)
             {
                 if (inventory.Contains(inventoryItemId)) continue;
 
