@@ -8,7 +8,7 @@ namespace FloorModule.PropsGenerator
 {
     public abstract class PropsGenerator : MonoBehaviour
     {
-        private const byte AttemptNumber = 50;
+        private const byte AttemptNumber = 250;
         private readonly List<BoxCollider> _allColliders = new List<BoxCollider>();
 
         private readonly Dictionary<byte, PropInstance[]> _instances =

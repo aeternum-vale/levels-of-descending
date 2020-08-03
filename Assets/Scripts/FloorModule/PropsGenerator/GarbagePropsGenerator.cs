@@ -36,7 +36,7 @@ namespace FloorModule.PropsGenerator
                 [(byte) GarbageId.GARBAGE_BAG] = new PropsScheme()
                 {
                     Prefab = garbageBagPrefab,
-                    AmountRange = new Vector2Int(3, 20),
+                    AmountRange = new Vector2Int(0, 2),
                     Ranges = new[]
                     {
                         new PropsRange()
@@ -44,14 +44,13 @@ namespace FloorModule.PropsGenerator
                             PositionX = new Vector2(-3.162f, -2.595f),
                             PositionZ = new Vector2(1.657f, 1.657f),
                             RotationY = new Vector2(0, 359)
-                        },
-                        _firstFloorRange
+                        }
                     }
                 },
                 [(byte) GarbageId.BOTTLE] = new PropsScheme()
                 {
                     Prefab = bottlePrefab,
-                    AmountRange = new Vector2Int(20, 100),
+                    AmountRange = new Vector2Int(0, 5),
                     Ranges = new[]
                     {
                         new PropsRange()
@@ -64,14 +63,13 @@ namespace FloorModule.PropsGenerator
                             PositionY = new Vector2(0.817f, 0.817f),
                             PositionX = new Vector2(3.559f, 3.155f),
                             PositionZ = new Vector2(1.679f, -1.098f),
-                        },
-                        _firstFloorRange
+                        }
                     }
                 },
                 [(byte) GarbageId.CIGARETTE] = new PropsScheme()
                 {
                     Prefab = cigarettePrefab,
-                    AmountRange = new Vector2Int(10, 50),
+                    AmountRange = new Vector2Int(2, 20),
                     Ranges = new[]
                     {
                         _firstFloorRange
@@ -80,7 +78,7 @@ namespace FloorModule.PropsGenerator
                 [(byte) GarbageId.CRUMPLED_PAPER] = new PropsScheme()
                 {
                     Prefab = crumpledPaperPrefab,
-                    AmountRange = new Vector2Int(20, 100),
+                    AmountRange = new Vector2Int(0, 2),
                     Ranges = new[]
                     {
                         _firstFloorRange
@@ -89,7 +87,7 @@ namespace FloorModule.PropsGenerator
                 [(byte) GarbageId.CAN] = new PropsScheme()
                 {
                     Prefab = canPrefab,
-                    AmountRange = new Vector2Int(20, 100),
+                    AmountRange = new Vector2Int(0, 2),
                     Ranges = new[]
                     {
                         _firstFloorRange
