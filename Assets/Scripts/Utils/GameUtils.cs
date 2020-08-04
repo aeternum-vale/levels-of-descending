@@ -4,7 +4,7 @@
     {
         public static string GetNameByPath(string path)
         {
-            var lastIndexOfSlash = path.LastIndexOf('/');
+            int lastIndexOfSlash = path.LastIndexOf('/');
             return lastIndexOfSlash == -1 ? path : path.Substring(lastIndexOfSlash + 1);
         }
     }

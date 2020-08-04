@@ -44,7 +44,7 @@ namespace FloorModule
         private Door _rightDoor;
         private Scalpel _scalpel;
 
-        [SerializeField] private DoorFactory doorFactory;
+        [SerializeField] private DoorController doorController;
 
         public AdGenerator AdGenerator { get; set; }
         private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
@@ -159,7 +159,7 @@ namespace FloorModule
 
         public void ResetAllMarks()
         {
-            foreach (var key in _markStates.Keys.ToList()) ResetMark(key);
+            foreach (EFloorMarkId key in _markStates.Keys.ToList()) ResetMark(key);
         }
 
         public void SetFrontWallRandomAd()
@@ -171,12 +171,12 @@ namespace FloorModule
 
         public void UpdateDoors()
         {
-            var entrywayTransform = transform.Find(EntrywayObjectName);
-            var floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
-            var floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
+            Transform entrywayTransform = transform.Find(EntrywayObjectName);
+            Transform floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
+            Transform floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
 
-            var leftDoor = doorFactory.GenerateRandomDoor();
-            var rightDoor = doorFactory.GenerateRandomDoor();
+            Door leftDoor = doorController.GenerateRandomDoor();
+            Door rightDoor = doorController.GenerateRandomDoor();
 
             leftDoor.transform.position = floorLeftDoorBaseTransform.position;
 
@@ -186,7 +186,7 @@ namespace FloorModule
             leftDoor.name = LeftDoorObjectName;
             rightDoor.name = RightDoorObjectName;
 
-            var transformValue = transform;
+            Transform transformValue = transform;
             leftDoor.transform.SetParent(transformValue);
             rightDoor.transform.SetParent(transformValue);
         }

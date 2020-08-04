@@ -29,7 +29,7 @@ namespace SelectableObjectsModule.SpecificObjects
             _doorRigidbody.velocity = new Vector3(0f, 0f, 0f);
             _doorRigidbody.angularVelocity = new Vector3(0f, 0f, 0f);
 
-            var doorRigidbodyTransform = _doorRigidbody.transform;
+            Transform doorRigidbodyTransform = _doorRigidbody.transform;
             doorRigidbodyTransform.localPosition = _doorRigidbodyInitPosition;
             doorRigidbodyTransform.localRotation = _doorRigidbodyInitRotation;
 
@@ -46,7 +46,7 @@ namespace SelectableObjectsModule.SpecificObjects
             _garbageChuteDoor.InitStateSafeDistanceToPlayer = InitStateSafeDistanceToPlayer;
             _garbageChuteHinge.InitStateSafeDistanceToPlayer = InitStateSafeDistanceToPlayer;
 
-            var doorRigidbodyGameObject = _doorRigidbody.gameObject;
+            GameObject doorRigidbodyGameObject = _doorRigidbody.gameObject;
 
             _doorRigidbodyInitPosition = doorRigidbodyGameObject.transform.localPosition;
             _doorRigidbodyInitRotation = doorRigidbodyGameObject.transform.localRotation;

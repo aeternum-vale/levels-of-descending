@@ -86,10 +86,10 @@ namespace PlayerModule
 
         private void UpdateMouse()
         {
-            var delta = Input.GetAxis("Mouse X") * _mouseSensitivity;
-            var transformValue = transform;
+            float delta = Input.GetAxis("Mouse X") * _mouseSensitivity;
+            Transform transformValue = transform;
 
-            var rotationY = transformValue.localEulerAngles.y + delta;
+            float rotationY = transformValue.localEulerAngles.y + delta;
             transformValue.localEulerAngles = new Vector3(0, rotationY, 0);
 
             if (_selectedObject)
@@ -98,13 +98,13 @@ namespace PlayerModule
                 _selectedObject = null;
             }
 
-            var point = new Vector3(_playerCameraComponent.pixelWidth / 2, _playerCameraComponent.pixelHeight / 2, 0);
-            var ray = _playerCameraComponent.ScreenPointToRay(point);
+            Vector3 point = new Vector3(_playerCameraComponent.pixelWidth / 2, _playerCameraComponent.pixelHeight / 2, 0);
+            Ray ray = _playerCameraComponent.ScreenPointToRay(point);
 
-            if (!Physics.Raycast(ray, out var hit)) return;
+            if (!Physics.Raycast(ray, out RaycastHit hit)) return;
 
-            var currentTransform = hit.transform;
-            var currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
+            Transform currentTransform = hit.transform;
+            SelectableObject currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
 
             while (currentSelectedObject == null && currentTransform.parent != null)
             {
@@ -114,7 +114,7 @@ namespace PlayerModule
 
             if (!currentSelectedObject) return;
 
-            var distance = _maxDistanceToSelectableObject;
+            float distance = _maxDistanceToSelectableObject;
             if (currentSelectedObject.MaxDistanceToSelect != null)
                 distance = (float) currentSelectedObject.MaxDistanceToSelect;
 
@@ -178,9 +178,9 @@ namespace PlayerModule
 
         private void UpdateMovement()
         {
-            var deltaX = Input.GetAxis("Horizontal") * _speed;
-            var deltaZ = Input.GetAxis("Vertical") * _speed;
-            var movement = new Vector3(deltaX, 0, deltaZ);
+            float deltaX = Input.GetAxis("Horizontal") * _speed;
+            float deltaZ = Input.GetAxis("Vertical") * _speed;
+            Vector3 movement = new Vector3(deltaX, 0, deltaZ);
 
             movement = Vector3.ClampMagnitude(movement, _speed);
             movement.y = _gravity;
@@ -198,7 +198,7 @@ namespace PlayerModule
 
                 if (_stairPaceYRealOffset == _stairPaceYTargetOffset) return;
 
-                var diff = Mathf.Abs(_stairPaceYRealOffset - _stairPaceYTargetOffset);
+                float diff = Mathf.Abs(_stairPaceYRealOffset - _stairPaceYTargetOffset);
                 if (diff <= StairPaceYSpeed)
                     _stairPaceYRealOffset = _stairPaceYTargetOffset;
                 else

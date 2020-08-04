@@ -67,11 +67,11 @@ namespace InventoryModule
             Messenger<EInventoryItemId>.AddListener(Events.InventoryItemWasSuccessfullyUsed,
                 OnInventoryItemSuccessfullyUsed);
 
-            var itemsContainerTransform = transform.Find(ItemsContainerName);
+            Transform itemsContainerTransform = transform.Find(ItemsContainerName);
             foreach (var pair in _itemsData)
             {
-                var itemName = GameUtils.GetNameByPath(GameConstants.inventoryObjectPaths[pair.Key]);
-                var go = itemsContainerTransform.Find(itemName).gameObject;
+                string itemName = GameUtils.GetNameByPath(GameConstants.inventoryObjectPaths[pair.Key]);
+                GameObject go = itemsContainerTransform.Find(itemName).gameObject;
                 pair.Value.Container = go;
                 pair.Value.Content = go.transform.GetChild(0).gameObject;
                 pair.Value.AnimatorComponent = go.GetComponent<Animator>();
@@ -150,7 +150,7 @@ namespace InventoryModule
         private void SwitchCurrentItemIdToNext()
         {
             var arrayOfAvailableItemsIdsCopy = ArrayOfAvailableItemsIds;
-            var indexOfCurrentItemId = Array.IndexOf(arrayOfAvailableItemsIdsCopy, CurrentItemId);
+            int indexOfCurrentItemId = Array.IndexOf(arrayOfAvailableItemsIdsCopy, CurrentItemId);
 
             CurrentItemId =
                 arrayOfAvailableItemsIdsCopy[(indexOfCurrentItemId + 1) % arrayOfAvailableItemsIdsCopy.Length];

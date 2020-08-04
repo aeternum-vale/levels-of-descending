@@ -86,9 +86,9 @@ namespace AdGeneratorModule
 
         private static string Mul(string str, int times)
         {
-            var sb = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
 
-            for (var i = 0; i < times; i++) sb.Append(str);
+            for (int i = 0; i < times; i++) sb.Append(str);
 
             return sb.ToString();
         }
@@ -97,7 +97,7 @@ namespace AdGeneratorModule
         {
             if (!(Random.Range(0, 1f) < NumbersProbability)) return;
 
-            var numbersStr = Random.Range(0, 1f).ToString(CultureInfo.InvariantCulture);
+            string numbersStr = Random.Range(0, 1f).ToString(CultureInfo.InvariantCulture);
             sb.Append(numbersStr.Substring(2, Math.Min(NumbersMaxCount, numbersStr.Length - 3)));
             sb.Append('\n');
         }
@@ -117,17 +117,17 @@ namespace AdGeneratorModule
 
             _header.text = _politeHeaders[Random.Range(0, _politeHeaders.Length)].ToUpper();
 
-            var messageTextSb = new StringBuilder();
-            var messageTextCount = Random.Range(1, MessageTextMaxLineCount + 1);
-            var messageTextValue = _politePhrases[Random.Range(0, _politePhrases.Length)];
+            StringBuilder messageTextSb = new StringBuilder();
+            int messageTextCount = Random.Range(1, MessageTextMaxLineCount + 1);
+            string messageTextValue = _politePhrases[Random.Range(0, _politePhrases.Length)];
 
             AppendRandomNumbersToStringBuilder(ref messageTextSb);
 
-            for (var i = 0; i < messageTextCount; i++)
+            for (int i = 0; i < messageTextCount; i++)
             {
-                var messageTextLineSb = new StringBuilder(messageTextValue);
+                StringBuilder messageTextLineSb = new StringBuilder(messageTextValue);
 
-                for (var j = 0; j < messageTextLineSb.Length; j++)
+                for (int j = 0; j < messageTextLineSb.Length; j++)
                     if (messageTextLineSb[j].Equals(' '))
                     {
                         if (Random.Range(0, 1f) < NewLineProbability) messageTextLineSb[j] = '\n';
@@ -138,7 +138,7 @@ namespace AdGeneratorModule
                             messageTextLineSb[j] = messageTextLineSb[j].ToString().ToUpper()[0];
                     }
 
-                for (var j = 0; j < messageTextLineSb.Length; j++)
+                for (int j = 0; j < messageTextLineSb.Length; j++)
                     if (messageTextLineSb[j].Equals('\n'))
                         messageTextLineSb.Insert(j + 1, GetRandomAmountOfSpaces());
 

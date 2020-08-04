@@ -65,7 +65,7 @@ namespace SelectableObjectsModule
             if (root.transform.childCount == 0)
                 applyStateAction(GetGameObjectMaterial(root));
             else
-                for (var i = 0; i < root.transform.childCount; i++)
+                for (int i = 0; i < root.transform.childCount; i++)
                     ApplyStateToMaterialRecursively(root.transform.GetChild(i).gameObject, applyStateAction);
         }
 
@@ -73,7 +73,7 @@ namespace SelectableObjectsModule
         {
             if (_materialsCache.ContainsKey(go)) return _materialsCache[go];
 
-            var mat = go.GetComponent<MeshRenderer>().material;
+            Material mat = go.GetComponent<MeshRenderer>().material;
             _materialsCache.Add(go, mat);
             return mat;
         }
