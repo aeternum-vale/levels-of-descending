@@ -21,6 +21,8 @@ namespace DoorModule
         [SerializeField] private Material leatherMaterial;
         [SerializeField] private Material metalMaterial;
 
+        [SerializeField] private Material padMaterial2;
+
         private readonly EDoorAction?[] _lastActions = new EDoorAction?[GameConstants.dragonflyCode.Length];
         private GameObject _bellButton;
         private GameObject _doorHandle;
@@ -30,13 +32,12 @@ namespace DoorModule
         private GameObject _frames2;
         private int _lastActionsCursor;
         private GameObject _nameplate;
-        private Material _nameplateMaterial;
+        private Material _nameplateMatComponent;
         private GameObject _pad;
         private DoorPushableDetail[] _pushableDetails;
         private GameObject _root;
         private GameObject _staticDetails;
         protected GameObject DoorBase;
-
         private bool IsDragonflyMarked { get; set; }
 
         private void Awake()
@@ -56,7 +57,7 @@ namespace DoorModule
 
             _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
 
-            _nameplateMaterial = _nameplate.GetComponent<MeshRenderer>().material;
+            _nameplateMatComponent = _nameplate.GetComponent<MeshRenderer>().material;
 
             Randomize();
         }
@@ -82,14 +83,14 @@ namespace DoorModule
         public void MarkWithDragonfly()
         {
             _nameplate.SetActive(true);
-            _nameplateMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
+            _nameplateMatComponent.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
             IsDragonflyMarked = true;
         }
 
         public void UnmarkWithDragonfly()
         {
             _nameplate.SetActive(false);
-            _nameplateMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
+            _nameplateMatComponent.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
             IsDragonflyMarked = false;
         }
 
@@ -111,36 +112,42 @@ namespace DoorModule
 
         protected virtual void Randomize()
         {
-             int doorType = Random.Range(0, 3);
-            
-             switch (doorType)
-             {
-                 case 0: //wood
-                     break;
-            
-                 case 1: //leather
-            
-                     DoorBase.GetComponent<MeshRenderer>().material = leatherMaterial;
-                     break;
-            
-                 case 2: //metal
-            
-                     DoorBase.GetComponent<MeshRenderer>().material = metalMaterial;
-                     
-                     _frames1.SetActive(false);
-                     _frames2.SetActive(true);
-                     
-                     break;
-             }
-            
-             if (doorType == 0 || doorType == 2)
-             {
-                 if (Random.Range(0, 2) == 0)
-                 {
-                     _doorHandleBase1.SetActive(false);
-                     _doorHandleBase2.SetActive(true);
-                 }
-             }
+            if (Random.Range(0, 2) == 0)
+            {
+                _pad.GetComponent<MeshRenderer>().material = padMaterial2;
+            }
+
+            int doorType = Random.Range(0, 3);
+
+            switch (doorType)
+            {
+                case 0: //wood
+                    break;
+
+                case 1: //leather
+
+                    DoorBase.GetComponent<MeshRenderer>().material = leatherMaterial;
+                    break;
+
+                case 2: //metal
+
+                    DoorBase.GetComponent<MeshRenderer>().material = metalMaterial;
+
+                    _frames1.SetActive(false);
+                    _frames2.SetActive(true);
+
+                    break;
+            }
+
+            if (doorType == 0 || doorType == 2)
+            {
+                if (Random.Range(0, 2) == 0)
+                {
+                    _doorHandleBase1.SetActive(false);
+                    _doorHandleBase2.SetActive(true);
+                }
+            }
+
 
             // float offset = Random.Range(0f, 0.1f);
             // DoorBase.transform.position -= new Vector3(0, 0, offset);
