@@ -59,7 +59,6 @@ public static class GameConstants
     public static readonly Dictionary<ESwitchableObjectId, string> switchableObjectPaths =
         new Dictionary<ESwitchableObjectId, string>
         {
-            {ESwitchableObjectId.PAD, "pad"},
             {ESwitchableObjectId.POSTBOX_LEFT_DOOR, "postbox/left_door"},
             {ESwitchableObjectId.POSTBOX_RIGHT_DOOR, "postbox/right_door"},
             {ESwitchableObjectId.E_PANEL, "e-panel/right_door"},
