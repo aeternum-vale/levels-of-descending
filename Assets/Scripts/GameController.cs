@@ -69,7 +69,7 @@ public class GameController : MonoBehaviour
 
         Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
         Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
-        Messenger.AddListener(Events.DragonflyCodeActivated, OnDragonflyCodeActivated);
+        Messenger.AddListener(Events.CowCodeActivated, OnCowCodeActivated);
     }
 
     private bool IsFloorCurrent(Floor floor)
@@ -183,7 +183,7 @@ public class GameController : MonoBehaviour
         UpdateInventoryObjectsPresence();
     }
 
-    private void OnDragonflyCodeActivated()
+    private void OnCowCodeActivated()
     {
         if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
     }

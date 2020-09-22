@@ -28,7 +28,6 @@ public enum ESwitchableObjectId
     ELEVATOR_CALLER_CONNECTOR,
     ELEVATOR_CALLER_PANEL,
     ELEVATOR_CALLER_WIRES,
-    
     PEEPHOLE
 }
 
@@ -42,7 +41,8 @@ public enum EFloorMarkId
 {
     DRAGONFLY,
     RABBIT_AD,
-    RABBIT_SYMBOL
+    RABBIT_SYMBOL,
+    COW
 }
 
 public static class Events
@@ -52,7 +52,7 @@ public static class Events
     public const string InventoryWasUpdated = "INVENTORY_WAS_UPDATED";
     public const string InventoryButtonWasPressed = "INVENTORY_BUTTON_WAS_PRESSED";
     public const string SwitchableObjectWasOpened = "SWITCHABLE_OBJECT_WAS_OPENED";
-    public const string DragonflyCodeActivated = "DRAGONFLY_CODE_ACTIVATED";
+    public const string CowCodeActivated = "DRAGONFLY_CODE_ACTIVATED";
     public const string InventoryItemWasSuccessfullyUsed = "INVENTORY_ITEM_WAS_SUCCESSFULLY_USED";
 }
 
@@ -97,7 +97,7 @@ public static class GameConstants
 
     public static readonly int isPaintingOnPropertyId = Shader.PropertyToID("_IsPaintingOn");
 
-    public static readonly EDoorAction[] dragonflyCode =
+    public static readonly EDoorAction[] cowCode =
     {
         EDoorAction.BELL,
         EDoorAction.BELL,
@@ -114,7 +114,7 @@ public static class GameConstants
             {
                 FirstFloor = 9, Frequency = 3,
                 AssociatedInventoryItems = new[]
-                    {EInventoryItemId.POSTBOX_KEY, EInventoryItemId.LETTER, EInventoryItemId.SCALPEL}
+                    {EInventoryItemId.POSTBOX_KEY, EInventoryItemId.LETTER}
             }
         },
         {
@@ -133,6 +133,15 @@ public static class GameConstants
                 FirstFloor = 9, Frequency = 5,
                 AssociatedInventoryItems = new[]
                     {EInventoryItemId.SCREWDRIVER}
+            }
+        },
+        {
+            EFloorMarkId.COW,
+            new FloorMark
+            {
+                FirstFloor = 10, Frequency = 7,
+                AssociatedInventoryItems = new[]
+                    {EInventoryItemId.SCALPEL}
             }
         }
     };

@@ -21,7 +21,7 @@ namespace DoorModule
         private const string TapeName = "tape";
         private const string PeepholeName = "peephole";
 
-        private readonly EDoorAction?[] _lastActions = new EDoorAction?[GameConstants.dragonflyCode.Length];
+        private readonly EDoorAction?[] _lastActions = new EDoorAction?[GameConstants.cowCode.Length];
         private GameObject _bellButton;
         private GameObject _doorHandle;
         private GameObject _doorHandleBase1;
@@ -40,11 +40,15 @@ namespace DoorModule
 
         protected GameObject DoorBase;
 
+        private bool _isSealedWithTape = false;
+
+        [SerializeField] private Material woodMaterial;
         [SerializeField] private Material leatherMaterial;
         [SerializeField] private Material metalMaterial;
 
         [SerializeField] private Material padMaterial2;
         private bool IsDragonflyMarked { get; set; }
+        private bool IsCowMarked { get; set; }
 
         private void Awake()
         {
@@ -75,7 +79,11 @@ namespace DoorModule
             foreach (DoorPushableDetail pushableDetail in _pushableDetails)
                 pushableDetail.Opened += OnPushableDetailActivated(pushableDetail);
 
-            _peephole.Opened += (s, e) => { _tape.SetActive(true); };
+            _peephole.Opened += (s, e) =>
+            {
+                _tape.SetActive(true);
+                _isSealedWithTape = true;
+            };
             _peephole.Closed += (s, e) => { _tape.SetActive(false); };
         }
 
@@ -94,15 +102,22 @@ namespace DoorModule
         public void MarkWithDragonfly()
         {
             _nameplate.SetActive(true);
-            _nameplateMatComponent.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
+            _nameplate.GetComponent<MeshRenderer>().material = woodMaterial;
             IsDragonflyMarked = true;
         }
 
-        public void UnmarkWithDragonfly()
+        public void MarkWithCow()
+        {
+            _nameplate.SetActive(true);
+            _nameplate.GetComponent<MeshRenderer>().material = leatherMaterial;
+            IsCowMarked = true;
+        }
+
+        public void Unmark()
         {
             _nameplate.SetActive(false);
-            _nameplateMatComponent.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
             IsDragonflyMarked = false;
+            IsCowMarked = false;
         }
 
         private void Interact(EDoorAction action)
@@ -110,15 +125,15 @@ namespace DoorModule
             _lastActions[_lastActionsCursor] = action;
             _lastActionsCursor = (_lastActionsCursor + 1) % _lastActions.Length;
 
-            if (!IsDragonflyMarked) return;
+            if (!IsCowMarked || !_isSealedWithTape) return;
 
-            var dragonflyCode = GameConstants.dragonflyCode;
+            var cowCode = GameConstants.cowCode;
 
-            for (int i = 0; i < dragonflyCode.Length; i++)
-                if (dragonflyCode[i] != _lastActions[(_lastActionsCursor + i) % dragonflyCode.Length])
+            for (int i = 0; i < cowCode.Length; i++)
+                if (cowCode[i] != _lastActions[(_lastActionsCursor + i) % cowCode.Length])
                     return;
 
-            Messenger.Broadcast(Events.DragonflyCodeActivated);
+            Messenger.Broadcast(Events.CowCodeActivated);
         }
 
         protected virtual void Randomize()

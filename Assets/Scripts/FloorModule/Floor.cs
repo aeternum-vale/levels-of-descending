@@ -137,6 +137,10 @@ namespace FloorModule
                 case EFloorMarkId.RABBIT_SYMBOL:
                     _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
                     break;
+                
+                case EFloorMarkId.COW:
+                    _rightDoor.MarkWithCow();
+                    break;
             }
         }
 
@@ -148,7 +152,7 @@ namespace FloorModule
             {
                 case EFloorMarkId.DRAGONFLY:
                     _postboxBaseMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
-                    _leftDoor.UnmarkWithDragonfly();
+                    _leftDoor.Unmark();
                     break;
 
                 case EFloorMarkId.RABBIT_SYMBOL:
