@@ -27,7 +27,9 @@ public enum ESwitchableObjectId
 
     ELEVATOR_CALLER_CONNECTOR,
     ELEVATOR_CALLER_PANEL,
-    ELEVATOR_CALLER_WIRES
+    ELEVATOR_CALLER_WIRES,
+    
+    PEEPHOLE
 }
 
 public enum EDoorAction

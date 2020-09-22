@@ -1,5 +1,6 @@
 using System;
 using Plugins;
+using SelectableObjectsModule;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,11 +18,8 @@ namespace DoorModule
         private const string BellButtonName = "bell-button";
         private const string NameplateName = "nameplate";
         private const string PadName = "pad";
-
-        [SerializeField] private Material leatherMaterial;
-        [SerializeField] private Material metalMaterial;
-
-        [SerializeField] private Material padMaterial2;
+        private const string TapeName = "tape";
+        private const string PeepholeName = "peephole";
 
         private readonly EDoorAction?[] _lastActions = new EDoorAction?[GameConstants.dragonflyCode.Length];
         private GameObject _bellButton;
@@ -37,7 +35,15 @@ namespace DoorModule
         private DoorPushableDetail[] _pushableDetails;
         private GameObject _root;
         private GameObject _staticDetails;
+        private GameObject _tape;
+        private SwitchableObject _peephole;
+
         protected GameObject DoorBase;
+
+        [SerializeField] private Material leatherMaterial;
+        [SerializeField] private Material metalMaterial;
+
+        [SerializeField] private Material padMaterial2;
         private bool IsDragonflyMarked { get; set; }
 
         private void Awake()
@@ -54,6 +60,8 @@ namespace DoorModule
             _nameplate = _root.transform.Find(NameplateName).gameObject;
             _bellButton = _root.transform.Find(BellButtonName).gameObject;
             _pad = _root.transform.Find(PadName).gameObject;
+            _tape = _root.transform.Find(TapeName).gameObject;
+            _peephole = SelectableObject.GetAsChild<SwitchableObject>(_root, PeepholeName);
 
             _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
 
@@ -66,6 +74,9 @@ namespace DoorModule
         {
             foreach (DoorPushableDetail pushableDetail in _pushableDetails)
                 pushableDetail.Opened += OnPushableDetailActivated(pushableDetail);
+
+            _peephole.Opened += (s, e) => { _tape.SetActive(true); };
+            _peephole.Closed += (s, e) => { _tape.SetActive(false); };
         }
 
         private EventHandler OnPushableDetailActivated(DoorPushableDetail detail)
@@ -112,10 +123,7 @@ namespace DoorModule
 
         protected virtual void Randomize()
         {
-            if (Random.Range(0, 2) == 0)
-            {
-                _pad.GetComponent<MeshRenderer>().material = padMaterial2;
-            }
+            if (Random.Range(0, 2) == 0) _pad.GetComponent<MeshRenderer>().material = padMaterial2;
 
             int doorType = Random.Range(0, 3);
 
@@ -140,13 +148,11 @@ namespace DoorModule
             }
 
             if (doorType == 0 || doorType == 2)
-            {
                 if (Random.Range(0, 2) == 0)
                 {
                     _doorHandleBase1.SetActive(false);
                     _doorHandleBase2.SetActive(true);
                 }
-            }
 
 
             // float offset = Random.Range(0f, 0.1f);
