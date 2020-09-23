@@ -158,6 +158,14 @@ namespace FloorModule
                 case EFloorMarkId.RABBIT_SYMBOL:
                     _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
                     break;
+                
+                case EFloorMarkId.RABBIT_AD:
+                    SetFrontWallRandomAd();
+                    break;
+                
+                case EFloorMarkId.COW:
+                    _rightDoor.Unmark();
+                    break;
             }
         }
 
