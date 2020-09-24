@@ -26,7 +26,7 @@ namespace InventoryModule
                 [EInventoryItemId.SCREWDRIVER] = new InventoryItemData(),
                 [EInventoryItemId.INSULATING_TAPE] = new InventoryItemData(),
                 [EInventoryItemId.ELEVATOR_CALLER_BUTTON] = new InventoryItemData {IsDisposable = true},
-                [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData {IsDisposable = true}
+                [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData {IsDisposable = true, IsInStock = true}
             };
 
         private Image _backgroundImageComponent;
