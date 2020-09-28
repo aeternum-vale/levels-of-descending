@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using Utils;
 
 namespace PlayerModule
@@ -13,6 +14,7 @@ namespace PlayerModule
         public bool IsInventoryModeOn { get; set; }
         public float MouseSensitivity { get; } = 1;
 
+        public bool IsCutSceneMoving { get; set; } = false;
 
         private void Start()
         {
@@ -25,9 +27,23 @@ namespace PlayerModule
         {
             if (IsInventoryModeOn) return;
 
+            if (IsCutSceneMoving)
+            {
+                _rotationX = NormalizeAngle(transform.localEulerAngles.x, -90, 90);
+                return;
+            }
+
             _rotationX -= Input.GetAxis("Mouse Y") * MouseSensitivity;
             _rotationX = Mathf.Clamp(_rotationX, _mouseVerticalMin, _mouseVerticalMax);
             transform.localEulerAngles = new Vector3(_rotationX, 0, 0);
+        }
+
+        private static int NormalizeAngle(float value, int start, int end)
+        {
+            int width = end - start;
+            float offsetValue = value - start;
+
+            return (int) (offsetValue + start - (int) (offsetValue / width) * width);
         }
 
         private void OnGUI()

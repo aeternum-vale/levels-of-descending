@@ -54,6 +54,8 @@ public static class Events
     public const string SwitchableObjectWasOpened = "SWITCHABLE_OBJECT_WAS_OPENED";
     public const string CowCodeActivated = "DRAGONFLY_CODE_ACTIVATED";
     public const string InventoryItemWasSuccessfullyUsed = "INVENTORY_ITEM_WAS_SUCCESSFULLY_USED";
+    public const string ElevatorFloorWasTouched = "ELEVATOR_FLOOR_WAS_TOUCHED";
+    public const string PlayerCutSceneMoveCompleted = "PLYER_CUT_SCENE_MOVE_COMPLETED";
 }
 
 public static class GameConstants
@@ -94,6 +96,8 @@ public static class GameConstants
     public static readonly string ground2ColliderObjectName = "ground2";
     public static readonly string stairs1ColliderObjectName = "stairs1";
     public static readonly string stairs2ColliderObjectName = "stairs2";
+    
+    public static readonly string elevatorFloorColliderObjectName = "elevator_floor";
 
     public static readonly int isPaintingOnPropertyId = Shader.PropertyToID("_IsPaintingOn");
 

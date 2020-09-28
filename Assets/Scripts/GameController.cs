@@ -58,7 +58,7 @@ public class GameController : MonoBehaviour
         playerGameObject.transform.localPosition = localPosition;
 
         initPlayerFloor.SetFrontWallRandomAd();
-        
+
         foreach (Floor floor in _floors)
             floor.GenerateRandomTextureProjectorsAndGarbageProps();
     }
@@ -70,6 +70,8 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
         Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
         Messenger.AddListener(Events.CowCodeActivated, OnCowCodeActivated);
+        Messenger.AddListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
+        Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
     }
 
     private bool IsFloorCurrent(Floor floor)
@@ -279,5 +281,24 @@ public class GameController : MonoBehaviour
 
             return;
         }
+    }
+
+    private void OnElevatorFloorWasTouched()
+    {
+        StartEndingCutScene();
+    }
+
+    private void StartEndingCutScene()
+    {
+        Transform playerPhTransform = GetCurrentFloor().PlayerPlaceholder.transform;
+        Transform cameraPhTransform = GetCurrentFloor().PlayerPlaceholder.transform.GetChild(0);
+
+        _player.CutSceneMoveToPosition(playerPhTransform.position, playerPhTransform.eulerAngles,
+            cameraPhTransform.eulerAngles);
+    }
+
+    private void OnPlayerCutSceneMoveCompleted()
+    {
+        GetCurrentFloor().CloseAndElevateElevator();
     }
 }

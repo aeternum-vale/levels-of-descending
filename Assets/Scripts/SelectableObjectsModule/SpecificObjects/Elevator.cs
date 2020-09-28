@@ -6,8 +6,11 @@ namespace SelectableObjectsModule.SpecificObjects
 {
     public class Elevator : MonoBehaviour, IInitStateReturnable
     {
+        private static readonly int ElevatorOpenStateNameHash = Animator.StringToHash("Open");
+        private static readonly int ElevatorCloseAndElevateStateNameHash = Animator.StringToHash("Elevate");
+
         private ElevatorCaller _caller;
-        private Animator _doorsAnimator;
+        private Animator _animator;
         private GameObject _elevatorRoom;
 
         private bool _isDoorsOpened;
@@ -16,13 +19,13 @@ namespace SelectableObjectsModule.SpecificObjects
 
         public void ReturnToInitState(int floorDistanceToPlayer)
         {
-            _doorsAnimator.Play("Idle", -1, 1f);
+            _animator.Play("Idle", -1, 1f);
         }
 
         private void Start()
         {
             _caller = transform.GetComponentInChildren<ElevatorCaller>();
-            _doorsAnimator = transform.Find("elevator_doors").GetComponent<Animator>();
+            _animator = transform.GetComponent<Animator>();
             _elevatorRoom = transform.Find("elevator_room").gameObject;
 
             _caller.CallIsDone += CallIsDone;
@@ -35,7 +38,12 @@ namespace SelectableObjectsModule.SpecificObjects
             _isDoorsOpened = true;
 
             _elevatorRoom.SetActive(true);
-            _doorsAnimator.Play("Open", -1, 0f);
+            _animator.Play(ElevatorOpenStateNameHash, -1, 0f);
+        }
+
+        public void CloseAndElevate()
+        {
+            _animator.Play(ElevatorCloseAndElevateStateNameHash, -1, 0f);
         }
     }
 }

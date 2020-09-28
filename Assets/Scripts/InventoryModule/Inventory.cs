@@ -23,10 +23,11 @@ namespace InventoryModule
                 [EInventoryItemId.LETTER] = new InventoryItemData(),
                 [EInventoryItemId.SCALPEL] = new InventoryItemData(),
                 [EInventoryItemId.E_PANEL_KEY] = new InventoryItemData(),
-                [EInventoryItemId.SCREWDRIVER] = new InventoryItemData() {IsInStock = true},
-                [EInventoryItemId.INSULATING_TAPE] = new InventoryItemData(),
-                [EInventoryItemId.ELEVATOR_CALLER_BUTTON] = new InventoryItemData {IsDisposable = true},
-                [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData {IsDisposable = true}
+                [EInventoryItemId.SCREWDRIVER] = new InventoryItemData(),
+                [EInventoryItemId.INSULATING_TAPE] = new InventoryItemData() {IsInStock = true},
+                [EInventoryItemId.ELEVATOR_CALLER_BUTTON] =
+                    new InventoryItemData {IsDisposable = true, IsInStock = true},
+                [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData {IsDisposable = true, IsInStock = true}
             };
 
         private Image _backgroundImageComponent;

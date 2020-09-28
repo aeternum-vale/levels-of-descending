@@ -21,6 +21,7 @@ namespace FloorModule
         private const string RightDoorObjectName = "right_door_prefab";
         private static readonly int MainTexPropertyId = Shader.PropertyToID("_MainTex");
         private static readonly int FloorNumberPropertyId = Shader.PropertyToID("_FloorNumber");
+
         public static Texture2D LostRabbitAdTexture;
 
         private readonly Dictionary<EInventoryItemId, InventoryObject> _inventoryObjects =
@@ -43,12 +44,16 @@ namespace FloorModule
         private List<IInitStateReturnable> _returnableObjects;
         private Door _rightDoor;
         private Scalpel _scalpel;
+        private Elevator _elevator;
 
         [SerializeField] private DoorController doorController;
 
         public AdGenerator AdGenerator { get; set; }
         private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
         private GarbagePropsGenerator _garbagePropsGenerator;
+        
+        private readonly string _playerPlaceholderName = "player_placeholder";
+        public GameObject PlayerPlaceholder { get; private set; }
         
         private void Start()
         {
@@ -60,6 +65,8 @@ namespace FloorModule
             _ePanelDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.E_PANEL);
             _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_LEFT_DOOR);
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
+            PlayerPlaceholder = transform.Find(_playerPlaceholderName).gameObject;
+            _elevator = transform.Find("elevator").GetComponent<Elevator>();
             
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
@@ -207,6 +214,11 @@ namespace FloorModule
         {
             _textureProjectorPropsGenerator.GenerateProps();
             _garbagePropsGenerator.GenerateProps();
+        }
+
+        public void CloseAndElevateElevator()
+        {
+            _elevator.CloseAndElevate();
         }
     }
 }

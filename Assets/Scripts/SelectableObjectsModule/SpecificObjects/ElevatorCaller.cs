@@ -75,16 +75,19 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnConnectorClicked(object s, SelectableObjectClickedEventArgs e)
         {
-            if (e.SelectedInventoryItemId != EInventoryItemId.ELEVATOR_CALLER_PANEL) return;
-
-            _connector.PreventSwitching = true;
-            _panel.gameObject.SetActive(true);
-
-            _connectorWire1.SetActive(false);
-            _connectorWire2.SetActive(false);
-
-            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
-                EInventoryItemId.ELEVATOR_CALLER_PANEL);
+            CallIsDone?.Invoke(this, EventArgs.Empty);
+            
+            
+            // if (e.SelectedInventoryItemId != EInventoryItemId.ELEVATOR_CALLER_PANEL) return;
+            //
+            // _connector.PreventSwitching = true;
+            // _panel.gameObject.SetActive(true);
+            //
+            // _connectorWire1.SetActive(false);
+            // _connectorWire2.SetActive(false);
+            //
+            // Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
+            //     EInventoryItemId.ELEVATOR_CALLER_PANEL);
         }
 
         private void OnWiresConnectedWithTape(object s, EventArgs e)

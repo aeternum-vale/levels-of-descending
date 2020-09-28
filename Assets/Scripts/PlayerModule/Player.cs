@@ -1,4 +1,6 @@
-﻿using InventoryModule;
+﻿using System;
+using InventoryModule;
+using JetBrains.Annotations;
 using Plugins;
 using SelectableObjectsModule;
 using UnityEngine;
@@ -43,6 +45,8 @@ namespace PlayerModule
         public GameObject LastGround1ColliderTouched { get; private set; }
         public GameObject PrevLastGround1ColliderTouched { get; private set; }
 
+        private bool _IsCutSceneMoving = false;
+
         private void Start()
         {
             _playerCameraComponent = playerCamera.GetComponent<Camera>();
@@ -55,11 +59,14 @@ namespace PlayerModule
         {
             if (!inventory.IsInventoryModeOn)
             {
-                UpdateMouse();
-                UpdateMovement();
-                UpdateStairPace();
-                UpdateSquatting();
-                UpdateCameraY();
+                if (!_IsCutSceneMoving)
+                {
+                    UpdateMouse();
+                    UpdateCameraY();
+                    UpdateMovement();
+                    UpdateStairPace();
+                    UpdateSquatting();
+                }
             }
 
             UpdateUseButton();
@@ -98,7 +105,8 @@ namespace PlayerModule
                 _selectedObject = null;
             }
 
-            Vector3 point = new Vector3(_playerCameraComponent.pixelWidth / 2, _playerCameraComponent.pixelHeight / 2, 0);
+            Vector3 point = new Vector3(_playerCameraComponent.pixelWidth / 2, _playerCameraComponent.pixelHeight / 2,
+                0);
             Ray ray = _playerCameraComponent.ScreenPointToRay(point);
 
             if (!Physics.Raycast(ray, out RaycastHit hit)) return;
@@ -143,6 +151,12 @@ namespace PlayerModule
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
+            if (hit.collider.gameObject.name == GameConstants.elevatorFloorColliderObjectName)
+            {
+                Messenger.Broadcast(Events.ElevatorFloorWasTouched);
+                return;
+            }
+
             if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName &&
                 LastGround1ColliderTouched != hit.collider.gameObject)
             {
@@ -192,6 +206,8 @@ namespace PlayerModule
 
         private void UpdateStairPace()
         {
+            if (_IsCutSceneMoving) return;
+
             if (!_isStairCommonPace)
             {
                 _stairPaceYTargetOffset = 0;
@@ -232,6 +248,22 @@ namespace PlayerModule
         {
             playerCamera.transform.localPosition =
                 new Vector3(0, _startCameraY + _stairPaceYRealOffset - _realSquattingAmount, 0);
+        }
+
+        public void CutSceneMoveToPosition(Vector3 position, Vector3 rotation, Vector3 cameraRotation)
+        {
+            _IsCutSceneMoving = true;
+            playerCamera.IsCutSceneMoving = true;
+
+            iTween.MoveTo(gameObject,
+                iTween.Hash("position", position, "time", 2, "oncomplete", "OnCutSceneMoveComplete"));
+            iTween.RotateTo(gameObject, rotation, 2);
+            iTween.RotateTo(playerCamera.gameObject, cameraRotation, 2);
+        }
+
+        public void OnCutSceneMoveComplete()
+        {
+            Messenger.Broadcast(Events.PlayerCutSceneMoveCompleted);
         }
     }
 }
