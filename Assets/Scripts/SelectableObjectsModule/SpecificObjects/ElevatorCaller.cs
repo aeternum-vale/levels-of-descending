@@ -39,9 +39,6 @@ namespace SelectableObjectsModule.SpecificObjects
             _commonWires = SelectableObject.GetAsChild(_connector.gameObject, ESwitchableObjectId.ELEVATOR_CALLER_WIRES);
             _button = SelectableObject.GetAsChild<PushableObject>(_panel.gameObject, "button");
             _connectorWires = _connector.transform.Find("connector_static_wires").gameObject;
-            
-            Debug.Log(_connectorWires);
-            Debug.Log(_connector.transform.childCount);
 
             _connector.Clicked += OnConnectorClicked;
             _connector.Closed += OnConnectorClosed;
