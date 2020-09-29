@@ -27,6 +27,7 @@ namespace PlayerModule
         private bool _isStairCommonPace;
 
         private float _maxDistanceToSelectableObject = .45f;
+        private float _cutSceneMoveDurationSec = 4f;
         private float _mouseSensitivity;
 
         private Camera _playerCameraComponent;
@@ -269,9 +270,9 @@ namespace PlayerModule
             playerCamera.IsCutSceneMoving = true;
 
             iTween.MoveTo(gameObject,
-                iTween.Hash("position", position, "time", 2, "oncomplete", "OnCutSceneMoveComplete"));
-            iTween.RotateTo(gameObject, rotation, 2);
-            iTween.RotateTo(playerCamera.gameObject, cameraRotation, 2);
+                iTween.Hash("position", position, "time", _cutSceneMoveDurationSec, "oncomplete", "OnCutSceneMoveComplete"));
+            iTween.RotateTo(gameObject, rotation, _cutSceneMoveDurationSec);
+            iTween.RotateTo(playerCamera.gameObject, cameraRotation, _cutSceneMoveDurationSec);
         }
 
         public void OnCutSceneMoveComplete()

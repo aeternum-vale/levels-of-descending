@@ -220,6 +220,11 @@ namespace FloorModule
         {
             Elevator.CloseAndElevate();
         }
+
+        public void HideElevator()
+        {
+            Elevator.gameObject.SetActive(false);
+        }
         
     }
 }
