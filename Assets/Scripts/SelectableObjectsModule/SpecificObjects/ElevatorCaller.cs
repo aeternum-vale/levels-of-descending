@@ -11,8 +11,7 @@ namespace SelectableObjectsModule.SpecificObjects
         private SwitchableObject _commonWires;
         private SwitchableObject _connector;
 
-        private GameObject _connectorWire1;
-        private GameObject _connectorWire2;
+        private GameObject _connectorWires;
 
         private bool _isButtonAdded;
         private bool _isWiresConnected;
@@ -23,8 +22,7 @@ namespace SelectableObjectsModule.SpecificObjects
         public void ReturnToInitState(int floorDistanceToPlayer)
         {
             _panel.gameObject.SetActive(false);
-            _connectorWire1.SetActive(true);
-            _connectorWire2.SetActive(true);
+            _connectorWires.SetActive(true);
 
             _button.gameObject.SetActive(false);
 
@@ -38,17 +36,21 @@ namespace SelectableObjectsModule.SpecificObjects
         {
             _connector = SelectableObject.GetAsChild(gameObject, ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR);
             _panel = SelectableObject.GetAsChild(_connector.gameObject, ESwitchableObjectId.ELEVATOR_CALLER_PANEL);
-            _commonWires = SelectableObject.GetAsChild(_panel.gameObject, ESwitchableObjectId.ELEVATOR_CALLER_WIRES);
+            _commonWires = SelectableObject.GetAsChild(_connector.gameObject, ESwitchableObjectId.ELEVATOR_CALLER_WIRES);
             _button = SelectableObject.GetAsChild<PushableObject>(_panel.gameObject, "button");
-            _connectorWire1 = _connector.transform.Find("wire1_mesh.001").gameObject;
-            _connectorWire2 = _connector.transform.Find("wire2_mesh.001").gameObject;
+            _connectorWires = _connector.transform.Find("connector_static_wires").gameObject;
+            
+            Debug.Log(_connectorWires);
+            Debug.Log(_connector.transform.childCount);
 
             _connector.Clicked += OnConnectorClicked;
-            _panel.Clicked += OnPanelClicked;
-            _commonWires.Opened += OnWiresConnectedWithTape;
+            _connector.Closed += OnConnectorClosed;
 
-            _connector.Closed += OnConnectorOrPanelClosed;
-            _panel.Closed += OnConnectorOrPanelClosed;
+            _panel.Clicked += OnPanelClicked;
+            _panel.Closed += OnPanelClosed;
+            _panel.OpenAnimationCompleted += OnPanelOpenAnimationCompleted;
+
+            _commonWires.Opened += OnWiresConnectedWithTape;
 
             _button.Opened += OnButtonClicked;
         }
@@ -62,6 +64,8 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnPanelClicked(object sender, SelectableObjectClickedEventArgs e)
         {
+            
+            
             if (e.SelectedInventoryItemId != EInventoryItemId.ELEVATOR_CALLER_BUTTON) return;
 
             _panel.PreventSwitching = true;
@@ -75,37 +79,44 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnConnectorClicked(object s, SelectableObjectClickedEventArgs e)
         {
-            CallIsDone?.Invoke(this, EventArgs.Empty);
+            if (e.SelectedInventoryItemId != EInventoryItemId.ELEVATOR_CALLER_PANEL) return;
             
+            _connector.PreventSwitching = true;
+            _panel.gameObject.SetActive(true);
             
-            // if (e.SelectedInventoryItemId != EInventoryItemId.ELEVATOR_CALLER_PANEL) return;
-            //
-            // _connector.PreventSwitching = true;
-            // _panel.gameObject.SetActive(true);
-            //
-            // _connectorWire1.SetActive(false);
-            // _connectorWire2.SetActive(false);
-            //
-            // Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
-            //     EInventoryItemId.ELEVATOR_CALLER_PANEL);
+            _connectorWires.SetActive(false);
+            
+            Messenger<EInventoryItemId>.Broadcast(Events.InventoryItemWasSuccessfullyUsed,
+                EInventoryItemId.ELEVATOR_CALLER_PANEL);
         }
 
         private void OnWiresConnectedWithTape(object s, EventArgs e)
         {
             _isWiresConnected = true;
         }
-
-        private void OnConnectorOrPanelClosed(object s, EventArgs e)
-        {
-            TryToSealConnectorAndPanel();
-        }
-
+        
         private void TryToSealConnectorAndPanel()
         {
             if (_connector.IsOpened || _panel.IsOpened || !_isWiresConnected || !_isButtonAdded) return;
 
             _connector.SealAndDisableGlowing();
             _panel.SealAndDisableGlowing();
+        }
+
+        private void OnPanelOpenAnimationCompleted(object sender, EventArgs e)
+        {
+            _commonWires.gameObject.SetActive(true);
+        }
+
+        private void OnPanelClosed(object sender, EventArgs e)
+        {
+            _commonWires.gameObject.SetActive(false);
+            TryToSealConnectorAndPanel();
+        }
+        
+        private void OnConnectorClosed(object sender, EventArgs e)
+        {
+            TryToSealConnectorAndPanel();
         }
     }
 }

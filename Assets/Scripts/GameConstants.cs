@@ -73,7 +73,7 @@ public static class GameConstants
 
             {ESwitchableObjectId.ELEVATOR_CALLER_CONNECTOR, "elevator/caller/connector"},
             {ESwitchableObjectId.ELEVATOR_CALLER_PANEL, "elevator/caller/connector/panel"},
-            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator/caller/connector/panel/wires"}
+            {ESwitchableObjectId.ELEVATOR_CALLER_WIRES, "elevator/caller/connector/wires"}
         };
 
     public static readonly Dictionary<EInventoryItemId, string> inventoryObjectPaths =
