@@ -45,7 +45,13 @@ namespace PlayerModule
         public GameObject LastGround1ColliderTouched { get; private set; }
         public GameObject PrevLastGround1ColliderTouched { get; private set; }
 
-        private bool _IsCutSceneMoving = false;
+        private bool _isCutSceneMoving = false;
+        private bool _isYBind = false;
+        private Transform _playerTransform;
+
+        private GameObject _bindingPlatform;
+        private float _bindingPlatformStartY;
+        private float _playerYBeforeBinding;
 
         private void Start()
         {
@@ -53,19 +59,26 @@ namespace PlayerModule
             _charController = GetComponent<CharacterController>();
             _mouseSensitivity = playerCamera.MouseSensitivity;
             _startCameraY = playerCamera.transform.localPosition.y;
+            _playerTransform = transform;
         }
 
         private void Update()
         {
             if (!inventory.IsInventoryModeOn)
             {
-                if (!_IsCutSceneMoving)
+                if (!_isCutSceneMoving)
                 {
                     UpdateMouse();
                     UpdateCameraY();
                     UpdateMovement();
                     UpdateStairPace();
                     UpdateSquatting();
+                }
+                
+
+                if (_isYBind)
+                {
+                    UpdateBindY();
                 }
             }
 
@@ -151,7 +164,7 @@ namespace PlayerModule
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
         {
-            if (hit.collider.gameObject.name == GameConstants.elevatorFloorColliderObjectName)
+            if (!_isCutSceneMoving && hit.collider.gameObject.name == GameConstants.elevatorFloorColliderObjectName)
             {
                 Messenger.Broadcast(Events.ElevatorFloorWasTouched);
                 return;
@@ -206,7 +219,7 @@ namespace PlayerModule
 
         private void UpdateStairPace()
         {
-            if (_IsCutSceneMoving) return;
+            if (_isCutSceneMoving) return;
 
             if (!_isStairCommonPace)
             {
@@ -252,7 +265,7 @@ namespace PlayerModule
 
         public void CutSceneMoveToPosition(Vector3 position, Vector3 rotation, Vector3 cameraRotation)
         {
-            _IsCutSceneMoving = true;
+            _isCutSceneMoving = true;
             playerCamera.IsCutSceneMoving = true;
 
             iTween.MoveTo(gameObject,
@@ -264,6 +277,25 @@ namespace PlayerModule
         public void OnCutSceneMoveComplete()
         {
             Messenger.Broadcast(Events.PlayerCutSceneMoveCompleted);
+        }
+
+        public void BindYTo(GameObject platform)
+        {
+            _isYBind = true;
+            _bindingPlatform = platform;
+            _bindingPlatformStartY = platform.transform.position.y;
+            _playerYBeforeBinding = transform.position.y;
+        }
+
+        private void UpdateBindY()
+        {
+            Vector3 pos = _playerTransform.position;
+            
+            _playerTransform.position = new Vector3(
+                pos.x,
+                _playerYBeforeBinding + (_bindingPlatform.transform.position.y - _bindingPlatformStartY),
+                pos.z
+            );
         }
     }
 }

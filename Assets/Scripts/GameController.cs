@@ -299,6 +299,8 @@ public class GameController : MonoBehaviour
 
     private void OnPlayerCutSceneMoveCompleted()
     {
-        GetCurrentFloor().CloseAndElevateElevator();
+        Floor f = GetCurrentFloor();
+        f.CloseAndElevateElevator();
+        _player.BindYTo(f.Elevator.gameObject);
     }
 }

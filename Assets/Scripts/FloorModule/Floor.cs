@@ -44,7 +44,7 @@ namespace FloorModule
         private List<IInitStateReturnable> _returnableObjects;
         private Door _rightDoor;
         private Scalpel _scalpel;
-        private Elevator _elevator;
+        public Elevator Elevator { get; private set; }
 
         [SerializeField] private DoorController doorController;
 
@@ -66,7 +66,7 @@ namespace FloorModule
             _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_LEFT_DOOR);
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
             PlayerPlaceholder = transform.Find(_playerPlaceholderName).gameObject;
-            _elevator = transform.Find("elevator").GetComponent<Elevator>();
+            Elevator = transform.Find("elevator").GetComponent<Elevator>();
             
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
@@ -218,7 +218,8 @@ namespace FloorModule
 
         public void CloseAndElevateElevator()
         {
-            _elevator.CloseAndElevate();
+            Elevator.CloseAndElevate();
         }
+        
     }
 }
