@@ -1,4 +1,5 @@
 ﻿using System;
+using Plugins;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
 
@@ -48,6 +49,11 @@ namespace SelectableObjectsModule.SpecificObjects
         public void CloseAndElevate()
         {
             _animator.Play(ElevatorCloseAndElevateStateNameHash, -1, 0f);
+        }
+
+        private void OnElevating()
+        {
+            Messenger.Broadcast(Events.Elevating);
         }
     }
 }

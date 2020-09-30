@@ -298,5 +298,10 @@ namespace PlayerModule
                 pos.z
             );
         }
+
+        public void Blackout()
+        {
+            playerCamera.Blackout();
+        }
     }
 }

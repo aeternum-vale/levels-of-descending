@@ -72,6 +72,7 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.CowCodeActivated, OnCowCodeActivated);
         Messenger.AddListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
         Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
+        Messenger.AddListener(Events.Elevating, OnElevating);
     }
 
     private bool IsFloorCurrent(Floor floor)
@@ -304,6 +305,11 @@ public class GameController : MonoBehaviour
         Floor f = GetCurrentFloor();
         f.CloseAndElevateElevator();
         _player.BindYTo(f.Elevator.gameObject);
+    }
+
+    private void OnElevating()
+    {
+        _player.Blackout();
     }
 
 }

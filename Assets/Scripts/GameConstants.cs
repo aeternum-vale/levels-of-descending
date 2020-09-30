@@ -56,6 +56,7 @@ public static class Events
     public const string InventoryItemWasSuccessfullyUsed = "INVENTORY_ITEM_WAS_SUCCESSFULLY_USED";
     public const string ElevatorFloorWasTouched = "ELEVATOR_FLOOR_WAS_TOUCHED";
     public const string PlayerCutSceneMoveCompleted = "PLYER_CUT_SCENE_MOVE_COMPLETED";
+    public const string Elevating = "ELEVATING";
 }
 
 public static class GameConstants

@@ -10,11 +10,17 @@ namespace PlayerModule
         private readonly float _mouseVerticalMin = -80;
         private Camera _cameraComponent;
         private float _rotationX;
-        [SerializeField] private Material mat;
+        [SerializeField] private Material blurMaterial;
+        [SerializeField] private Material blackoutMaterial;
         public bool IsInventoryModeOn { get; set; }
         public float MouseSensitivity { get; } = 1;
 
         public bool IsCutSceneMoving { get; set; } = false;
+        
+        private static readonly int BlackoutIntensityId = Shader.PropertyToID("_Intensity");
+        private float _blackoutIntensity = 1f;
+        private float _blackoutIntensityTarget = 0f;
+        private float _blackoutIntensitySpeed = .3f;
 
         private void Start()
         {
@@ -27,6 +33,8 @@ namespace PlayerModule
         {
             if (IsInventoryModeOn) return;
 
+            UpdateBlackoutIntensity();
+            
             if (IsCutSceneMoving)
             {
                 _rotationX = NormalizeAngle(transform.localEulerAngles.x, -90, 90);
@@ -49,6 +57,7 @@ namespace PlayerModule
         private void OnGUI()
         {
             if (IsInventoryModeOn) return;
+            if (IsCutSceneMoving) return;
 
             const int size = 8;
             float posX = _cameraComponent.pixelWidth / 2 - size / 2;
@@ -58,10 +67,7 @@ namespace PlayerModule
 
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
-            if (IsInventoryModeOn)
-                Graphics.Blit(src, dest, mat);
-            else
-                Graphics.Blit(src, dest);
+            Graphics.Blit(src, dest, IsInventoryModeOn ? blurMaterial : blackoutMaterial);
         }
 
         public Texture2D GetBackgroundTexture()
@@ -80,6 +86,33 @@ namespace PlayerModule
             IsInventoryModeOn = false;
             _cameraComponent.targetTexture = null;
             gameObject.SetActive(true);
+        }
+
+        private void UpdateBlackoutIntensity()
+        {
+            float normalizedSpeed = _blackoutIntensitySpeed * Time.deltaTime;
+            
+            if (Mathf.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= normalizedSpeed)
+            {
+                _blackoutIntensity = _blackoutIntensityTarget;
+            }
+            else
+            {
+                if (_blackoutIntensity < _blackoutIntensityTarget)
+                {
+                    _blackoutIntensity += normalizedSpeed;
+                }
+                else if (_blackoutIntensity > _blackoutIntensityTarget)
+                {
+                    _blackoutIntensity -= normalizedSpeed;
+                }
+            }
+            
+            blackoutMaterial.SetFloat(BlackoutIntensityId, _blackoutIntensity);
+        }
+        public void Blackout()
+        {
+            _blackoutIntensityTarget = 1f;
         }
     }
 }
