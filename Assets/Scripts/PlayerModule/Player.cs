@@ -61,6 +61,8 @@ namespace PlayerModule
             _mouseSensitivity = playerCamera.MouseSensitivity;
             _startCameraY = playerCamera.transform.localPosition.y;
             _playerTransform = transform;
+
+            StartCoroutine(playerCamera.FadeIn());
         }
 
         private void Update()
@@ -299,9 +301,9 @@ namespace PlayerModule
             );
         }
 
-        public void Blackout()
+        public void FadeOut()
         {
-            playerCamera.Blackout();
+            StartCoroutine(playerCamera.FadeOut());
         }
     }
 }

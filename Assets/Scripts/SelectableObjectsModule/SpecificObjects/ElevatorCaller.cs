@@ -74,6 +74,8 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnConnectorClicked(object s, SelectableObjectClickedEventArgs e)
         {
+            CallIsDone?.Invoke(this, EventArgs.Empty);
+
             if (e.SelectedInventoryItemId != EInventoryItemId.ELEVATOR_CALLER_PANEL) return;
             
             _connector.PreventSwitching = true;

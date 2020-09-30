@@ -309,7 +309,7 @@ public class GameController : MonoBehaviour
 
     private void OnElevating()
     {
-        _player.Blackout();
+        _player.FadeOut();
     }
 
 }
