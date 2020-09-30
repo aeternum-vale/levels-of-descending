@@ -10,7 +10,6 @@ namespace SelectableObjectsModule
     {
         public static readonly int defaultSwitchStateNameHash = Animator.StringToHash("Switch");
         private static readonly int DirectionParamHash = Animator.StringToHash("Direction");
-        private static readonly int IdleStateNameHash = Animator.StringToHash("Idle");
 
         private Animator _animator;
         [SerializeField] private bool hasValueOfNecessaryInventoryItem;
@@ -131,7 +130,7 @@ namespace SelectableObjectsModule
             {
                 if (immediately)
                 {
-                    _animator.Play(IdleStateNameHash, -1, 1f);
+                    _animator.Play(GameConstants.idleStateNameHash, -1, 1f);
                 }
                 else
                 {

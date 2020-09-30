@@ -19,7 +19,11 @@ namespace SelectableObjectsModule.SpecificObjects
 
         public void ReturnToInitState(int floorDistanceToPlayer)
         {
-            _animator.Play("Idle", -1, 1f);
+            if (floorDistanceToPlayer <= 1) return;
+            
+            _animator.Play(GameConstants.idleStateNameHash, -1, 1f);
+            _isDoorsOpened = false;
+            _elevatorRoom.SetActive(false);
         }
 
         private void Start()

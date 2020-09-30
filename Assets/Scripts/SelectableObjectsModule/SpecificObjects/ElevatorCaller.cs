@@ -61,8 +61,6 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnPanelClicked(object sender, SelectableObjectClickedEventArgs e)
         {
-            
-            
             if (e.SelectedInventoryItemId != EInventoryItemId.ELEVATOR_CALLER_BUTTON) return;
 
             _panel.PreventSwitching = true;

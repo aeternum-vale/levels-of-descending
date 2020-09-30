@@ -100,6 +100,9 @@ public static class GameConstants
     public static readonly string elevatorFloorColliderObjectName = "elevator_floor";
 
     public static readonly int isPaintingOnPropertyId = Shader.PropertyToID("_IsPaintingOn");
+    
+    public static readonly int idleStateNameHash = Animator.StringToHash("Idle");
+
 
     public static readonly EDoorAction[] cowCode =
     {
