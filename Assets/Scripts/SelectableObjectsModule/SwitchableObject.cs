@@ -37,6 +37,7 @@ namespace SelectableObjectsModule
 
         public void ReturnToInitState(int floorDistanceToPlayer)
         {
+            if (IsDependent) return;
             if (floorDistanceToPlayer < InitStateSafeDistanceToPlayer) return;
 
             Close(true);
