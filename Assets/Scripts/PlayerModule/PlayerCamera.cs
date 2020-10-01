@@ -124,7 +124,6 @@ namespace PlayerModule
 
         private void UpdateBlackoutIntensity()
         {
-            Debug.Log(_blackoutIntensity);
             if (!_blackoutIntensityIsLocked)
             {
                 float value = (float)((Math.Sin(Time.time  * BlackoutIdleTimeMultiplier) + 1) / 2) *
