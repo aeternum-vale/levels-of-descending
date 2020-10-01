@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using UnityEngine;
 using Utils;
 
@@ -7,24 +6,24 @@ namespace PlayerModule
 {
     public class PlayerCamera : MonoBehaviour
     {
+        private const float BlackoutIntensitySpeed = .25f;
+        private const float BlackoutIdleIntensityMax = .25f;
+        private const float BlackoutIdleIntensityMin = 0f;
+        private const float BlackoutIdleTimeMultiplier = 1f;
+
+        private static readonly int BlackoutIntensityId = Shader.PropertyToID("_Intensity");
         private readonly float _mouseVerticalMax = 70;
         private readonly float _mouseVerticalMin = -80;
+        private float _blackoutIntensity = 1f;
+        private float _blackoutIntensityTarget = 1f;
         private Camera _cameraComponent;
         private float _rotationX;
-        [SerializeField] private Material blurMaterial;
         [SerializeField] private Material blackoutMaterial;
+        [SerializeField] private Material blurMaterial;
         public bool IsInventoryModeOn { get; set; }
         public float MouseSensitivity { get; } = 1;
 
-        public bool IsCutSceneMoving { get; set; } = false;
-
-        private static readonly int BlackoutIntensityId = Shader.PropertyToID("_Intensity");
-        private float _blackoutIntensity = 1f;
-        private static readonly float BlackoutIntensitySpeed = .005f;
-        private static readonly float BlackoutIdleIntensityMax = .25f;
-        private static readonly float BlackoutIdleIntensityMin = 0f;
-        private static readonly float BlackoutIdleTimeMultiplier = 1f;
-        private bool _blackoutIntensityIsLocked = false;
+        public bool IsCutSceneMoving { get; set; }
 
         private void Start()
         {
@@ -35,9 +34,9 @@ namespace PlayerModule
 
         private void Update()
         {
-            if (IsInventoryModeOn) return;
-
             UpdateBlackoutIntensity();
+
+            if (IsInventoryModeOn) return;
 
             if (IsCutSceneMoving)
             {
@@ -92,46 +91,47 @@ namespace PlayerModule
             gameObject.SetActive(true);
         }
 
-
-        public IEnumerator FadeOut()
+        public void FadeOut()
         {
-            _blackoutIntensityIsLocked = true;
-            yield return StartCoroutine(AnimateBlackoutIntensity(1f));
+            _blackoutIntensityTarget = 1f;
         }
 
-        public IEnumerator FadeIn()
+        public void FadeIn()
         {
-            _blackoutIntensityIsLocked = true;
-            yield return StartCoroutine(AnimateBlackoutIntensity(0f));
-            _blackoutIntensityIsLocked = false;
-        }
-
-        private IEnumerator AnimateBlackoutIntensity(float target)
-        {
-            while (Mathf.Abs(_blackoutIntensity - target) > BlackoutIntensitySpeed)
-            {
-                if (_blackoutIntensity < target)
-                    _blackoutIntensity += BlackoutIntensitySpeed;
-                else if (_blackoutIntensity > target)
-                    _blackoutIntensity -= BlackoutIntensitySpeed;
-
-                yield return new WaitForFixedUpdate();
-            }
-
-            _blackoutIntensity = target;
-            yield return null;
+            _blackoutIntensityTarget = 0f;
         }
 
         private void UpdateBlackoutIntensity()
         {
-            if (!_blackoutIntensityIsLocked)
+            float normalizedSpeed = BlackoutIntensitySpeed * Time.deltaTime;
+
+            if (Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) > 0.005)
             {
-                float value = (float)((Math.Sin(Time.time  * BlackoutIdleTimeMultiplier) + 1) / 2) *
+                if (Mathf.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= normalizedSpeed)
+                {
+                    _blackoutIntensity = _blackoutIntensityTarget;
+                }
+
+                else
+                {
+                    if (_blackoutIntensity < _blackoutIntensityTarget)
+                        _blackoutIntensity += normalizedSpeed;
+
+                    else if (_blackoutIntensity > _blackoutIntensityTarget)
+                        _blackoutIntensity -= normalizedSpeed;
+                }
+            }
+            else
+            {
+                float value = (float) ((Math.Sin(Time.time * BlackoutIdleTimeMultiplier) + 1) / 2) *
                     (BlackoutIdleIntensityMax - BlackoutIdleIntensityMin) + BlackoutIdleIntensityMin;
 
                 float diff = Mathf.Abs(value - _blackoutIntensity);
-                if (diff <= BlackoutIntensitySpeed)
+                if (diff <= normalizedSpeed)
+                {
                     _blackoutIntensity = value;
+                    _blackoutIntensityTarget = value;
+                }
             }
 
             blackoutMaterial.SetFloat(BlackoutIntensityId, _blackoutIntensity);

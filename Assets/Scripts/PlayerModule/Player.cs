@@ -1,6 +1,4 @@
-﻿using System;
-using InventoryModule;
-using JetBrains.Annotations;
+﻿using InventoryModule;
 using Plugins;
 using SelectableObjectsModule;
 using UnityEngine;
@@ -14,23 +12,31 @@ namespace PlayerModule
         private static readonly float StairPaceYSpeed = 0.02f;
         private static readonly float StairPaceYAmplitude = 0.2f;
         private static readonly float StairPaceYFrequency = 20f;
+        private readonly float _cutSceneMoveDurationSec = 4f;
         private readonly float _gravity = -9.8f;
 
         private readonly float _speed = 1.5f;
         private readonly float _squattingMaxAmount = 2f;
         private readonly float _squattingSpeed = 3f;
+
+        private GameObject _bindingPlatform;
+        private float _bindingPlatformStartY;
         private CharacterController _charController;
         private GameObject _colliderCarrier;
+
+        private bool _isCutSceneMoving;
         private bool _isGround1Last;
         private bool _isStair1Pace;
 
         private bool _isStairCommonPace;
+        private bool _isYBind;
 
         private float _maxDistanceToSelectableObject = .45f;
-        private float _cutSceneMoveDurationSec = 4f;
         private float _mouseSensitivity;
 
         private Camera _playerCameraComponent;
+        private Transform _playerTransform;
+        private float _playerYBeforeBinding;
         private bool _prevIsStairPace;
         private float _realSquattingAmount;
 
@@ -46,14 +52,6 @@ namespace PlayerModule
         public GameObject LastGround1ColliderTouched { get; private set; }
         public GameObject PrevLastGround1ColliderTouched { get; private set; }
 
-        private bool _isCutSceneMoving = false;
-        private bool _isYBind = false;
-        private Transform _playerTransform;
-
-        private GameObject _bindingPlatform;
-        private float _bindingPlatformStartY;
-        private float _playerYBeforeBinding;
-
         private void Start()
         {
             _playerCameraComponent = playerCamera.GetComponent<Camera>();
@@ -62,7 +60,7 @@ namespace PlayerModule
             _startCameraY = playerCamera.transform.localPosition.y;
             _playerTransform = transform;
 
-            StartCoroutine(playerCamera.FadeIn());
+            playerCamera.FadeIn();
         }
 
         private void Update()
@@ -77,12 +75,9 @@ namespace PlayerModule
                     UpdateStairPace();
                     UpdateSquatting();
                 }
-                
 
-                if (_isYBind)
-                {
-                    UpdateBindY();
-                }
+
+                if (_isYBind) UpdateBindY();
             }
 
             UpdateUseButton();
@@ -272,7 +267,9 @@ namespace PlayerModule
             playerCamera.IsCutSceneMoving = true;
 
             iTween.MoveTo(gameObject,
-                iTween.Hash("position", position, "time", _cutSceneMoveDurationSec, "oncomplete", "OnCutSceneMoveComplete"));
+                iTween.Hash("position", position,
+                    "time", _cutSceneMoveDurationSec,
+                    "oncomplete", "OnCutSceneMoveComplete"));
             iTween.RotateTo(gameObject, rotation, _cutSceneMoveDurationSec);
             iTween.RotateTo(playerCamera.gameObject, cameraRotation, _cutSceneMoveDurationSec);
         }
@@ -293,7 +290,7 @@ namespace PlayerModule
         private void UpdateBindY()
         {
             Vector3 pos = _playerTransform.position;
-            
+
             _playerTransform.position = new Vector3(
                 pos.x,
                 _playerYBeforeBinding + (_bindingPlatform.transform.position.y - _bindingPlatformStartY),
@@ -303,7 +300,7 @@ namespace PlayerModule
 
         public void FadeOut()
         {
-            StartCoroutine(playerCamera.FadeOut());
+            playerCamera.FadeOut();
         }
     }
 }
