@@ -7,7 +7,7 @@ namespace PlayerModule
     public class PlayerCamera : MonoBehaviour
     {
         private const float BlackoutIntensitySpeed = .25f;
-        private const float BlackoutIdleIntensityMax = .25f;
+        private const float BlackoutIdleIntensityMax = .2f;
         private const float BlackoutIdleIntensityMin = 0f;
         private const float BlackoutIdleTimeMultiplier = 1f;
 
