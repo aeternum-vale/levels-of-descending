@@ -10,7 +10,7 @@ Shader "Custom/AdShader" {
 
 		_RimColor("Rim Color", Color) = (0.26,0.19,0.16,0.0)
 		_RimPower("Rim Power", Range(0.5,8.0)) = 3.0
-		[MaterialToggle] _IsSelected("Is Enabled", Float) = 0
+		[MaterialToggle] _IsRimLightEnabled("Is Rim Light Enabled", Float) = 0
 	}
 		SubShader{
 			Tags { "RenderType" = "Opaque" }
@@ -37,7 +37,7 @@ Shader "Custom/AdShader" {
 			float4 _RimColor;
 			float _RimPower;
 			float _MainTextureIntensityPower;
-			int _IsSelected;
+			int _IsRimLightEnabled;
 
 			UNITY_INSTANCING_BUFFER_START(Props)
 			UNITY_INSTANCING_BUFFER_END(Props)
@@ -52,7 +52,7 @@ Shader "Custom/AdShader" {
 
 				o.Albedo = (main_color + (1.0 - main_color.r) * intensity) * paper_color;
 
-				if (_IsSelected) {
+				if (_IsRimLightEnabled) {
 					half rim = 1.0 - saturate(dot(normalize(IN.viewDir), o.Normal));
 					o.Emission = _RimColor.rgb * pow(rim, _RimPower);
 				}
