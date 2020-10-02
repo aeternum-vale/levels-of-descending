@@ -201,15 +201,9 @@ public class GameController : MonoBehaviour
 
             floor.ReturnAllObjectsToInitState(floorDistanceToPlayer);
 
-            if (floorDistanceToPlayer == 2)
-            {
-                floor.GenerateRandomTextureProjectorsAndGarbageProps();
-            }
+            if (floorDistanceToPlayer == 2) floor.GenerateRandomTextureProjectorsAndGarbageProps();
 
-            if (floorDistanceToPlayer == 1)
-            {
-                floor.SetFrontWallRandomAd();
-            }
+            if (floorDistanceToPlayer == 1) floor.SetFrontWallRandomAd();
         });
 
         UpdateInventoryObjectsPresence();
@@ -220,7 +214,7 @@ public class GameController : MonoBehaviour
     {
         ForEachFloorExceptCurrent(floor =>
         {
-            floor.HideAllInventoryObjects();
+            floor.HideSomeInventoryObjects(id => inventory.Contains(id));
 
             if (!inventory.Contains(EInventoryItemId.ELEVATOR_CALLER_PANEL))
                 floor.ShowInventoryObject(EInventoryItemId.ELEVATOR_CALLER_PANEL);
@@ -262,6 +256,12 @@ public class GameController : MonoBehaviour
             EFloorMarkId id = floorMarkKeyValuePair.Key;
             FloorMark floorMarkValue = floorMarkKeyValuePair.Value;
 
+            foreach (EInventoryItemId inventoryItemId in floorMarkValue.AssociatedInventoryItems)
+            {
+                nextHighFloor.HideInventoryObject(inventoryItemId);
+                nextLowFloor.HideInventoryObject(inventoryItemId);
+            }
+
             if (!floorMarkValue.IsFloorMarked(nextFakeFloorNumber)) continue;
 
             bool playerHaveAllAssociatedInventoryItems =
@@ -301,7 +301,7 @@ public class GameController : MonoBehaviour
     private void OnPlayerCutSceneMoveCompleted()
     {
         ForEachFloorExceptCurrent(floor => floor.HideElevator());
-        
+
         Floor f = GetCurrentFloor();
         f.CloseAndElevateElevator();
         _player.BindYTo(f.Elevator.gameObject);
@@ -311,5 +311,4 @@ public class GameController : MonoBehaviour
     {
         _player.FadeOut();
     }
-
 }

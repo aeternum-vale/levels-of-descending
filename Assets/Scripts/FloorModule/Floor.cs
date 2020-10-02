@@ -34,27 +34,27 @@ namespace FloorModule
             {EFloorMarkId.RABBIT_SYMBOL, false}
         };
 
+        private readonly string _playerPlaceholderName = "player_placeholder";
+
         private Material _adMaterial;
         private SwitchableObject _ePanelDoor;
         private Material _ePanelDoorMaterial;
         private Material _frontWallMaterial;
+        private GarbagePropsGenerator _garbagePropsGenerator;
         private Door _leftDoor;
-        private SwitchableObject _postboxDoor;
         private Material _postboxBaseMaterial;
+        private SwitchableObject _postboxDoor;
         private List<IInitStateReturnable> _returnableObjects;
         private Door _rightDoor;
         private Scalpel _scalpel;
-        public Elevator Elevator { get; private set; }
+        private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
 
         [SerializeField] private DoorController doorController;
 
+        public Elevator Elevator { get; private set; }
         public AdGenerator AdGenerator { get; set; }
-        private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
-        private GarbagePropsGenerator _garbagePropsGenerator;
-        
-        private readonly string _playerPlaceholderName = "player_placeholder";
         public GameObject PlayerPlaceholder { get; private set; }
-        
+
         private void Start()
         {
             _postboxBaseMaterial =
@@ -67,7 +67,7 @@ namespace FloorModule
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
             PlayerPlaceholder = transform.Find(_playerPlaceholderName).gameObject;
             Elevator = transform.Find("elevator").GetComponent<Elevator>();
-            
+
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
                 .ForEach(io => _inventoryObjects.Add(io.objectId, io));
@@ -80,7 +80,7 @@ namespace FloorModule
         {
             _textureProjectorPropsGenerator = transform.GetComponentInChildren<TextureProjectorPropsGenerator>();
             _garbagePropsGenerator = transform.GetComponentInChildren<GarbagePropsGenerator>();
-            
+
             _frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
                 .GetComponent<MeshRenderer>().material;
             _adMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
@@ -116,6 +116,11 @@ namespace FloorModule
             _inventoryObjects.Keys.ToList().ForEach(HideInventoryObject);
         }
 
+        public void HideSomeInventoryObjects(Func<EInventoryItemId, bool> condition)
+        {
+            _inventoryObjects.Keys.Where(condition).ToList().ForEach(HideInventoryObject);
+        }
+
         public void SetFloorDrawnNumber(int number)
         {
             _frontWallMaterial.SetFloat(FloorNumberPropertyId, number);
@@ -144,7 +149,7 @@ namespace FloorModule
                 case EFloorMarkId.RABBIT_SYMBOL:
                     _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
                     break;
-                
+
                 case EFloorMarkId.COW:
                     _rightDoor.MarkWithCow();
                     break;
@@ -165,11 +170,11 @@ namespace FloorModule
                 case EFloorMarkId.RABBIT_SYMBOL:
                     _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
                     break;
-                
+
                 case EFloorMarkId.RABBIT_AD:
                     SetFrontWallRandomAd();
                     break;
-                
+
                 case EFloorMarkId.COW:
                     _rightDoor.Unmark();
                     break;
@@ -225,6 +230,5 @@ namespace FloorModule
         {
             Elevator.gameObject.SetActive(false);
         }
-        
     }
 }

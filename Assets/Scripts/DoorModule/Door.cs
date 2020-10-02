@@ -28,25 +28,24 @@ namespace DoorModule
         private GameObject _doorHandleBase2;
         private GameObject _frames1;
         private GameObject _frames2;
+
+        private bool _isSealedWithTape;
         private int _lastActionsCursor;
         private GameObject _nameplate;
         private Material _nameplateMatComponent;
         private GameObject _pad;
+        private SwitchableObject _peephole;
         private DoorPushableDetail[] _pushableDetails;
         private GameObject _root;
         private GameObject _staticDetails;
         private GameObject _tape;
-        private SwitchableObject _peephole;
 
         protected GameObject DoorBase;
-
-        private bool _isSealedWithTape = false;
-
-        [SerializeField] private Material woodMaterial;
         [SerializeField] private Material leatherMaterial;
         [SerializeField] private Material metalMaterial;
-
         [SerializeField] private Material padMaterial2;
+        [SerializeField] private Material woodMaterial;
+
         private bool IsDragonflyMarked { get; set; }
         private bool IsCowMarked { get; set; }
 
@@ -84,7 +83,11 @@ namespace DoorModule
                 _tape.SetActive(true);
                 _isSealedWithTape = true;
             };
-            _peephole.Closed += (s, e) => { _tape.SetActive(false); };
+            _peephole.Closed += (s, e) =>
+            {
+                _tape.SetActive(false);
+                _isSealedWithTape = false;
+            };
         }
 
         private EventHandler OnPushableDetailActivated(DoorPushableDetail detail)
