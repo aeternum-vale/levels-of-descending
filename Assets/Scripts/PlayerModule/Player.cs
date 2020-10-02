@@ -87,6 +87,7 @@ namespace PlayerModule
         private void UpdateInventoryButton()
         {
             if (!Input.GetButtonDown("Inventory")) return;
+            if (playerCamera.IsCutSceneMoving) return;
 
             if (!inventory.IsInventoryModeOn)
             {
