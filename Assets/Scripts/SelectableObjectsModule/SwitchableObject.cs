@@ -12,9 +12,12 @@ namespace SelectableObjectsModule
         private static readonly int DirectionParamHash = Animator.StringToHash("Direction");
 
         private Animator _animator;
+
         [SerializeField] private bool hasValueOfNecessaryInventoryItem;
 
         [SerializeField] private ESwitchableObjectId id;
+
+        [SerializeField] private int initStateSafeDistanceToPlayer = 1;
 
         protected bool IsAnimationOn;
         [SerializeField] private bool isDependent;
@@ -58,8 +61,11 @@ namespace SelectableObjectsModule
         protected override void Awake()
         {
             base.Awake();
+
             if (hasValueOfNecessaryInventoryItem)
                 NecessaryInventoryItem = necessaryInventoryItem;
+
+            InitStateSafeDistanceToPlayer = initStateSafeDistanceToPlayer;
 
             AnimationNameHash = defaultSwitchStateNameHash;
             IsDependent = isDependent;

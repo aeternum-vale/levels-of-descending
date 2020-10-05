@@ -20,8 +20,16 @@ public enum ESwitchableObjectId
     POSTBOX_LEFT_DOOR,
     POSTBOX_RIGHT_DOOR,
     E_PANEL,
-    AD,
-    AD_COVERING,
+    
+    ELEVATOR_AD,
+    ELEVATOR_AD_COVERING,
+    
+    GC_1_AD,
+    GC_1_AD_COVERING,
+    
+    GC_2_AD,
+    GC_2_AD_COVERING,
+    
     GARBAGE_CHUTE_DOOR,
     GARBAGE_CHUTE_DOOR_HINGE,
 
@@ -67,8 +75,16 @@ public static class GameConstants
             {ESwitchableObjectId.POSTBOX_LEFT_DOOR, "postbox/left_door"},
             {ESwitchableObjectId.POSTBOX_RIGHT_DOOR, "postbox/right_door"},
             {ESwitchableObjectId.E_PANEL, "e-panel/right_door"},
-            {ESwitchableObjectId.AD, "bulletin_board_elevator/ad"},
-            {ESwitchableObjectId.AD_COVERING, "bulletin_board_elevator/covering"},
+            
+            {ESwitchableObjectId.ELEVATOR_AD, "bulletin-board-elevator/ad"},
+            {ESwitchableObjectId.ELEVATOR_AD_COVERING, "bulletin-board-elevator/covering"},
+            
+            {ESwitchableObjectId.GC_1_AD, "bulletin-board-gc/ad"},
+            {ESwitchableObjectId.GC_1_AD_COVERING, "bulletin-board-gc/covering"},
+            
+            {ESwitchableObjectId.GC_2_AD, "bulletin-board-gc_2/ad"},
+            {ESwitchableObjectId.GC_2_AD_COVERING, "bulletin-board-gc_2/covering"},
+            
             {ESwitchableObjectId.GARBAGE_CHUTE_DOOR, "garbage_chute/gc-door"},
             {ESwitchableObjectId.GARBAGE_CHUTE_DOOR_HINGE, "garbage_chute/gc-hinge"},
 

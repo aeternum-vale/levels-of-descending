@@ -4,10 +4,12 @@ using System.Linq;
 using AdGeneratorModule;
 using DoorModule;
 using FloorModule.PropsGenerator;
+using ResourcesControllerModule;
 using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace FloorModule
 {
@@ -22,8 +24,6 @@ namespace FloorModule
         private static readonly int MainTexPropertyId = Shader.PropertyToID("_MainTex");
         private static readonly int FloorNumberPropertyId = Shader.PropertyToID("_FloorNumber");
 
-        public static Texture2D LostRabbitAdTexture;
-
         private readonly Dictionary<EInventoryItemId, InventoryObject> _inventoryObjects =
             new Dictionary<EInventoryItemId, InventoryObject>();
 
@@ -36,11 +36,14 @@ namespace FloorModule
 
         private readonly string _playerPlaceholderName = "player_placeholder";
 
-        private Material _adMaterial;
+        private Material _elevatorAdMaterial;
+
         private SwitchableObject _ePanelDoor;
         private Material _ePanelDoorMaterial;
         private Material _frontWallMaterial;
         private GarbagePropsGenerator _garbagePropsGenerator;
+        private Material _gc1AdMaterial;
+        private Material _gc2AdMaterial;
         private Door _leftDoor;
         private Material _postboxBaseMaterial;
         private SwitchableObject _postboxDoor;
@@ -51,8 +54,9 @@ namespace FloorModule
 
         [SerializeField] private DoorController doorController;
 
-        public Elevator Elevator { get; private set; }
+        public ResourcesController ResourcesController { get; set; }
         public AdGenerator AdGenerator { get; set; }
+        public Elevator Elevator { get; private set; }
         public GameObject PlayerPlaceholder { get; private set; }
 
         private void Start()
@@ -74,6 +78,12 @@ namespace FloorModule
 
             _ePanelDoor.OpenCondition = () => _markStates[EFloorMarkId.RABBIT_SYMBOL];
             _postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
+
+            if (AdGenerator == null) throw new Exception("AdGenerator is not provided to the floor");
+            if (ResourcesController == null) throw new Exception("ResourcesController is not provided to the floor");
+            if (doorController == null) throw new Exception("doorController is not provided to the floor");
+
+            SetGcAdsRandomTextures();
         }
 
         private void Awake()
@@ -83,12 +93,15 @@ namespace FloorModule
 
             _frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
                 .GetComponent<MeshRenderer>().material;
-            _adMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.AD)).GetComponent<MeshRenderer>()
+
+            _elevatorAdMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.ELEVATOR_AD))
+                .GetComponent<MeshRenderer>()
                 .material;
 
-            _ePanelDoorMaterial = transform.Find("e-panel/right_door").GetComponent<MeshRenderer>().material;
+            _gc1AdMaterial = transform.Find("bulletin-board-gc/ad").GetComponent<MeshRenderer>().material;
+            _gc2AdMaterial = transform.Find("bulletin-board-gc_2/ad").GetComponent<MeshRenderer>().material;
 
-            LostRabbitAdTexture = Resources.Load<Texture2D>("Textures/rabbit");
+            _ePanelDoorMaterial = transform.Find("e-panel/right_door").GetComponent<MeshRenderer>().material;
         }
 
         public void ReturnAllObjectsToInitState(int floorDistanceToPlayer)
@@ -143,7 +156,7 @@ namespace FloorModule
                     break;
 
                 case EFloorMarkId.RABBIT_AD:
-                    _adMaterial.SetTexture(MainTexPropertyId, LostRabbitAdTexture);
+                    SetLostRabbitTextureToElevatorAd();
                     break;
 
                 case EFloorMarkId.RABBIT_SYMBOL:
@@ -153,6 +166,9 @@ namespace FloorModule
                 case EFloorMarkId.COW:
                     _rightDoor.MarkWithCow();
                     break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(id), id, null);
             }
         }
 
@@ -172,12 +188,15 @@ namespace FloorModule
                     break;
 
                 case EFloorMarkId.RABBIT_AD:
-                    SetFrontWallRandomAd();
+                    SetElevatorAdRandomTexture();
                     break;
 
                 case EFloorMarkId.COW:
                     _rightDoor.Unmark();
                     break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(id), id, null);
             }
         }
 
@@ -186,11 +205,38 @@ namespace FloorModule
             foreach (EFloorMarkId key in _markStates.Keys.ToList()) ResetMark(key);
         }
 
-        public void SetFrontWallRandomAd()
+        public void SetElevatorAdRandomTexture()
         {
-            if (AdGenerator == null) throw new Exception("AdGenerator is not provided to the floor");
+            SetAdRandomTexture(_elevatorAdMaterial);
+        }
 
-            _adMaterial.SetTexture(MainTexPropertyId, AdGenerator.GetRandomAdTexture());
+        public void SetAdRandomTexture(Material adMaterial)
+        {
+            if (Random.Range(0, 10) <= 3)
+            {
+                int randomIndex = Random.Range(0, ResourcesController.StaticAdPicTextures.Length);
+                adMaterial.SetTexture(MainTexPropertyId, ResourcesController.StaticAdPicTextures[randomIndex]);
+            }
+            else
+            {
+                adMaterial.SetTexture(MainTexPropertyId, AdGenerator.GetRandomAdTexture());
+            }
+        }
+
+        public void SetLostRabbitTextureToElevatorAd()
+        {
+            _elevatorAdMaterial.SetTexture(MainTexPropertyId, ResourcesController.LostRabbitAdTexture);
+        }
+
+        public void SetHandsTextureToElevatorAd()
+        {
+            _elevatorAdMaterial.SetTexture(MainTexPropertyId, ResourcesController.HandsTexture);
+        }
+
+        public void SetGcAdsRandomTextures()
+        {
+            SetAdRandomTexture(_gc1AdMaterial);
+            SetAdRandomTexture(_gc2AdMaterial);
         }
 
         public void UpdateDoors()

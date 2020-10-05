@@ -6,6 +6,7 @@ using FloorModule;
 using InventoryModule;
 using PlayerModule;
 using Plugins;
+using ResourcesControllerModule;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -27,6 +28,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private GameObject floorPrefab;
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
+    [SerializeField] private ResourcesController resourcesController;
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
     private void Start()
@@ -56,8 +58,7 @@ public class GameController : MonoBehaviour
         );
 
         playerGameObject.transform.localPosition = localPosition;
-
-        initPlayerFloor.SetFrontWallRandomAd();
+        initPlayerFloor.SetHandsTextureToElevatorAd();
 
         foreach (Floor floor in _floors)
             floor.GenerateRandomTextureProjectorsAndGarbageProps();
@@ -132,6 +133,7 @@ public class GameController : MonoBehaviour
     {
         Floor floor = Instantiate(floorPrefab).GetComponent<Floor>();
         floor.AdGenerator = adGenerator;
+        floor.ResourcesController = resourcesController;
         floor.transform.position = position;
         floor.UpdateDoors();
         return floor;
@@ -201,9 +203,13 @@ public class GameController : MonoBehaviour
 
             floor.ReturnAllObjectsToInitState(floorDistanceToPlayer);
 
-            if (floorDistanceToPlayer == 2) floor.GenerateRandomTextureProjectorsAndGarbageProps();
+            if (floorDistanceToPlayer == 2)
+            {
+                floor.GenerateRandomTextureProjectorsAndGarbageProps();
+                floor.SetGcAdsRandomTextures();
+            }
 
-            if (floorDistanceToPlayer == 1) floor.SetFrontWallRandomAd();
+            if (floorDistanceToPlayer == 1) floor.SetElevatorAdRandomTexture();
         });
 
         UpdateInventoryObjectsPresence();
