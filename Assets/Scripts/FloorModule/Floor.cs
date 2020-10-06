@@ -4,7 +4,7 @@ using System.Linq;
 using AdGeneratorModule;
 using DoorModule;
 using FloorModule.PropsGenerator;
-using ResourcesControllerModule;
+using ResourcesModule;
 using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
 using SelectableObjectsModule.Utilities;

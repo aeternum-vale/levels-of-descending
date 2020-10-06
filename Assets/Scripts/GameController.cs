@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using AdGeneratorModule;
+using BackgroundMusicModule;
 using FloorModule;
 using InventoryModule;
 using PlayerModule;
 using Plugins;
-using ResourcesControllerModule;
+using ResourcesModule;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -29,6 +30,8 @@ public class GameController : MonoBehaviour
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private ResourcesController resourcesController;
+    [SerializeField] private BackgroundMusicController backgroundMusicController;
+    
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
     private void Start()
@@ -147,6 +150,8 @@ public class GameController : MonoBehaviour
     private void OnFloorWasTouched()
     {
         _fakeFloorNumber++;
+
+        backgroundMusicController.BackgroundMusicIntensity = (float) (_fakeFloorNumber - 7) / 20 + 0.01f;
 
         UpdateRealFloorNumber();
         RearrangeFloors();

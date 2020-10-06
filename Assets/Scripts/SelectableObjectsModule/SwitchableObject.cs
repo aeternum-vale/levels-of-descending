@@ -12,17 +12,18 @@ namespace SelectableObjectsModule
         private static readonly int DirectionParamHash = Animator.StringToHash("Direction");
 
         private Animator _animator;
-
-        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
-
+        private AudioSource _audioSource;
+        
+        [SerializeField] private AudioClip openSound;
+        [SerializeField] private AudioClip closeSound;
         [SerializeField] private ESwitchableObjectId id;
-
         [SerializeField] private int initStateSafeDistanceToPlayer = 1;
-
-        protected bool IsAnimationOn;
         [SerializeField] private bool isDependent;
         [SerializeField] protected bool isDisposable;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
+        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
+
+        protected bool IsAnimationOn;
 
         public bool IsOpened { get; private set; }
         public bool IsDependent { get; private set; }
@@ -56,6 +57,7 @@ namespace SelectableObjectsModule
         protected virtual void Start()
         {
             _animator = GetComponent<Animator>();
+            _audioSource = GetComponent<AudioSource>();
         }
 
         protected override void Awake()
@@ -109,8 +111,11 @@ namespace SelectableObjectsModule
             IsOpened = true;
             if (isDisposable)
                 SealAndDisableGlowing();
-
+            
             PlayAnimation(immediately);
+            
+            if (!immediately)
+                PlayOpenSound();
 
             Opened?.Invoke(this, EventArgs.Empty);
         }
@@ -118,8 +123,12 @@ namespace SelectableObjectsModule
         public virtual void Close(bool immediately = false)
         {
             IsOpened = false;
+            
             PlayAnimation(immediately);
-
+            
+            if (!immediately)
+                PlayCloseSound();
+            
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -176,6 +185,24 @@ namespace SelectableObjectsModule
                 IsAnimationOn = false;
                 OpenAnimationCompleted?.Invoke(this, EventArgs.Empty);
             }
+        }
+
+        private void PlayOpenSound()
+        {
+            PlaySound(openSound);
+        }
+
+        private void PlayCloseSound()
+        {
+            PlaySound(closeSound);
+        }
+
+        private void PlaySound(AudioClip clip)
+        {
+            if (_audioSource == null) return;
+            if (clip == null) return;
+
+            _audioSource.PlayOneShot(clip);
         }
     }
 }

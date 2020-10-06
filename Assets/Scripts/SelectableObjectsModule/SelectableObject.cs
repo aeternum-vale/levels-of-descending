@@ -11,8 +11,8 @@ namespace SelectableObjectsModule
         private static readonly int IsRimLightEnabledPropertyId = Shader.PropertyToID("_IsRimLightEnabled");
 
         private readonly Dictionary<GameObject, Material> _materialsCache = new Dictionary<GameObject, Material>();
-        [SerializeField] private bool hasValueOfMaxDistanceToSelect;
         [SerializeField] private float maxDistanceToSelect = .45f;
+        [SerializeField] private bool hasValueOfMaxDistanceToSelect;
 
         public bool IsGlowingEnabled { get; set; } = true;
 

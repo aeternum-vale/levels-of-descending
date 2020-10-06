@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ResourcesControllerModule
+namespace ResourcesModule
 {
     public class ResourcesController : MonoBehaviour
     {
