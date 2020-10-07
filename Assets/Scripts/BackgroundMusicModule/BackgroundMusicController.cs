@@ -7,65 +7,50 @@ namespace BackgroundMusicModule
     [RequireComponent(typeof(AudioSource))]
     public class BackgroundMusicController : MonoBehaviour
     {
-        private const float VolumeChangeSpeed = 0.01f;
+        private const float VolumeChangeRate = 0.008f;
 
         private AudioSource _audioSource;
 
         private float _backgroundMusicIntensity;
-        private bool _clipChangingIsOn;
-        private float _currentVolume;
+        private bool _intensityChangingIsOn;
 
         [SerializeField] private AudioClip[] clips;
         [Range(0f, 1f)] [SerializeField] private float maxVolume = 1f;
 
         public float BackgroundMusicIntensity
         {
-            get => _backgroundMusicIntensity;
             set
             {
                 _backgroundMusicIntensity = Mathf.Clamp(value, 0f, 1f);
-                AudioClip nextClip = GetAppropriateClip();
-                _currentVolume = GetAppropriateVolume();
 
-                if (_audioSource.clip == null)
-                {
-                    _audioSource.clip = nextClip;
-                    _audioSource.Play();
-                }
-                else
-                {
-                    if (!_clipChangingIsOn)
-                        StartCoroutine(ChangeClipAndCurrentVolume(nextClip));
-                }
-
-                Debug.Log("backgroundMusicIntensity: " + _backgroundMusicIntensity);
-                Debug.Log("currentVolume: " + _currentVolume);
+                if (!_intensityChangingIsOn)
+                    StartCoroutine(ChangeClipAndIntensityVolumeToAppropriate());
             }
         }
 
         private void Start()
         {
             _audioSource = GetComponent<AudioSource>();
-            _currentVolume = GetAppropriateVolume();
-            _audioSource.volume = _currentVolume;
+            _audioSource.volume = 0f;
         }
 
         private AudioClip GetAppropriateClip()
         {
             int index = (int) (clips.Length * _backgroundMusicIntensity);
             if (index == clips.Length) index--;
-
-            return clips[index];
+            return _backgroundMusicIntensity <= 0f ? null : clips[index];
         }
 
         private float GetAppropriateVolume()
         {
-            return Mathf.Clamp(_backgroundMusicIntensity * maxVolume, 0.01f, 1f);
+            return _backgroundMusicIntensity * maxVolume;
         }
 
-        private IEnumerator ChangeClipAndCurrentVolume(AudioClip nextClip)
+        private IEnumerator ChangeClipAndIntensityVolumeToAppropriate()
         {
-            _clipChangingIsOn = true;
+            _intensityChangingIsOn = true;
+
+            AudioClip nextClip = GetAppropriateClip();
 
             if (_audioSource.clip != nextClip)
             {
@@ -74,16 +59,19 @@ namespace BackgroundMusicModule
                 _audioSource.Play();
             }
 
-            yield return StartCoroutine(ChangeVolumeTo(_currentVolume));
-            _clipChangingIsOn = false;
+            yield return StartCoroutine(ChangeVolumeTo(GetAppropriateVolume()));
+            _intensityChangingIsOn = false;
         }
 
         private IEnumerator ChangeVolumeTo(float value)
         {
-            while (Math.Abs(_audioSource.volume - value) > VolumeChangeSpeed)
+            float startVolumeValueDiff = Math.Abs(_audioSource.volume - value);
+            float volumeChangeSpeed = VolumeChangeRate * startVolumeValueDiff;
+
+            while (Math.Abs(_audioSource.volume - value) > volumeChangeSpeed)
             {
                 float volume = _audioSource.volume;
-                volume += VolumeChangeSpeed * (volume - value > 0 ? -1 : 1);
+                volume += volumeChangeSpeed * (volume - value > 0 ? -1 : 1);
                 volume = Mathf.Clamp(volume, 0f, 1f);
                 _audioSource.volume = volume;
 

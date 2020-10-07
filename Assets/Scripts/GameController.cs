@@ -14,24 +14,27 @@ public class GameController : MonoBehaviour
 {
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 5;
+    private const int FirstFloorNumber = 7;
+    private const int LastFloorNumber = 100;
+    private const float MinBackgroundMusicIntensity = 0.01f;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
-    private int _fakeFloorNumber = 7;
+    private int _fakeFloorNumber = FirstFloorNumber;
 
     private Floor[] _floors;
     private int _floorsHalf;
     private int _highestFloorIndex;
     private Player _player;
-    private int _realFloorNumber = 7;
+    private int _realFloorNumber = FirstFloorNumber;
 
     [SerializeField] private AdGenerator adGenerator;
+    [SerializeField] private BackgroundMusicController backgroundMusicController;
     [SerializeField] private GameObject floorPrefab;
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private ResourcesController resourcesController;
-    [SerializeField] private BackgroundMusicController backgroundMusicController;
-    
+
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
     private void Start()
@@ -151,11 +154,19 @@ public class GameController : MonoBehaviour
     {
         _fakeFloorNumber++;
 
-        backgroundMusicController.BackgroundMusicIntensity = (float) (_fakeFloorNumber - 7) / 20 + 0.01f;
-
+        UpdateBackgroundMusicIntensity();
         UpdateRealFloorNumber();
         RearrangeFloors();
         FloorsSelectiveUpdate();
+    }
+
+    private void UpdateBackgroundMusicIntensity()
+    {
+        backgroundMusicController.BackgroundMusicIntensity =
+            Math.Max(
+                (float) (_fakeFloorNumber - FirstFloorNumber) / LastFloorNumber,
+                MinBackgroundMusicIntensity
+            );
     }
 
     private void UpdateRealFloorNumber()
@@ -302,6 +313,8 @@ public class GameController : MonoBehaviour
 
     private void StartEndingCutScene()
     {
+        backgroundMusicController.BackgroundMusicIntensity = 0f;
+
         Transform playerPhTransform = GetCurrentFloor().PlayerPlaceholder.transform;
         Transform cameraPhTransform = GetCurrentFloor().PlayerPlaceholder.transform.GetChild(0);
 
