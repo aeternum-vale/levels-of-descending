@@ -20,6 +20,8 @@ public class GameController : MonoBehaviour
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
+    private AudioSource _audioSource;
+
     private int _fakeFloorNumber = FirstFloorNumber;
 
     private Floor[] _floors;
@@ -72,6 +74,7 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
+        _audioSource = GetComponent<AudioSource>();
         _player = playerGameObject.GetComponent<Player>();
 
         Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
@@ -80,6 +83,7 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
         Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
         Messenger.AddListener(Events.Elevating, OnElevating);
+        Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
     }
 
     private bool IsFloorCurrent(Floor floor)
@@ -334,5 +338,15 @@ public class GameController : MonoBehaviour
     private void OnElevating()
     {
         _player.FadeOut();
+    }
+
+    private void OnInventoryItemUsedIncorrectly()
+    {
+        PlayErrorSound();
+    }
+
+    private void PlayErrorSound()
+    {
+        _audioSource.Play();
     }
 }

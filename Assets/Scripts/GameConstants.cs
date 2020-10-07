@@ -60,8 +60,9 @@ public static class Events
     public const string InventoryWasUpdated = "INVENTORY_WAS_UPDATED";
     public const string InventoryButtonWasPressed = "INVENTORY_BUTTON_WAS_PRESSED";
     public const string SwitchableObjectWasOpened = "SWITCHABLE_OBJECT_WAS_OPENED";
-    public const string CowCodeActivated = "DRAGONFLY_CODE_ACTIVATED";
+    public const string CowCodeActivated = "COW_CODE_ACTIVATED";
     public const string InventoryItemWasSuccessfullyUsed = "INVENTORY_ITEM_WAS_SUCCESSFULLY_USED";
+    public const string InventoryItemUsedIncorrectly = "INVENTORY_ITEM_USED_INCORRECTLY";
     public const string ElevatorFloorWasTouched = "ELEVATOR_FLOOR_WAS_TOUCHED";
     public const string PlayerCutSceneMoveCompleted = "PLYER_CUT_SCENE_MOVE_COMPLETED";
     public const string Elevating = "ELEVATING";

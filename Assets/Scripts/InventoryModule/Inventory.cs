@@ -39,6 +39,7 @@ namespace InventoryModule
         private RenderTexture _inventoryCameraTexture;
         private bool _isTransition;
         private bool _isTransitionOut = true;
+        private AudioListener _inventoryCameraAudioListener;
 
         public bool IsInventoryModeOn { get; private set; }
         public bool CanActivateInventoryMode => _itemsData.Any(pair => pair.Value.IsInStock);
@@ -60,6 +61,7 @@ namespace InventoryModule
             _inventoryCamera = transform.GetComponentInChildren<InventoryCamera>();
             _inventoryCameraCameraComponent = _inventoryCamera.GetComponent<Camera>();
             _backgroundImageComponent = transform.Find("Canvas/Image").GetComponent<Image>();
+            _inventoryCameraAudioListener = _inventoryCamera.GetComponent<AudioListener>();
 
             Messenger<EInventoryItemId>.AddListener(Events.InventoryObjectWasClicked,
                 OnInventoryObjectWasClicked);
@@ -134,6 +136,7 @@ namespace InventoryModule
                 StartInstanceAnimation(CurrentItemId);
 
                 _inventoryCamera.gameObject.SetActive(true);
+                _inventoryCameraAudioListener.enabled = true;
             }
             else
             {

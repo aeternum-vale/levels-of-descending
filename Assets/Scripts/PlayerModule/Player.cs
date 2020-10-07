@@ -76,7 +76,6 @@ namespace PlayerModule
                     UpdateSquatting();
                 }
 
-
                 if (_isYBind) UpdateBindY();
             }
 
@@ -155,6 +154,9 @@ namespace PlayerModule
             {
                 selectedInventoryItem = inventory.CurrentItemId;
                 DeactivateInventoryMode();
+
+                if (!_selectedObject)
+                    Messenger.Broadcast(Events.InventoryItemUsedIncorrectly);
             }
 
             if (_selectedObject)

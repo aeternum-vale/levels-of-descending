@@ -13,17 +13,17 @@ namespace SelectableObjectsModule
 
         private Animator _animator;
         private AudioSource _audioSource;
-        
-        [SerializeField] private AudioClip openSound;
         [SerializeField] private AudioClip closeSound;
+        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
         [SerializeField] private ESwitchableObjectId id;
         [SerializeField] private int initStateSafeDistanceToPlayer = 1;
+
+        protected bool IsAnimationOn;
         [SerializeField] private bool isDependent;
         [SerializeField] protected bool isDisposable;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
-        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
 
-        protected bool IsAnimationOn;
+        [SerializeField] private AudioClip openSound;
 
         public bool IsOpened { get; private set; }
         public bool IsDependent { get; private set; }
@@ -92,6 +92,8 @@ namespace SelectableObjectsModule
             {
                 if (selectedInventoryItemId == null)
                     Close();
+                else
+                    Messenger.Broadcast(Events.InventoryItemUsedIncorrectly);
             }
             else
             {
@@ -103,6 +105,11 @@ namespace SelectableObjectsModule
 
                     Open();
                 }
+                else
+                {
+                    if (selectedInventoryItemId != null)
+                        Messenger.Broadcast(Events.InventoryItemUsedIncorrectly);
+                }
             }
         }
 
@@ -111,9 +118,9 @@ namespace SelectableObjectsModule
             IsOpened = true;
             if (isDisposable)
                 SealAndDisableGlowing();
-            
+
             PlayAnimation(immediately);
-            
+
             if (!immediately)
                 PlayOpenSound();
 
@@ -123,12 +130,12 @@ namespace SelectableObjectsModule
         public virtual void Close(bool immediately = false)
         {
             IsOpened = false;
-            
+
             PlayAnimation(immediately);
-            
+
             if (!immediately)
                 PlayCloseSound();
-            
+
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
