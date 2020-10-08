@@ -32,7 +32,7 @@ public class GameController : MonoBehaviour
     private int _floorsHalf;
     private int _highestFloorIndex;
 
-    private readonly bool _isDemoModeOn = true;
+    
     private Player _player;
     private int _realFloorNumber = FirstFloorNumber;
 
@@ -43,6 +43,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private ResourcesController resourcesController;
+    [SerializeField] private bool isDemoModeOn = true;
 
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
@@ -78,7 +79,7 @@ public class GameController : MonoBehaviour
         foreach (Floor floor in _floors)
             floor.GenerateRandomTextureProjectorsAndGarbageProps();
 
-        if (_isDemoModeOn)
+        if (isDemoModeOn)
         {
             _currentDemoCameraFloor = initPlayerFloor;
             GetNextHigherFloor().SetFloorDrawnNumber(++_fakeFloorNumber + 1);
@@ -100,7 +101,7 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.Elevating, OnElevating);
         Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
 
-        if (_isDemoModeOn)
+        if (isDemoModeOn)
         {
             _demoCameraRotateContainer = demoCamera.transform.GetChild(0).gameObject;
             _demoCameraInnerObject = _demoCameraRotateContainer.transform.GetChild(0).gameObject;
@@ -109,7 +110,7 @@ public class GameController : MonoBehaviour
 
     private bool IsFloorCurrent(Floor floor)
     {
-        if (_isDemoModeOn)
+        if (isDemoModeOn)
             return floor == _currentDemoCameraFloor;
 
         return _player.LastGround1ColliderTouched == _ground1Colliders[floor];
@@ -205,7 +206,7 @@ public class GameController : MonoBehaviour
 
     private void RearrangeFloors()
     {
-        var isPlayerGoingUpCopy = _isDemoModeOn ? true : IsPlayerGoingUp();
+        var isPlayerGoingUpCopy = isDemoModeOn ? true : IsPlayerGoingUp();
         if (!isPlayerGoingUpCopy.HasValue) return;
 
         if (isPlayerGoingUpCopy.GetValueOrDefault())
