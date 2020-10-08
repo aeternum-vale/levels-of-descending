@@ -13,18 +13,17 @@ namespace SelectableObjectsModule
 
         private Animator _animator;
         private AudioSource _audioSource;
-        [SerializeField] private AudioClip closeSound;
-        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
+        
         [SerializeField] private ESwitchableObjectId id;
-        [SerializeField] private int initStateSafeDistanceToPlayer = 1;
-
-        protected bool IsAnimationOn;
-        [SerializeField] private bool isDependent;
-        [SerializeField] protected bool isDisposable;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
-
+        [SerializeField] private bool hasValueOfNecessaryInventoryItem;
+        [SerializeField] private int initStateSafeDistanceToPlayer = 1;
+        [SerializeField] private bool isDependent;
         [SerializeField] private AudioClip openSound;
-
+        [SerializeField] private AudioClip closeSound;
+        [SerializeField] protected bool isDisposable;
+        
+        protected bool IsAnimationOn;
         public bool IsOpened { get; private set; }
         public bool IsDependent { get; private set; }
 

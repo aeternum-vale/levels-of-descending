@@ -15,8 +15,8 @@ public class GameController : MonoBehaviour
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 5;
     private const int FirstFloorNumber = 7;
-    private const int LastFloorNumber = 100;
-    private const float MinBackgroundMusicIntensity = 0.01f;
+    private const int FirstFloorNumberWithMusic = 11;
+    private const int LastFloorNumber = 112;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
@@ -166,11 +166,10 @@ public class GameController : MonoBehaviour
 
     private void UpdateBackgroundMusicIntensity()
     {
-        backgroundMusicController.BackgroundMusicIntensity =
-            Math.Max(
-                (float) (_fakeFloorNumber - FirstFloorNumber) / LastFloorNumber,
-                MinBackgroundMusicIntensity
-            );
+        backgroundMusicController.BackgroundMusicIntensity = Mathf.Clamp(
+            (float) (_fakeFloorNumber - FirstFloorNumberWithMusic) / LastFloorNumber,
+            0f,
+            1f);
     }
 
     private void UpdateRealFloorNumber()
