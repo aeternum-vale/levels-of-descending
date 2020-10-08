@@ -58,6 +58,7 @@ namespace FloorModule
         public AdGenerator AdGenerator { get; set; }
         public Elevator Elevator { get; private set; }
         public GameObject PlayerPlaceholder { get; private set; }
+        public GameObject DemoCameraPlaceholder { get; private set; }
 
         private void Start()
         {
@@ -88,6 +89,7 @@ namespace FloorModule
 
         private void Awake()
         {
+            DemoCameraPlaceholder = transform.Find("demoCamera_placeholder").gameObject;
             _textureProjectorPropsGenerator = transform.GetComponentInChildren<TextureProjectorPropsGenerator>();
             _garbagePropsGenerator = transform.GetComponentInChildren<GarbagePropsGenerator>();
 

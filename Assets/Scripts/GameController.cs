@@ -17,21 +17,28 @@ public class GameController : MonoBehaviour
     private const int FirstFloorNumber = 7;
     private const int FirstFloorNumberWithMusic = 11;
     private const int LastFloorNumber = 112;
+    private const int DemoCameraMoveDurationSec = 7;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
     private AudioSource _audioSource;
+    private Floor _currentDemoCameraFloor;
+    private GameObject _demoCameraInnerObject;
+    private GameObject _demoCameraRotateContainer;
 
     private int _fakeFloorNumber = FirstFloorNumber;
 
     private Floor[] _floors;
     private int _floorsHalf;
     private int _highestFloorIndex;
+
+    private readonly bool _isDemoModeOn = true;
     private Player _player;
     private int _realFloorNumber = FirstFloorNumber;
 
     [SerializeField] private AdGenerator adGenerator;
     [SerializeField] private BackgroundMusicController backgroundMusicController;
+    [SerializeField] private GameObject demoCamera;
     [SerializeField] private GameObject floorPrefab;
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
@@ -70,6 +77,14 @@ public class GameController : MonoBehaviour
 
         foreach (Floor floor in _floors)
             floor.GenerateRandomTextureProjectorsAndGarbageProps();
+
+        if (_isDemoModeOn)
+        {
+            _currentDemoCameraFloor = initPlayerFloor;
+            GetNextHigherFloor().SetFloorDrawnNumber(++_fakeFloorNumber + 1);
+            demoCamera.transform.position = initPlayerFloor.DemoCameraPlaceholder.transform.position;
+            MoveDemoCameraToNextPlaceholder();
+        }
     }
 
     private void Awake()
@@ -84,10 +99,19 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
         Messenger.AddListener(Events.Elevating, OnElevating);
         Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
+
+        if (_isDemoModeOn)
+        {
+            _demoCameraRotateContainer = demoCamera.transform.GetChild(0).gameObject;
+            _demoCameraInnerObject = _demoCameraRotateContainer.transform.GetChild(0).gameObject;
+        }
     }
 
     private bool IsFloorCurrent(Floor floor)
     {
+        if (_isDemoModeOn)
+            return floor == _currentDemoCameraFloor;
+
         return _player.LastGround1ColliderTouched == _ground1Colliders[floor];
     }
 
@@ -181,7 +205,7 @@ public class GameController : MonoBehaviour
 
     private void RearrangeFloors()
     {
-        var isPlayerGoingUpCopy = IsPlayerGoingUp();
+        var isPlayerGoingUpCopy = _isDemoModeOn ? true : IsPlayerGoingUp();
         if (!isPlayerGoingUpCopy.HasValue) return;
 
         if (isPlayerGoingUpCopy.GetValueOrDefault())
@@ -347,5 +371,43 @@ public class GameController : MonoBehaviour
     private void PlayErrorSound()
     {
         _audioSource.Play();
+    }
+
+    private void MoveDemoCameraToNextPlaceholder()
+    {
+        GameObject ph = GetNextHigherFloor().DemoCameraPlaceholder;
+
+        iTween.MoveTo(demoCamera, iTween.Hash(
+            "position", ph.transform.position,
+            "time", DemoCameraMoveDurationSec,
+            "EaseType", "linear",
+            "oncomplete", "OnDemoCameraMoveComplete",
+            "oncompletetarget", gameObject
+        ));
+
+        iTween.RotateBy(_demoCameraRotateContainer, iTween.Hash(
+            "y", -1,
+            "time", DemoCameraMoveDurationSec,
+            "EaseType", "linear"
+        ));
+
+        if (_fakeFloorNumber % 2 == 0)
+            iTween.RotateBy(_demoCameraInnerObject, iTween.Hash(
+                "z", -1,
+                "time", DemoCameraMoveDurationSec,
+                "EaseType", "easeInOutSine"
+            ));
+    }
+
+    public void OnDemoCameraMoveComplete()
+    {
+        _fakeFloorNumber++;
+
+        _currentDemoCameraFloor = GetNextHigherFloor();
+        RearrangeFloors();
+
+        GetNextHigherFloor().SetFloorDrawnNumber(_fakeFloorNumber + 1);
+
+        MoveDemoCameraToNextPlaceholder();
     }
 }
