@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour
     private const int FirstFloorNumber = 7;
     private const int FirstFloorNumberWithMusic = 11;
     private const int LastFloorNumber = 112;
-    private const int DemoCameraMoveDurationSec = 7;
+    private const int DemoCameraMoveDurationSec = 15;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
