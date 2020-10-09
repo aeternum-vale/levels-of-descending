@@ -5,10 +5,12 @@ using AdGeneratorModule;
 using BackgroundMusicModule;
 using FloorModule;
 using InventoryModule;
+using MenuModule;
 using PlayerModule;
 using Plugins;
 using ResourcesModule;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -32,10 +34,12 @@ public class GameController : MonoBehaviour
     private int _floorsHalf;
     private int _highestFloorIndex;
 
-    
+    private bool _menuIsActive = true;
+
     private Player _player;
     private int _realFloorNumber = FirstFloorNumber;
 
+    [SerializeField] private bool isItMenuScene;
     [SerializeField] private AdGenerator adGenerator;
     [SerializeField] private BackgroundMusicController backgroundMusicController;
     [SerializeField] private GameObject demoCamera;
@@ -43,8 +47,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private ResourcesController resourcesController;
-    [SerializeField] private bool isDemoModeOn = true;
-
+    
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
     private void Start()
@@ -79,7 +82,7 @@ public class GameController : MonoBehaviour
         foreach (Floor floor in _floors)
             floor.GenerateRandomTextureProjectorsAndGarbageProps();
 
-        if (isDemoModeOn)
+        if (isItMenuScene)
         {
             _currentDemoCameraFloor = initPlayerFloor;
             GetNextHigherFloor().SetFloorDrawnNumber(++_fakeFloorNumber + 1);
@@ -100,8 +103,9 @@ public class GameController : MonoBehaviour
         Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
         Messenger.AddListener(Events.Elevating, OnElevating);
         Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
+        Messenger<EMenuItemId>.AddListener(Events.MenuItemClicked, OnMenuItemClicked);
 
-        if (isDemoModeOn)
+        if (isItMenuScene)
         {
             _demoCameraRotateContainer = demoCamera.transform.GetChild(0).gameObject;
             _demoCameraInnerObject = _demoCameraRotateContainer.transform.GetChild(0).gameObject;
@@ -110,7 +114,7 @@ public class GameController : MonoBehaviour
 
     private bool IsFloorCurrent(Floor floor)
     {
-        if (isDemoModeOn)
+        if (isItMenuScene)
             return floor == _currentDemoCameraFloor;
 
         return _player.LastGround1ColliderTouched == _ground1Colliders[floor];
@@ -206,7 +210,7 @@ public class GameController : MonoBehaviour
 
     private void RearrangeFloors()
     {
-        var isPlayerGoingUpCopy = isDemoModeOn ? true : IsPlayerGoingUp();
+        var isPlayerGoingUpCopy = isItMenuScene ? true : IsPlayerGoingUp();
         if (!isPlayerGoingUpCopy.HasValue) return;
 
         if (isPlayerGoingUpCopy.GetValueOrDefault())
@@ -400,7 +404,7 @@ public class GameController : MonoBehaviour
             ));
     }
 
-    public void OnDemoCameraMoveComplete()
+    private void OnDemoCameraMoveComplete()
     {
         _fakeFloorNumber++;
 
@@ -410,5 +414,27 @@ public class GameController : MonoBehaviour
         GetNextHigherFloor().SetFloorDrawnNumber(_fakeFloorNumber + 1);
 
         MoveDemoCameraToNextPlaceholder();
+    }
+
+    public void OnMenuItemClicked(EMenuItemId id)
+    {
+        if (_menuIsActive)
+        {
+            _menuIsActive = false;
+
+            switch (id)
+            {
+                case EMenuItemId.NEW_GAME:
+                    SceneManager.LoadScene("game");
+                    break;
+                case EMenuItemId.INFO:
+                    break;
+                case EMenuItemId.EXIT:
+                    Application.Quit();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(id), id, null);
+            }
+        }
     }
 }
