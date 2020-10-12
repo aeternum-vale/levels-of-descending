@@ -47,7 +47,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private Inventory inventory;
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private ResourcesController resourcesController;
-    
+
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
     private void Start()
@@ -93,20 +93,22 @@ public class GameController : MonoBehaviour
 
     private void Awake()
     {
-        _audioSource = GetComponent<AudioSource>();
-        _player = playerGameObject.GetComponent<Player>();
-
-        Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
-        Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
-        Messenger.AddListener(Events.CowCodeActivated, OnCowCodeActivated);
-        Messenger.AddListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
-        Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
-        Messenger.AddListener(Events.Elevating, OnElevating);
-        Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
-        Messenger<EMenuItemId>.AddListener(Events.MenuItemClicked, OnMenuItemClicked);
-
-        if (isItMenuScene)
+        if (!isItMenuScene)
         {
+            _audioSource = GetComponent<AudioSource>();
+            _player = playerGameObject.GetComponent<Player>();
+
+            Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
+            Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
+            Messenger.AddListener(Events.CowCodeActivated, OnCowCodeActivated);
+            Messenger.AddListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
+            Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
+            Messenger.AddListener(Events.Elevating, OnElevating);
+            Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
+        }
+        else
+        {
+            Messenger<EMenuItemId>.AddListener(Events.MenuItemClicked, OnMenuItemClicked);
             _demoCameraRotateContainer = demoCamera.transform.GetChild(0).gameObject;
             _demoCameraInnerObject = _demoCameraRotateContainer.transform.GetChild(0).gameObject;
         }
@@ -425,9 +427,10 @@ public class GameController : MonoBehaviour
             switch (id)
             {
                 case EMenuItemId.NEW_GAME:
-                    SceneManager.LoadScene("game");
+                    SceneManager.LoadSceneAsync("game");
                     break;
                 case EMenuItemId.INFO:
+
                     break;
                 case EMenuItemId.EXIT:
                     Application.Quit();
@@ -435,6 +438,8 @@ public class GameController : MonoBehaviour
                 default:
                     throw new ArgumentOutOfRangeException(nameof(id), id, null);
             }
+
+            _menuIsActive = true;
         }
     }
 }

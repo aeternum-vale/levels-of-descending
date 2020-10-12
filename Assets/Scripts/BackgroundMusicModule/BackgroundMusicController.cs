@@ -80,5 +80,10 @@ namespace BackgroundMusicModule
 
             _audioSource.volume = value;
         }
+
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
+        }
     }
 }
