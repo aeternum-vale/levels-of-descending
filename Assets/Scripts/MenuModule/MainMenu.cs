@@ -11,7 +11,7 @@ using Utils;
 
 namespace MenuModule
 {
-    public class MainMenu : MonoBehaviour, IPointerClickHandler
+    public class MainMenu : MonoBehaviour
     {
         private const float HoverAlpha = 1f;
         private const float NormalAlpha = .55f;
@@ -19,60 +19,86 @@ namespace MenuModule
         private const float MenuItemAlphaRate = 0.1f;
         private const float AlphaRate = 0.05f;
 
-        private Text _loadingText;
-        private Text _infoText;
+        private Graphic _loadingText;
+        private Graphic _infoText;
         private bool _menuIsActive = true;
         private bool _infoMode = false;
         private bool _isLoading = false;
 
-        private List<MenuItem> _menuItems = new List<MenuItem>();
+        private List<Button> _buttons = new List<Button>();
 
         private void Awake()
         {
-            _menuItems = transform.GetComponentsInChildren<MenuItem>().ToList();
+            _buttons = transform.GetComponentsInChildren<Button>(true).ToList();
+            _infoText = transform.Find("infoText").GetComponent<Graphic>();
+            _loadingText = transform.Find("loadingText").GetComponent<Graphic>();
 
-            ForEachMenuItem(item =>
+            ForEachButton(item =>
             {
                 item.HoverAlpha = HoverAlpha;
                 item.NormalAlpha = NormalAlpha;
                 item.DisabledAlpha = DisabledAlpha;
-                item.AnimateAlpha = (text, target) => AnimateAlpha(text, target, MenuItemAlphaRate);
+                item.AnimateAlpha = (text, target) => AnimateAlpha(text, target, AlphaRate);
+                item.AnimateHoverAlpha = (text, target) => AnimateAlpha(text, target, MenuItemAlphaRate);
+
+                if (!item.isLink) return;
+                
+                item.SetAlpha(0, true);
+                item.Locked = true;
             });
 
-            _infoText = transform.Find("infoText").GetComponent<Text>();
-            _loadingText = transform.Find("loadingText").GetComponent<Text>();
+            _infoText.gameObject.SetActive(false);
+            _loadingText.gameObject.SetActive(false);
             
-            Messenger<EMenuItemId>.AddListener(Events.MenuItemClicked, OnMenuItemClicked);
+            Messenger<EButtonId>.AddListener(Events.ButtonClicked, OnButtonClicked);
+            Messenger.AddListener(Events.MenuBackClicked, OnMenuBackClicked);
         }
 
         private void Start()
         {
-            EnableAllItems();
+            EnableAllMenuItems();
         }
 
-        private void ForEachMenuItem(Action<MenuItem> action)
+        private void ForEachMenuItem(Action<Button> action)
         {
-            _menuItems.ForEach(action);
+            _buttons.Where(item => !item.isLink).ToList().ForEach(action);
         }
 
-        private void OnMenuItemClicked(EMenuItemId id)
+        private void ForEachButton(Action<Button> action)
+        {
+            _buttons.ForEach(action);
+        }
+
+        private void ForEachLink(Action<Button> action)
+        {
+            _buttons.Where(item => item.isLink).ToList().ForEach(action);
+        }
+
+        private void OnButtonClicked(EButtonId id)
         {
             if (!_menuIsActive) return;
             if (_isLoading) return;
-            if (_infoMode) return ;
             
             _menuIsActive = false;
 
             switch (id)
             {
-                case EMenuItemId.NEW_GAME:
-                    StartCoroutine(LoadGameScene());
+                case EButtonId.NEW_GAME:
+                    StartCoroutine(SwitchToLoadingMode());
                     break;
-                case EMenuItemId.INFO:
-                    StartCoroutine(SwitchToInfoMode(_infoText));
+                case EButtonId.INFO:
+                    StartCoroutine(SwitchToInfoMode());
                     break;
-                case EMenuItemId.EXIT:
+                case EButtonId.EXIT:
                     Application.Quit();
+                    break;
+                
+                case EButtonId.INSTA:
+                    Application.OpenURL("https://instagram.com/a.dedyulya");
+                    break;
+                case EButtonId.MAIL:
+                    Application.OpenURL("mailto:aeternum-vale@ya.ru");
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(id), id, null);
@@ -80,46 +106,58 @@ namespace MenuModule
 
             _menuIsActive = true;
         }
+        
 
-        private IEnumerator LoadGameScene()
+        private IEnumerator SwitchToLoadingMode()
         {
             _isLoading = true;
-            HideAllItems();
-            yield return StartCoroutine(SwitchToInfoMode(_loadingText));
+            
+            _loadingText.color = GameUtils.SetColorAlpha(_loadingText.color, 0f);
+            _loadingText.gameObject.SetActive(true);
+
+            HideAllMenuItems();
+
+            yield return StartCoroutine(AnimateAlpha(_loadingText, NormalAlpha, AlphaRate));
+            
             SceneManager.LoadSceneAsync("game");
+
+            yield return null;
         }
 
-        private IEnumerator SwitchToInfoMode(Text infoTypeText)
+        private IEnumerator SwitchToInfoMode()
         {
             _infoMode = true;
-            
-            infoTypeText.color = GameUtils.SetColorAlpha(infoTypeText.color, 0f);
-            infoTypeText.gameObject.SetActive(true);
 
-            DisableAllItems();
-            yield return StartCoroutine(AnimateAlpha(infoTypeText, NormalAlpha, AlphaRate));
+            _infoText.color = GameUtils.SetColorAlpha(_infoText.color, 0f);
+            _infoText.gameObject.SetActive(true);
+
+            DisableAllMenuItems();
+            ForEachLink(link =>link.Enable());
+
+            yield return StartCoroutine(AnimateAlpha(_infoText, NormalAlpha, AlphaRate));
         }
-        
-        private IEnumerator SwitchFromInfoMode(Text infoTypeText)
+
+        private IEnumerator SwitchFromInfoMode()
         {
             _infoMode = false;
 
-            EnableAllItems();
-            yield return StartCoroutine(AnimateAlpha(infoTypeText, 0f, AlphaRate));
-            infoTypeText.gameObject.SetActive(false);
+            EnableAllMenuItems();
+            ForEachLink(link =>link.Hide());
+            yield return StartCoroutine(AnimateAlpha(_infoText, 0f, AlphaRate));
+            _infoText.gameObject.SetActive(false);
         }
 
-        private void DisableAllItems()
+        private void DisableAllMenuItems()
         {
             ForEachMenuItem(item => item.Disable());
         }
-        
-        private void EnableAllItems()
+
+        private void EnableAllMenuItems()
         {
             ForEachMenuItem(item => item.Enable());
         }
-        
-        private void HideAllItems()
+
+        private void HideAllMenuItems()
         {
             ForEachMenuItem(item => item.Hide());
         }
@@ -132,12 +170,13 @@ namespace MenuModule
                 targetValue,
                 alphaRate);
         }
-        public void OnPointerClick(PointerEventData eventData)
+
+        public void OnMenuBackClicked()
         {
             if (!_infoMode) return;
             if (_isLoading) return;
             
-            StartCoroutine(SwitchFromInfoMode(_infoText));
+            StartCoroutine(SwitchFromInfoMode());
         }
     }
 }

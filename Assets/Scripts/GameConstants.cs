@@ -66,7 +66,8 @@ public static class Events
     public const string ElevatorFloorWasTouched = "ELEVATOR_FLOOR_WAS_TOUCHED";
     public const string PlayerCutSceneMoveCompleted = "PLYER_CUT_SCENE_MOVE_COMPLETED";
     public const string Elevating = "ELEVATING";
-    public const string MenuItemClicked = "MENU_ITEM_CLICKED";
+    public const string ButtonClicked = "BUTTON_CLICKED";
+    public const string MenuBackClicked = "MENU_BACK_CLICKED";
 }
 
 public static class GameConstants
