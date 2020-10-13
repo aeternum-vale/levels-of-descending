@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Plugins;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utils;
@@ -15,17 +14,17 @@ namespace MenuModule
     {
         private const float HoverAlpha = 1f;
         private const float NormalAlpha = .55f;
-        private const float DisabledAlpha = 0.03f;
-        private const float MenuItemAlphaRate = 0.1f;
+        private const float DisabledAlpha = 0.07f;
+        private const float MenuItemAlphaRate = 0.15f;
         private const float AlphaRate = 0.05f;
 
-        private Graphic _loadingText;
-        private Graphic _infoText;
-        private bool _menuIsActive = true;
-        private bool _infoMode = false;
-        private bool _isLoading = false;
-
         private List<Button> _buttons = new List<Button>();
+        private bool _infoMode;
+        private Graphic _infoText;
+        private bool _isLoading;
+
+        private Graphic _loadingText;
+        private bool _menuIsActive = true;
 
         private void Awake()
         {
@@ -41,15 +40,16 @@ namespace MenuModule
                 item.AnimateAlpha = (text, target) => AnimateAlpha(text, target, AlphaRate);
                 item.AnimateHoverAlpha = (text, target) => AnimateAlpha(text, target, MenuItemAlphaRate);
 
+                item.SetAlpha(item.isLink ? 0 : NormalAlpha, true);
+
                 if (!item.isLink) return;
-                
-                item.SetAlpha(0, true);
+
                 item.Locked = true;
             });
 
             _infoText.gameObject.SetActive(false);
             _loadingText.gameObject.SetActive(false);
-            
+
             Messenger<EButtonId>.AddListener(Events.ButtonClicked, OnButtonClicked);
             Messenger.AddListener(Events.MenuBackClicked, OnMenuBackClicked);
         }
@@ -78,7 +78,7 @@ namespace MenuModule
         {
             if (!_menuIsActive) return;
             if (_isLoading) return;
-            
+
             _menuIsActive = false;
 
             switch (id)
@@ -92,13 +92,15 @@ namespace MenuModule
                 case EButtonId.EXIT:
                     Application.Quit();
                     break;
-                
+
                 case EButtonId.INSTA:
                     Application.OpenURL("https://instagram.com/a.dedyulya");
                     break;
                 case EButtonId.MAIL:
                     Application.OpenURL("mailto:aeternum-vale@ya.ru");
-
+                    break;
+                case EButtonId.FB:
+                    Application.OpenURL("https://facebook.com/adedyulya");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(id), id, null);
@@ -106,19 +108,16 @@ namespace MenuModule
 
             _menuIsActive = true;
         }
-        
 
         private IEnumerator SwitchToLoadingMode()
         {
             _isLoading = true;
-            
+
             _loadingText.color = GameUtils.SetColorAlpha(_loadingText.color, 0f);
             _loadingText.gameObject.SetActive(true);
 
             HideAllMenuItems();
-
             yield return StartCoroutine(AnimateAlpha(_loadingText, NormalAlpha, AlphaRate));
-            
             SceneManager.LoadSceneAsync("game");
 
             yield return null;
@@ -132,7 +131,7 @@ namespace MenuModule
             _infoText.gameObject.SetActive(true);
 
             DisableAllMenuItems();
-            ForEachLink(link =>link.Enable());
+            ForEachLink(link => link.Enable());
 
             yield return StartCoroutine(AnimateAlpha(_infoText, NormalAlpha, AlphaRate));
         }
@@ -142,7 +141,8 @@ namespace MenuModule
             _infoMode = false;
 
             EnableAllMenuItems();
-            ForEachLink(link =>link.Hide());
+            ForEachLink(link => link.Hide());
+
             yield return StartCoroutine(AnimateAlpha(_infoText, 0f, AlphaRate));
             _infoText.gameObject.SetActive(false);
         }
@@ -175,7 +175,7 @@ namespace MenuModule
         {
             if (!_infoMode) return;
             if (_isLoading) return;
-            
+
             StartCoroutine(SwitchFromInfoMode());
         }
     }

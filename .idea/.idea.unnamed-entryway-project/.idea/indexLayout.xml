@@ -24,7 +24,6 @@
       <Path>LocalPackages</Path>
       <Path>Logs</Path>
       <Path>Models</Path>
-      <Path>Temp</Path>
       <Path>big_files</Path>
       <Path>obj</Path>
     </explicitExcludes>

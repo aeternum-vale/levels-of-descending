@@ -13,17 +13,20 @@ namespace MenuModule
         NEW_GAME,
         INFO,
         EXIT,
-        
+
         INSTA,
-        MAIL
+        MAIL,
+        FB
     }
 
     public class Button : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
     {
         private Graphic _graphic;
+
         [SerializeField] private EButtonId buttonIdId;
-        [SerializeField] public bool isLink = false;
-        public bool Locked { get; set; } = false;
+        [SerializeField] public bool isLink;
+
+        public bool Locked { get; set; }
         public float HoverAlpha { get; set; }
         public float NormalAlpha { get; set; }
         public float DisabledAlpha { get; set; }
@@ -33,14 +36,14 @@ namespace MenuModule
         public void OnPointerClick(PointerEventData eventData)
         {
             if (Locked) return;
-            
+
             Messenger<EButtonId>.Broadcast(Events.ButtonClicked, buttonIdId);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (Locked) return;
-            
+
             SetHoverAlpha(HoverAlpha);
         }
 
@@ -66,9 +69,13 @@ namespace MenuModule
         public void Hide()
         {
             Locked = true;
-            SetAlpha(0f);
+
+            if (isLink)
+                SetAlpha(0f);
+            else
+                SetHoverAlpha(0f);
         }
-        
+
         private void Awake()
         {
             _graphic = transform.GetComponent<Graphic>();
@@ -85,7 +92,7 @@ namespace MenuModule
             StopAllCoroutines();
             StartCoroutine(AnimateAlpha(_graphic, targetValue));
         }
-        
+
         public void SetHoverAlpha(float targetValue)
         {
             StopAllCoroutines();
