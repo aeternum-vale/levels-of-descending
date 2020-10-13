@@ -17,8 +17,8 @@ public class GameController : MonoBehaviour
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 5;
     private const int FirstFloorNumber = 7;
-    private const int FirstFloorNumberWithMusic = 11;
-    private const int LastFloorNumber = 112;
+    private const int FirstFloorNumberWithMusic = 9;
+    private const int LastFloorNumber = 67;
     private const int DemoCameraMoveDurationSec = 15;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
@@ -33,8 +33,6 @@ public class GameController : MonoBehaviour
     private Floor[] _floors;
     private int _floorsHalf;
     private int _highestFloorIndex;
-
-    private bool _menuIsActive = true;
 
     private Player _player;
     private int _realFloorNumber = FirstFloorNumber;
@@ -108,7 +106,6 @@ public class GameController : MonoBehaviour
         }
         else
         {
-            Messenger<EMenuItemId>.AddListener(Events.MenuItemClicked, OnMenuItemClicked);
             _demoCameraRotateContainer = demoCamera.transform.GetChild(0).gameObject;
             _demoCameraInnerObject = _demoCameraRotateContainer.transform.GetChild(0).gameObject;
         }
@@ -416,30 +413,5 @@ public class GameController : MonoBehaviour
         GetNextHigherFloor().SetFloorDrawnNumber(_fakeFloorNumber + 1);
 
         MoveDemoCameraToNextPlaceholder();
-    }
-
-    public void OnMenuItemClicked(EMenuItemId id)
-    {
-        if (_menuIsActive)
-        {
-            _menuIsActive = false;
-
-            switch (id)
-            {
-                case EMenuItemId.NEW_GAME:
-                    SceneManager.LoadSceneAsync("game");
-                    break;
-                case EMenuItemId.INFO:
-
-                    break;
-                case EMenuItemId.EXIT:
-                    Application.Quit();
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(id), id, null);
-            }
-
-            _menuIsActive = true;
-        }
     }
 }
