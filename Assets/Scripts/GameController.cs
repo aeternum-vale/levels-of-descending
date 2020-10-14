@@ -5,12 +5,10 @@ using AdGeneratorModule;
 using BackgroundMusicModule;
 using FloorModule;
 using InventoryModule;
-using MenuModule;
 using PlayerModule;
 using Plugins;
 using ResourcesModule;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -19,7 +17,7 @@ public class GameController : MonoBehaviour
     private const int FirstFloorNumber = 7;
     private const int FirstFloorNumberWithMusic = 9;
     private const int LastFloorNumber = 67;
-    private const int DemoCameraMoveDurationSec = 15;
+    private const int DemoCameraMoveDurationSec = 25;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
@@ -82,6 +80,7 @@ public class GameController : MonoBehaviour
 
         if (isItMenuScene)
         {
+            backgroundMusicController.BackgroundMusicIntensity = .45f;
             _currentDemoCameraFloor = initPlayerFloor;
             GetNextHigherFloor().SetFloorDrawnNumber(++_fakeFloorNumber + 1);
             demoCamera.transform.position = initPlayerFloor.DemoCameraPlaceholder.transform.position;
