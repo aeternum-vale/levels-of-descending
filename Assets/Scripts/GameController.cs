@@ -102,6 +102,7 @@ public class GameController : MonoBehaviour
             Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
             Messenger.AddListener(Events.Elevating, OnElevating);
             Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
+            Messenger.AddListener(Events.FullBlackoutReached, OnFullBlackoutReached);
         }
         else
         {
@@ -363,7 +364,15 @@ public class GameController : MonoBehaviour
 
     private void OnElevating()
     {
+        _gameIsOver = true;
         _player.FadeOut();
+    }
+
+    private bool _gameIsOver = false;
+    private void OnFullBlackoutReached()
+    {
+        if (_gameIsOver)
+            Application.Quit();
     }
 
     private void OnInventoryItemUsedIncorrectly()
@@ -375,7 +384,7 @@ public class GameController : MonoBehaviour
     {
         _audioSource.Play();
     }
-
+    
     private void MoveDemoCameraToNextPlaceholder()
     {
         GameObject ph = GetNextHigherFloor().DemoCameraPlaceholder;

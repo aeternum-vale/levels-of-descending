@@ -1,4 +1,5 @@
 ﻿using System;
+using Plugins;
 using UnityEngine;
 using Utils;
 
@@ -10,6 +11,7 @@ namespace PlayerModule
         private const float BlackoutIdleIntensityMax = .2f;
         private const float BlackoutIdleIntensityMin = 0f;
         private const float BlackoutIdleTimeMultiplier = 1f;
+        private const float Tolerance = 0.005f;
 
         private static readonly int BlackoutIntensityId = Shader.PropertyToID("_Intensity");
         private readonly float _mouseVerticalMax = 70;
@@ -105,7 +107,7 @@ namespace PlayerModule
         {
             float normalizedSpeed = BlackoutIntensitySpeed * Time.deltaTime;
 
-            if (Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) > 0.005)
+            if (Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) > Tolerance)
             {
                 if (Mathf.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= normalizedSpeed)
                 {
@@ -135,6 +137,9 @@ namespace PlayerModule
             }
 
             blackoutMaterial.SetFloat(BlackoutIntensityId, _blackoutIntensity);
+
+            if (Math.Abs(_blackoutIntensity - 1f) < Tolerance)
+                Messenger.Broadcast(Events.FullBlackoutReached);
         }
     }
 }
