@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using Utils;
 
 namespace BackgroundMusicModule
 {
@@ -63,22 +64,13 @@ namespace BackgroundMusicModule
             _intensityChangingIsOn = false;
         }
 
-        private IEnumerator ChangeVolumeTo(float value)
+        private IEnumerator ChangeVolumeTo(float target)
         {
-            float startVolumeValueDiff = Math.Abs(_audioSource.volume - value);
-            float volumeChangeSpeed = VolumeChangeRate * startVolumeValueDiff;
-
-            while (Math.Abs(_audioSource.volume - value) > volumeChangeSpeed)
-            {
-                float volume = _audioSource.volume;
-                volume += volumeChangeSpeed * (volume - value > 0 ? -1 : 1);
-                volume = Mathf.Clamp(volume, 0f, 1f);
-                _audioSource.volume = volume;
-
-                yield return new WaitForFixedUpdate();
-            }
-
-            _audioSource.volume = value;
+            return GameUtils.AnimateValue(
+                () => _audioSource.volume,
+                value => _audioSource.volume = value,
+                target,
+                VolumeChangeRate);
         }
 
         private void OnDestroy()
