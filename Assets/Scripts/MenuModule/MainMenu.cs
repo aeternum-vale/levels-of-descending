@@ -178,5 +178,13 @@ namespace MenuModule
 
             StartCoroutine(SwitchFromInfoMode());
         }
+
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
+            
+            Messenger<EButtonId>.RemoveListener(Events.ButtonClicked, OnButtonClicked);
+            Messenger.RemoveListener(Events.MenuBackClicked, OnMenuBackClicked);
+        }
     }
 }

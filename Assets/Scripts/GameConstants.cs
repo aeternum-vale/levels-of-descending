@@ -69,6 +69,7 @@ public static class Events
     public const string ButtonClicked = "BUTTON_CLICKED";
     public const string MenuBackClicked = "MENU_BACK_CLICKED";
     public const string FullBlackoutReached = "FULL_BLACKOUT_REACHED";
+    public const string ExitButtonClicked = "EXIT_BUTTON_CLICKED";
 }
 
 public static class GameConstants

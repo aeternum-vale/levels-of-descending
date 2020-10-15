@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AdGeneratorModule;
@@ -9,6 +10,7 @@ using PlayerModule;
 using Plugins;
 using ResourcesModule;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Utils;
 
@@ -20,6 +22,8 @@ public class GameController : MonoBehaviour
     private const int FirstFloorNumberWithMusic = 9;
     private const int LastFloorNumber = 67;
     private const int DemoCameraMoveDurationSec = 25;
+    private const float TipAlpha = 0.6f;
+    private const float TipAlphaRate = 0.05f;
 
     private readonly Dictionary<Floor, GameObject> _ground1Colliders = new Dictionary<Floor, GameObject>();
 
@@ -46,6 +50,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private AdGenerator adGenerator;
     [SerializeField] private BackgroundMusicController backgroundMusicController;
     [SerializeField] private GameObject demoCamera;
+    [SerializeField] private Text exitTipText;
     [SerializeField] private GameObject floorPrefab;
     [SerializeField] private Inventory inventory;
     [SerializeField] private Text inventoryTipText;
@@ -90,6 +95,9 @@ public class GameController : MonoBehaviour
 
         if (isItMenuScene)
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+
             backgroundMusicController.BackgroundMusicIntensity = .45f;
             _currentDemoCameraFloor = initPlayerFloor;
             GetNextHigherFloor().SetFloorDrawnNumber(++_fakeFloorNumber + 1);
@@ -114,6 +122,7 @@ public class GameController : MonoBehaviour
             Messenger.AddListener(Events.Elevating, OnElevating);
             Messenger.AddListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
             Messenger.AddListener(Events.FullBlackoutReached, OnFullBlackoutReached);
+            Messenger.AddListener(Events.ExitButtonClicked, OnExitButtonClicked);
         }
         else
         {
@@ -246,16 +255,31 @@ public class GameController : MonoBehaviour
         if (!_wasInventoryTipShown)
         {
             _wasInventoryTipShown = true;
-            inventoryTipText.gameObject.SetActive(true);
-            inventoryTipText.color = GameUtils.SetColorAlpha(inventoryTipText.color, 0f);
-
-            StartCoroutine(GameUtils.AnimateValue(
-                () => inventoryTipText.color.a,
-                v => inventoryTipText.color = GameUtils.SetColorAlpha(inventoryTipText.color, v),
-                0.5f, 0.05f));
+            StartCoroutine(ShowTip(inventoryTipText));
         }
 
         UpdateInventoryObjectsPresence();
+    }
+
+    private IEnumerator ShowTip(Text tip)
+    {
+        tip.gameObject.SetActive(true);
+        tip.color = GameUtils.SetColorAlpha(tip.color, 0f);
+
+        yield return StartCoroutine(GameUtils.AnimateValue(
+            () => tip.color.a,
+            v => tip.color = GameUtils.SetColorAlpha(tip.color, v),
+            TipAlpha, TipAlphaRate));
+    }
+
+    private IEnumerator HideTip(Text tip)
+    {
+        yield return StartCoroutine(GameUtils.AnimateValue(
+            () => tip.color.a,
+            v => tip.color = GameUtils.SetColorAlpha(tip.color, v),
+            0f, TipAlphaRate));
+
+        tip.gameObject.SetActive(false);
     }
 
     private void OnInventoryModeBeforeActivating()
@@ -448,5 +472,38 @@ public class GameController : MonoBehaviour
         GetNextHigherFloor().SetFloorDrawnNumber(_fakeFloorNumber + 1);
 
         MoveDemoCameraToNextPlaceholder();
+    }
+
+    private void OnExitButtonClicked()
+    {
+        if (exitTipText.gameObject.activeSelf)
+            SceneManager.LoadScene("menu");
+        else
+            StartCoroutine(ShowExitTip());
+    }
+
+    private IEnumerator ShowExitTip()
+    {
+        yield return ShowTip(exitTipText);
+        yield return new WaitForSeconds(3f);
+        yield return HideTip(exitTipText);
+    }
+
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+
+        if (isItMenuScene) return;
+
+        Messenger.RemoveListener(Events.FloorWasTouched, OnFloorWasTouched);
+        Messenger.RemoveListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
+        Messenger.RemoveListener(Events.InventoryModeBeforeActivating, OnInventoryModeBeforeActivating);
+        Messenger.RemoveListener(Events.CowCodeActivated, OnCowCodeActivated);
+        Messenger.RemoveListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
+        Messenger.RemoveListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
+        Messenger.RemoveListener(Events.Elevating, OnElevating);
+        Messenger.RemoveListener(Events.InventoryItemUsedIncorrectly, OnInventoryItemUsedIncorrectly);
+        Messenger.RemoveListener(Events.FullBlackoutReached, OnFullBlackoutReached);
+        Messenger.RemoveListener(Events.ExitButtonClicked, OnExitButtonClicked);
     }
 }

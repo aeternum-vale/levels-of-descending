@@ -228,5 +228,14 @@ namespace InventoryModule
         {
             if (_itemsData[id].IsDisposable) _itemsData[id].IsInStock = false;
         }
+
+        private void OnDestroy()
+        {
+            StopAllCoroutines();
+            Messenger<EInventoryItemId>.RemoveListener(Events.InventoryObjectWasClicked,
+                OnInventoryObjectWasClicked);
+            Messenger<EInventoryItemId>.RemoveListener(Events.InventoryItemWasSuccessfullyUsed,
+                OnInventoryItemSuccessfullyUsed);
+        }
     }
 }

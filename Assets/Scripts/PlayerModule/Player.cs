@@ -81,6 +81,7 @@ namespace PlayerModule
 
             UpdateUseButton();
             UpdateInventoryButton();
+            UpdateExitButton();
         }
 
         private void UpdateInventoryButton()
@@ -93,7 +94,7 @@ namespace PlayerModule
                 if (!inventory.CanActivateInventoryMode) return;
 
                 Messenger.Broadcast(Events.InventoryModeBeforeActivating);
-                
+
                 playerCamera.IsInventoryModeOn = true;
                 inventory.ActivateInventoryMode(playerCamera.GetBackgroundTexture());
                 playerCamera.ActivateInventoryMode();
@@ -163,6 +164,16 @@ namespace PlayerModule
 
             if (_selectedObject)
                 _selectedObject.OnClick(selectedInventoryItem, _colliderCarrier);
+        }
+
+        private void UpdateExitButton()
+        {
+            if (!Input.GetButtonDown("Cancel")) return;
+
+            if (inventory.IsInventoryModeOn)
+                DeactivateInventoryMode();
+            else
+                Messenger.Broadcast(Events.ExitButtonClicked);
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
