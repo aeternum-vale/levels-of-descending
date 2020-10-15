@@ -263,6 +263,8 @@ public class GameController : MonoBehaviour
 
     private IEnumerator ShowTip(Text tip)
     {
+        yield return HideAllTips();
+
         tip.gameObject.SetActive(true);
         tip.color = GameUtils.SetColorAlpha(tip.color, 0f);
 
@@ -280,6 +282,15 @@ public class GameController : MonoBehaviour
             0f, TipAlphaRate));
 
         tip.gameObject.SetActive(false);
+    }
+
+    private IEnumerator HideAllTips()
+    {
+        if (exitTipText.gameObject.activeSelf)
+            yield return HideTip(exitTipText);
+
+        if (inventoryTipText.gameObject.activeSelf)
+            yield return HideTip(inventoryTipText);
     }
 
     private void OnInventoryModeBeforeActivating()
