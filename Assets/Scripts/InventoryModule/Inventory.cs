@@ -65,8 +65,6 @@ namespace InventoryModule
 
             Messenger<EInventoryItemId>.AddListener(Events.InventoryObjectWasClicked,
                 OnInventoryObjectWasClicked);
-            Messenger.AddListener(Events.InventoryButtonWasPressed,
-                OnInventorySwitchToNextItem);
             Messenger<EInventoryItemId>.AddListener(Events.InventoryItemWasSuccessfullyUsed,
                 OnInventoryItemSuccessfullyUsed);
 

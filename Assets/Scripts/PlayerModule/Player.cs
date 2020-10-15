@@ -92,6 +92,8 @@ namespace PlayerModule
             {
                 if (!inventory.CanActivateInventoryMode) return;
 
+                Messenger.Broadcast(Events.InventoryModeBeforeActivating);
+                
                 playerCamera.IsInventoryModeOn = true;
                 inventory.ActivateInventoryMode(playerCamera.GetBackgroundTexture());
                 playerCamera.ActivateInventoryMode();

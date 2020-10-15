@@ -58,7 +58,7 @@ public static class Events
     public const string FloorWasTouched = "FLOOR_WAS_TOUCHED";
     public const string InventoryObjectWasClicked = "INVENTORY_ITEM_WAS_CLICKED";
     public const string InventoryWasUpdated = "INVENTORY_WAS_UPDATED";
-    public const string InventoryButtonWasPressed = "INVENTORY_BUTTON_WAS_PRESSED";
+    public const string InventoryModeBeforeActivating = "INVENTORY_BUTTON_WAS_PRESSED";
     public const string SwitchableObjectWasOpened = "SWITCHABLE_OBJECT_WAS_OPENED";
     public const string CowCodeActivated = "COW_CODE_ACTIVATED";
     public const string InventoryItemWasSuccessfullyUsed = "INVENTORY_ITEM_WAS_SUCCESSFULLY_USED";

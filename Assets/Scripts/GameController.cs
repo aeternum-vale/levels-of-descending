@@ -9,6 +9,8 @@ using PlayerModule;
 using Plugins;
 using ResourcesModule;
 using UnityEngine;
+using UnityEngine.UI;
+using Utils;
 
 public class GameController : MonoBehaviour
 {
@@ -30,17 +32,25 @@ public class GameController : MonoBehaviour
 
     private Floor[] _floors;
     private int _floorsHalf;
+
+    private bool _gameIsOver;
     private int _highestFloorIndex;
 
     private Player _player;
     private int _realFloorNumber = FirstFloorNumber;
 
-    [SerializeField] private bool isItMenuScene;
+
+    private string _useButtonName;
+
+    private bool _wasInventoryTipShown;
     [SerializeField] private AdGenerator adGenerator;
     [SerializeField] private BackgroundMusicController backgroundMusicController;
     [SerializeField] private GameObject demoCamera;
     [SerializeField] private GameObject floorPrefab;
     [SerializeField] private Inventory inventory;
+    [SerializeField] private Text inventoryTipText;
+
+    [SerializeField] private bool isItMenuScene;
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private ResourcesController resourcesController;
 
@@ -97,6 +107,7 @@ public class GameController : MonoBehaviour
 
             Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
             Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
+            Messenger.AddListener(Events.InventoryModeBeforeActivating, OnInventoryModeBeforeActivating);
             Messenger.AddListener(Events.CowCodeActivated, OnCowCodeActivated);
             Messenger.AddListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
             Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
@@ -232,7 +243,24 @@ public class GameController : MonoBehaviour
 
     private void OnInventoryWasUpdated()
     {
+        if (!_wasInventoryTipShown)
+        {
+            _wasInventoryTipShown = true;
+            inventoryTipText.gameObject.SetActive(true);
+            inventoryTipText.color = GameUtils.SetColorAlpha(inventoryTipText.color, 0f);
+
+            StartCoroutine(GameUtils.AnimateValue(
+                () => inventoryTipText.color.a,
+                v => inventoryTipText.color = GameUtils.SetColorAlpha(inventoryTipText.color, v),
+                0.5f, 0.05f));
+        }
+
         UpdateInventoryObjectsPresence();
+    }
+
+    private void OnInventoryModeBeforeActivating()
+    {
+        inventoryTipText.gameObject.SetActive(false);
     }
 
     private void OnCowCodeActivated()
@@ -368,7 +396,6 @@ public class GameController : MonoBehaviour
         _player.FadeOut();
     }
 
-    private bool _gameIsOver = false;
     private void OnFullBlackoutReached()
     {
         if (_gameIsOver)
@@ -384,7 +411,7 @@ public class GameController : MonoBehaviour
     {
         _audioSource.Play();
     }
-    
+
     private void MoveDemoCameraToNextPlaceholder()
     {
         GameObject ph = GetNextHigherFloor().DemoCameraPlaceholder;
