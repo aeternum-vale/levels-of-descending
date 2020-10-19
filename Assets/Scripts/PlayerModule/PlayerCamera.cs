@@ -18,10 +18,14 @@ namespace PlayerModule
         private static readonly int BlackoutIntensityId = Shader.PropertyToID("_Intensity");
         private readonly float _mouseVerticalMax = 70;
         private readonly float _mouseVerticalMin = -80;
-        private float _blackoutTimeMultiplier = 1f;
         private float _blackoutIntensity = 1f;
         private float _blackoutIntensityTarget = 1f;
+        private float _blackoutTimeMultiplier = 1f;
         private Camera _cameraComponent;
+        private bool _isFlickerAllowed;
+
+        private bool _isFlickerOn;
+        private bool _isFlickerSynced;
         private float _rotationX;
         [SerializeField] private Material blackoutMaterial;
         [SerializeField] private Material blurMaterial;
@@ -121,32 +125,35 @@ namespace PlayerModule
             _blackoutIntensityTarget = 0f;
         }
 
-        bool _isFlickerOn = true;
-        bool _isFlickerAllowed = false;
-        bool _isFlickerSynced = false;
+        public void StartFlicker()
+        {
+            _isFlickerOn = true;
+        }
 
         private void UpdateBlackoutIntensity()
         {
             if (!_isFlickerOn)
                 _isFlickerAllowed = false;
 
-            float diff;
-            float changeSpeed =
-                Mathf.Min(BlackoutIntensityChangeSpeed * Time.deltaTime, BlackoutIntensityMaxChangeStep);
-
-
-            bool isIntensityValueInFlickeringRange = (_blackoutIntensity > FlickerBlackoutIntensityMin) &&
-                                                     (_blackoutIntensity < FlickerBlackoutIntensityMax);
-
             bool isIntensityEqualTarget = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= Tolerance;
 
             if (isIntensityEqualTarget && _isFlickerOn)
             {
+                _blackoutIntensity = _blackoutIntensityTarget;
+                if (!_isFlickerAllowed)
+                    _isFlickerSynced = false;
+
                 _isFlickerAllowed = true;
-                _isFlickerSynced = false;
             }
 
-            bool mustGoToFlickerRange = _isFlickerOn && !_isFlickerAllowed && !isIntensityValueInFlickeringRange &&
+            float changeSpeed =
+                Mathf.Min(BlackoutIntensityChangeSpeed * Time.deltaTime, BlackoutIntensityMaxChangeStep);
+
+            bool isIntensityValueInFlickerRange = _blackoutIntensity > FlickerBlackoutIntensityMin &&
+                                                  _blackoutIntensity < FlickerBlackoutIntensityMax;
+
+
+            bool mustGoToFlickerRange = _isFlickerOn && !_isFlickerAllowed && !isIntensityValueInFlickerRange &&
                                         !isIntensityEqualTarget;
             bool mustGoToTarget = !_isFlickerOn && !isIntensityEqualTarget;
 
@@ -158,20 +165,11 @@ namespace PlayerModule
 
             if (mustGoToTarget || mustGoToFlickerRange)
             {
-                diff = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget);
+                float diff = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget);
                 if (diff <= changeSpeed)
                     _blackoutIntensity = _blackoutIntensityTarget;
                 else
                     _blackoutIntensity += changeSpeed * (_blackoutIntensity < _blackoutIntensityTarget ? 1 : -1);
-
-                isIntensityEqualTarget = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= Tolerance;
-                
-                if (isIntensityEqualTarget && _isFlickerOn)
-                {
-                    _blackoutIntensity = _blackoutIntensityTarget;
-                    _isFlickerAllowed = true;
-                    _isFlickerSynced = false;
-                }
             }
             else
             {
@@ -182,10 +180,12 @@ namespace PlayerModule
                                   + FlickerBlackoutIntensityMin;
 
                     if (_isFlickerSynced)
+                    {
                         _blackoutIntensity = value;
+                    }
                     else
                     {
-                        diff = Mathf.Abs(value - _blackoutIntensity);
+                        float diff = Mathf.Abs(value - _blackoutIntensity);
                         if (diff <= BlackoutIntensityMaxChangeStep)
                         {
                             _isFlickerSynced = true;
