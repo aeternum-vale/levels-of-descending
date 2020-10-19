@@ -19,8 +19,10 @@ public class GameController : MonoBehaviour
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 5;
     private const int FirstFloorNumber = 7;
-    private const int FirstFloorNumberWithMusic = 9;
-    private const int LastFloorNumber = 67;
+    
+    private const int SuspenseStartFloorNumber = 9;
+    private const int SuspenseEndFloorNumber = 42;
+    
     private const int DemoCameraMoveDurationSec = 25;
     private const float TipAlpha = 0.6f;
     private const float TipAlphaRate = 0.05f;
@@ -42,8 +44,7 @@ public class GameController : MonoBehaviour
 
     private Player _player;
     private int _realFloorNumber = FirstFloorNumber;
-
-
+    
     private string _useButtonName;
 
     private bool _wasInventoryTipShown;
@@ -206,18 +207,21 @@ public class GameController : MonoBehaviour
     {
         _fakeFloorNumber++;
 
-        UpdateBackgroundMusicIntensity();
+        UpdateSuspenseIntensity();
         UpdateRealFloorNumber();
         RearrangeFloors();
         FloorsSelectiveUpdate();
     }
 
-    private void UpdateBackgroundMusicIntensity()
+    private void UpdateSuspenseIntensity()
     {
-        backgroundMusicController.BackgroundMusicIntensity = Mathf.Clamp(
-            (float) (_fakeFloorNumber - FirstFloorNumberWithMusic) / LastFloorNumber,
+         float si = Mathf.Clamp(
+            (float) (_fakeFloorNumber - SuspenseStartFloorNumber) / SuspenseEndFloorNumber,
             0f,
             1f);
+
+         backgroundMusicController.BackgroundMusicIntensity = si;
+         _player.SetFlickerIntensity(si);
     }
 
     private void UpdateRealFloorNumber()

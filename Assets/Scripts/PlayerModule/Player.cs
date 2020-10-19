@@ -279,6 +279,7 @@ namespace PlayerModule
 
         public void CutSceneMoveToPosition(Vector3 position, Vector3 rotation, Vector3 cameraRotation)
         {
+            playerCamera.StopFlicker();
             _isCutSceneMoving = true;
             playerCamera.IsCutSceneMoving = true;
 
@@ -317,6 +318,11 @@ namespace PlayerModule
         public void FadeOut()
         {
             playerCamera.FadeOut();
+        }
+
+        public void SetFlickerIntensity(float intensity)
+        {
+            playerCamera.SetFlickerIntensity(intensity);
         }
     }
 }
