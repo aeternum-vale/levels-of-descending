@@ -36,6 +36,7 @@ namespace PlayerModule
 
         private void Start()
         {
+            _isFlickerOn = true;
             _cameraComponent = GetComponent<Camera>();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -132,73 +133,64 @@ namespace PlayerModule
 
         private void UpdateBlackoutIntensity()
         {
-            if (!_isFlickerOn)
-                _isFlickerAllowed = false;
-
-            bool isIntensityEqualTarget = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= Tolerance;
-
-            if (isIntensityEqualTarget && _isFlickerOn)
-            {
-                _blackoutIntensity = _blackoutIntensityTarget;
-                if (!_isFlickerAllowed)
-                    _isFlickerSynced = false;
-
-                _isFlickerAllowed = true;
-            }
-
             float changeSpeed =
                 Mathf.Min(BlackoutIntensityChangeSpeed * Time.deltaTime, BlackoutIntensityMaxChangeStep);
 
-            bool isIntensityValueInFlickerRange = _blackoutIntensity > FlickerBlackoutIntensityMin &&
-                                                  _blackoutIntensity < FlickerBlackoutIntensityMax;
+            if (!_isFlickerOn)
+                _isFlickerAllowed = false;
 
-
-            bool mustGoToFlickerRange = _isFlickerOn && !_isFlickerAllowed && !isIntensityValueInFlickerRange &&
-                                        !isIntensityEqualTarget;
-            bool mustGoToTarget = !_isFlickerOn && !isIntensityEqualTarget;
-
-            if (mustGoToFlickerRange)
+            if (_isFlickerOn && _isFlickerAllowed)
             {
-                _blackoutIntensityTarget = (FlickerBlackoutIntensityMax - FlickerBlackoutIntensityMin) / 2;
-                _isFlickerSynced = false;
-            }
+                float value = (float) ((Math.Sin(Time.time * _blackoutTimeMultiplier) + 1) / 2) *
+                              (FlickerBlackoutIntensityMax - FlickerBlackoutIntensityMin)
+                              + FlickerBlackoutIntensityMin;
 
-            if (mustGoToTarget || mustGoToFlickerRange)
-            {
-                float diff = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget);
-                if (diff <= changeSpeed)
-                    _blackoutIntensity = _blackoutIntensityTarget;
+                if (_isFlickerSynced)
+                {
+                    _blackoutIntensity = value;
+                }
                 else
-                    _blackoutIntensity += changeSpeed * (_blackoutIntensity < _blackoutIntensityTarget ? 1 : -1);
+                {
+                    float diff = Mathf.Abs(value - _blackoutIntensity);
+                    if (diff <= changeSpeed)
+                    {
+                        _isFlickerSynced = true;
+                        _blackoutIntensity = value;
+                    }
+                }
             }
             else
             {
                 if (_isFlickerOn)
                 {
-                    float value = (float) ((Math.Sin(Time.time * _blackoutTimeMultiplier) + 1) / 2) *
-                                  (FlickerBlackoutIntensityMax - FlickerBlackoutIntensityMin)
-                                  + FlickerBlackoutIntensityMin;
+                    _blackoutIntensityTarget = FlickerBlackoutIntensityMin +
+                                               (FlickerBlackoutIntensityMax - FlickerBlackoutIntensityMin) / 2;
+                    _isFlickerSynced = false;
+                }
 
-                    if (_isFlickerSynced)
+                float diff = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget);
+                if (diff <= changeSpeed)
+                    _blackoutIntensity = _blackoutIntensityTarget;
+                else
+                    _blackoutIntensity += changeSpeed * (_blackoutIntensity < _blackoutIntensityTarget ? 1 : -1);
+
+                bool isIntensityEqualTarget = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= Tolerance;
+                if (isIntensityEqualTarget && _isFlickerOn)
+                {
+                    _blackoutIntensity = _blackoutIntensityTarget;
+
+                    if (_isFlickerOn)
                     {
-                        _blackoutIntensity = value;
-                    }
-                    else
-                    {
-                        float diff = Mathf.Abs(value - _blackoutIntensity);
-                        if (diff <= BlackoutIntensityMaxChangeStep)
-                        {
-                            _isFlickerSynced = true;
-                            _blackoutIntensity = value;
-                        }
+                        _isFlickerAllowed = true;
+                        _isFlickerSynced = false;
                     }
                 }
             }
 
             blackoutMaterial.SetFloat(BlackoutIntensityId, _blackoutIntensity);
 
-            Debug.Log(_blackoutIntensity + " : " + (_isFlickerOn ? 1 : 0) + " : " +
-                      _blackoutTimeMultiplier);
+            /*Debug.Log(_blackoutIntensity + " : " + (_isFlickerOn ? 1 : 0) + " : " +
+                      _blackoutTimeMultiplier);*/
 
             if (Math.Abs(_blackoutIntensity - 1f) < Tolerance)
                 Messenger.Broadcast(Events.FullBlackoutReached);
