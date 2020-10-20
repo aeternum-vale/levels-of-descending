@@ -16,13 +16,16 @@ namespace DoorModule
         private const string Frames1Name = "frames_1";
         private const string Frames2Name = "frames_2";
         private const string BellButtonName = "bell-button";
+        private const string BellBaseName = "bell-base";
         private const string NameplateName = "nameplate";
         private const string PadName = "pad";
         private const string TapeName = "tape";
         private const string PeepholeName = "peephole";
+        private Vector3 _framelessOffset = new Vector3(0, 0, -0.06f);
 
         private readonly EDoorAction?[] _lastActions = new EDoorAction?[GameConstants.cowCode.Length];
         private GameObject _bellButton;
+        private GameObject _bellBase;
         private GameObject _doorHandle;
         private GameObject _doorHandleBase1;
         private GameObject _doorHandleBase2;
@@ -41,8 +44,15 @@ namespace DoorModule
         private GameObject _tape;
 
         protected GameObject DoorBase;
+
         private Vector3 _initRootPosition;
+        private Vector3 _initBellBasePosition;
+        private Vector3 _initBellButtonPosition;
+
         private Vector3 _framelessRootPosition;
+        private Vector3 _framelessBellBasePosition;
+        private Vector3 _framelessBellButtonPosition;
+
         [SerializeField] private Material leatherMaterial;
         [SerializeField] private Material metalMaterial;
         [SerializeField] private Material padMaterial1;
@@ -55,11 +65,11 @@ namespace DoorModule
         private void Awake()
         {
             _root = transform.GetChild(0).gameObject;
+
             _initRootPosition = _root.transform.localPosition;
-            _framelessRootPosition = _initRootPosition + new Vector3(0, 0, -0.06f);
+            _framelessRootPosition = _initRootPosition + _framelessOffset;
 
             DoorBase = _root.transform.Find(DoorBaseName).gameObject;
-
             _doorHandle = _root.transform.Find(DoorHandleName).gameObject;
             _doorHandleBase1 = _root.transform.Find(DoorHandleBase1Name).gameObject;
             _doorHandleBase2 = _root.transform.Find(DoorHandleBase2Name).gameObject;
@@ -67,12 +77,18 @@ namespace DoorModule
             _frames2 = _root.transform.Find(Frames2Name).gameObject;
             _nameplate = _root.transform.Find(NameplateName).gameObject;
             _bellButton = _root.transform.Find(BellButtonName).gameObject;
+            _bellBase = _root.transform.Find(BellBaseName).gameObject;
+
+            _initBellBasePosition = _bellBase.transform.localPosition;
+            _initBellButtonPosition = _bellButton.transform.localPosition;
+
+            _framelessBellBasePosition = _initBellBasePosition - _framelessOffset;
+            _framelessBellButtonPosition = _initBellButtonPosition - _framelessOffset;
+
             _pad = _root.transform.Find(PadName).gameObject;
             _tape = _root.transform.Find(TapeName).gameObject;
             _peephole = SelectableObject.GetAsChild<SwitchableObject>(_root, PeepholeName);
-
             _pushableDetails = transform.GetComponentsInChildren<DoorPushableDetail>();
-
             _nameplateMatComponent = _nameplate.GetComponent<MeshRenderer>().material;
 
             Randomize();
@@ -155,6 +171,9 @@ namespace DoorModule
             _pad.GetComponent<MeshRenderer>().material = padMaterial1;
 
             _root.transform.localPosition = _initRootPosition;
+
+            _bellBase.transform.localPosition = _initBellBasePosition;
+            _bellButton.transform.localPosition = _initBellButtonPosition;
         }
 
         public void Randomize()
@@ -196,6 +215,9 @@ namespace DoorModule
                 _frames2.SetActive(false);
 
                 _root.transform.localPosition = _framelessRootPosition;
+
+                _bellBase.transform.localPosition = _framelessBellBasePosition;
+                _bellButton.transform.localPosition = _framelessBellButtonPosition;
             }
         }
     }
