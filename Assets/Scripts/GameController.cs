@@ -216,12 +216,14 @@ public class GameController : MonoBehaviour
     private void UpdateSuspenseIntensity()
     {
          float si = Mathf.Clamp(
-            (float) (_fakeFloorNumber - SuspenseStartFloorNumber) / SuspenseEndFloorNumber,
+            (float) (_fakeFloorNumber - SuspenseStartFloorNumber) / (SuspenseEndFloorNumber - SuspenseStartFloorNumber),
             0f,
             1f);
 
          backgroundMusicController.BackgroundMusicIntensity = si;
          _player.SetFlickerIntensity(si);
+         
+         //Debug.Log("suspense intensity is: " + si);
     }
 
     private void UpdateRealFloorNumber()
