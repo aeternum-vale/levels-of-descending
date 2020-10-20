@@ -41,8 +41,11 @@ namespace DoorModule
         private GameObject _tape;
 
         protected GameObject DoorBase;
+        private Vector3 _initRootPosition;
+        private Vector3 _framelessRootPosition;
         [SerializeField] private Material leatherMaterial;
         [SerializeField] private Material metalMaterial;
+        [SerializeField] private Material padMaterial1;
         [SerializeField] private Material padMaterial2;
         [SerializeField] private Material woodMaterial;
 
@@ -52,6 +55,8 @@ namespace DoorModule
         private void Awake()
         {
             _root = transform.GetChild(0).gameObject;
+            _initRootPosition = _root.transform.localPosition;
+            _framelessRootPosition = _initRootPosition + new Vector3(0, 0, -0.06f);
 
             DoorBase = _root.transform.Find(DoorBaseName).gameObject;
 
@@ -139,8 +144,23 @@ namespace DoorModule
             Messenger.Broadcast(Events.CowCodeActivated);
         }
 
-        protected virtual void Randomize()
+        private void SetInitViewType()
         {
+            _frames1.SetActive(true);
+            _frames2.SetActive(false);
+            _doorHandleBase1.SetActive(true);
+            _doorHandleBase2.SetActive(false);
+
+            DoorBase.GetComponent<MeshRenderer>().material = woodMaterial;
+            _pad.GetComponent<MeshRenderer>().material = padMaterial1;
+
+            _root.transform.localPosition = _initRootPosition;
+        }
+
+        public void Randomize()
+        {
+            SetInitViewType();
+
             if (Random.Range(0, 2) == 0) _pad.GetComponent<MeshRenderer>().material = padMaterial2;
 
             int doorType = Random.Range(0, 3);
@@ -151,12 +171,10 @@ namespace DoorModule
                     break;
 
                 case 1: //leather
-
                     DoorBase.GetComponent<MeshRenderer>().material = leatherMaterial;
                     break;
 
                 case 2: //metal
-
                     DoorBase.GetComponent<MeshRenderer>().material = metalMaterial;
 
                     _frames1.SetActive(false);
@@ -172,10 +190,13 @@ namespace DoorModule
                     _doorHandleBase2.SetActive(true);
                 }
 
+            if (Random.Range(0, 3) == 0) //frameless
+            {
+                _frames1.SetActive(false);
+                _frames2.SetActive(false);
 
-            // float offset = Random.Range(0f, 0.1f);
-            // DoorBase.transform.position -= new Vector3(0, 0, offset);
-            // _handle.transform.position -= new Vector3(0, 0, offset);
+                _root.transform.localPosition = _framelessRootPosition;
+            }
         }
     }
 }

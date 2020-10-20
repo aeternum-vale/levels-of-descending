@@ -20,10 +20,10 @@ public class GameController : MonoBehaviour
     private const float FloorHeight = 3.99f;
     private const int FloorCount = 5;
     private const int FirstFloorNumber = 7;
-    
+
     private const int SuspenseStartFloorNumber = 9;
     private const int SuspenseEndFloorNumber = 42;
-    
+
     private const int DemoCameraMoveDurationSec = 25;
     private const float TipAlpha = 0.6f;
     private const float TipAlphaRate = 0.05f;
@@ -45,7 +45,7 @@ public class GameController : MonoBehaviour
 
     private Player _player;
     private int _realFloorNumber = FirstFloorNumber;
-    
+
     private string _useButtonName;
 
     private bool _wasInventoryTipShown;
@@ -200,13 +200,13 @@ public class GameController : MonoBehaviour
         floor.AdGenerator = adGenerator;
         floor.ResourcesController = resourcesController;
         floor.transform.position = position;
-        floor.UpdateDoors();
+        floor.GenerateDoors();
         return floor;
     }
 
     private void RandomizeFloor(Floor floor)
     {
-        //updateFloorDoors (floor);
+        floor.RandomizeDoors();
     }
 
     private void OnFloorWasTouched()
@@ -221,15 +221,15 @@ public class GameController : MonoBehaviour
 
     private void UpdateSuspenseIntensity()
     {
-         float si = Mathf.Clamp(
+        float si = Mathf.Clamp(
             (float) (_fakeFloorNumber - SuspenseStartFloorNumber) / (SuspenseEndFloorNumber - SuspenseStartFloorNumber),
             0f,
             1f);
 
-         backgroundMusicController.BackgroundMusicIntensity = si;
-         gameCanvas.SetFlickerIntensity(si);
-         
-         //Debug.Log("suspense intensity is: " + si);
+        backgroundMusicController.BackgroundMusicIntensity = si;
+        gameCanvas.SetFlickerIntensity(si);
+
+        //Debug.Log("suspense intensity is: " + si);
     }
 
     private void UpdateRealFloorNumber()

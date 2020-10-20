@@ -241,7 +241,7 @@ namespace FloorModule
             SetAdRandomTexture(_gc2AdMaterial);
         }
 
-        public void UpdateDoors()
+        public void GenerateDoors()
         {
             Transform entrywayTransform = transform.Find(EntrywayObjectName);
             Transform floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
@@ -277,6 +277,12 @@ namespace FloorModule
         public void HideElevator()
         {
             Elevator.gameObject.SetActive(false);
+        }
+
+        public void RandomizeDoors()
+        {
+            _leftDoor.Randomize();
+            _rightDoor.Randomize();
         }
     }
 }
