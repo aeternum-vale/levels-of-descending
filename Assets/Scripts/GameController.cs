@@ -5,6 +5,7 @@ using System.Linq;
 using AdGeneratorModule;
 using BackgroundMusicModule;
 using FloorModule;
+using GameCanvasModule;
 using InventoryModule;
 using PlayerModule;
 using Plugins;
@@ -59,6 +60,7 @@ public class GameController : MonoBehaviour
     [SerializeField] private bool isItMenuScene;
     [SerializeField] private GameObject playerGameObject;
     [SerializeField] private ResourcesController resourcesController;
+    [SerializeField] private GameCanvas gameCanvas;
 
     private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
@@ -104,6 +106,10 @@ public class GameController : MonoBehaviour
             GetNextHigherFloor().SetFloorDrawnNumber(++_fakeFloorNumber + 1);
             demoCamera.transform.position = initPlayerFloor.DemoCameraPlaceholder.transform.position;
             MoveDemoCameraToNextPlaceholder();
+        }
+        else
+        {
+            gameCanvas.FadeIn();
         }
     }
 
@@ -221,7 +227,7 @@ public class GameController : MonoBehaviour
             1f);
 
          backgroundMusicController.BackgroundMusicIntensity = si;
-         _player.SetFlickerIntensity(si);
+         gameCanvas.SetFlickerIntensity(si);
          
          //Debug.Log("suspense intensity is: " + si);
     }
@@ -414,6 +420,7 @@ public class GameController : MonoBehaviour
     private void StartEndingCutScene()
     {
         backgroundMusicController.BackgroundMusicIntensity = 0f;
+        gameCanvas.StopFlicker();
 
         Transform playerPhTransform = GetCurrentFloor().PlayerPlaceholder.transform;
         Transform cameraPhTransform = GetCurrentFloor().PlayerPlaceholder.transform.GetChild(0);
@@ -434,7 +441,7 @@ public class GameController : MonoBehaviour
     private void OnElevating()
     {
         _gameIsOver = true;
-        _player.FadeOut();
+        gameCanvas.FadeOut();
     }
 
     private void OnFullBlackoutReached()

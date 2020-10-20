@@ -59,8 +59,6 @@ namespace PlayerModule
             _mouseSensitivity = playerCamera.MouseSensitivity;
             _startCameraY = playerCamera.transform.localPosition.y;
             _playerTransform = transform;
-
-            playerCamera.FadeIn();
         }
 
         private void Update()
@@ -279,7 +277,6 @@ namespace PlayerModule
 
         public void CutSceneMoveToPosition(Vector3 position, Vector3 rotation, Vector3 cameraRotation)
         {
-            playerCamera.StopFlicker();
             _isCutSceneMoving = true;
             playerCamera.IsCutSceneMoving = true;
 
@@ -313,16 +310,6 @@ namespace PlayerModule
                 _playerYBeforeBinding + (_bindingPlatform.transform.position.y - _bindingPlatformStartY),
                 pos.z
             );
-        }
-
-        public void FadeOut()
-        {
-            playerCamera.FadeOut();
-        }
-
-        public void SetFlickerIntensity(float intensity)
-        {
-            playerCamera.SetFlickerIntensity(intensity);
         }
     }
 }

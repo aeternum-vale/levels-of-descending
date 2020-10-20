@@ -1,33 +1,14 @@
-﻿using System;
-using Plugins;
-using UnityEngine;
+﻿using UnityEngine;
 using Utils;
 
 namespace PlayerModule
 {
     public class PlayerCamera : MonoBehaviour
     {
-        private const float BlackoutIntensityMaxChangeStep = 0.01f;
-        private const float BlackoutIntensityChangeSpeed = 0.25f;
-        private const float FlickerBlackoutIntensityMax = .2f;
-        private const float FlickerBlackoutIntensityMin = 0f;
-        private const float BlackoutTimeMultiplierMax = 10f;
-        private const float BlackoutTimeMultiplierMin = .7f;
-        private const float Tolerance = 0.001f;
-
-        private static readonly int BlackoutIntensityId = Shader.PropertyToID("_Intensity");
         private readonly float _mouseVerticalMax = 70;
         private readonly float _mouseVerticalMin = -80;
-        private float _blackoutIntensity = 1f;
-        private float _blackoutIntensityTarget = 1f;
-        private float _blackoutTimeMultiplier = 1f;
         private Camera _cameraComponent;
-        private bool _isFlickerAllowed;
-
-        private bool _isFlickerOn;
-        private bool _isFlickerSynced;
         private float _rotationX;
-        [SerializeField] private Material blackoutMaterial;
         [SerializeField] private Material blurMaterial;
         public bool IsInventoryModeOn { get; set; }
         public float MouseSensitivity { get; } = 1;
@@ -36,7 +17,6 @@ namespace PlayerModule
 
         private void Start()
         {
-            _isFlickerOn = true;
             _cameraComponent = GetComponent<Camera>();
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -44,8 +24,6 @@ namespace PlayerModule
 
         private void Update()
         {
-            UpdateBlackoutIntensity();
-
             if (IsInventoryModeOn) return;
 
             if (IsCutSceneMoving)
@@ -80,7 +58,10 @@ namespace PlayerModule
 
         private void OnRenderImage(RenderTexture src, RenderTexture dest)
         {
-            Graphics.Blit(src, dest, IsInventoryModeOn ? blurMaterial : blackoutMaterial);
+            if (IsInventoryModeOn)
+                Graphics.Blit(src, dest, blurMaterial);
+            else
+                Graphics.Blit(src, dest);
         }
 
         public Texture2D GetBackgroundTexture()
@@ -99,101 +80,6 @@ namespace PlayerModule
             IsInventoryModeOn = false;
             _cameraComponent.targetTexture = null;
             gameObject.SetActive(true);
-        }
-
-        public void FadeOut()
-        {
-            _blackoutIntensityTarget = 1f;
-        }
-
-        public void FadeIn()
-        {
-            _blackoutIntensityTarget = 0f;
-        }
-
-        public void SetFlickerIntensity(float intensity)
-        {
-            intensity = Mathf.Clamp(intensity, 0f, 1f);
-            _blackoutTimeMultiplier = BlackoutTimeMultiplierMin +
-                                      (BlackoutTimeMultiplierMax - BlackoutTimeMultiplierMin) * intensity;
-
-            _isFlickerSynced = false;
-        }
-
-        public void StopFlicker()
-        {
-            _isFlickerOn = false;
-            _blackoutIntensityTarget = 0f;
-        }
-
-        public void StartFlicker()
-        {
-            _isFlickerOn = true;
-        }
-
-        private void UpdateBlackoutIntensity()
-        {
-            float changeSpeed =
-                Mathf.Min(BlackoutIntensityChangeSpeed * Time.deltaTime, BlackoutIntensityMaxChangeStep);
-
-            if (!_isFlickerOn)
-                _isFlickerAllowed = false;
-
-            if (_isFlickerOn && _isFlickerAllowed)
-            {
-                float value = (float) ((Math.Sin(Time.time * _blackoutTimeMultiplier) + 1) / 2) *
-                              (FlickerBlackoutIntensityMax - FlickerBlackoutIntensityMin)
-                              + FlickerBlackoutIntensityMin;
-
-                if (_isFlickerSynced)
-                {
-                    _blackoutIntensity = value;
-                }
-                else
-                {
-                    float diff = Mathf.Abs(value - _blackoutIntensity);
-                    if (diff <= changeSpeed)
-                    {
-                        _isFlickerSynced = true;
-                        _blackoutIntensity = value;
-                    }
-                }
-            }
-            else
-            {
-                if (_isFlickerOn)
-                {
-                    _blackoutIntensityTarget = FlickerBlackoutIntensityMin +
-                                               (FlickerBlackoutIntensityMax - FlickerBlackoutIntensityMin) / 2;
-                    _isFlickerSynced = false;
-                }
-
-                float diff = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget);
-                if (diff <= changeSpeed)
-                    _blackoutIntensity = _blackoutIntensityTarget;
-                else
-                    _blackoutIntensity += changeSpeed * (_blackoutIntensity < _blackoutIntensityTarget ? 1 : -1);
-
-                bool isIntensityEqualTarget = Math.Abs(_blackoutIntensity - _blackoutIntensityTarget) <= Tolerance;
-                if (isIntensityEqualTarget && _isFlickerOn)
-                {
-                    _blackoutIntensity = _blackoutIntensityTarget;
-
-                    if (_isFlickerOn)
-                    {
-                        _isFlickerAllowed = true;
-                        _isFlickerSynced = false;
-                    }
-                }
-            }
-
-            blackoutMaterial.SetFloat(BlackoutIntensityId, _blackoutIntensity);
-
-            /*Debug.Log(_blackoutIntensity + " : " + (_isFlickerOn ? 1 : 0) + " : " +
-                      _blackoutTimeMultiplier);*/
-
-            if (Math.Abs(_blackoutIntensity - 1f) < Tolerance)
-                Messenger.Broadcast(Events.FullBlackoutReached);
         }
     }
 }
