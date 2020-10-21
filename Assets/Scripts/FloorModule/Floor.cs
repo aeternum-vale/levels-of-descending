@@ -51,6 +51,8 @@ namespace FloorModule
         private Door _rightDoor;
         private Scalpel _scalpel;
         private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
+        private Light _frontLight;
+        private Light _backLight;
 
         [SerializeField] private DoorController doorController;
 
@@ -59,6 +61,7 @@ namespace FloorModule
         public Elevator Elevator { get; private set; }
         public GameObject PlayerPlaceholder { get; private set; }
         public GameObject DemoCameraPlaceholder { get; private set; }
+        public String Id { get; set; }
 
         private void Start()
         {
@@ -72,6 +75,9 @@ namespace FloorModule
             _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
             PlayerPlaceholder = transform.Find(_playerPlaceholderName).gameObject;
             Elevator = transform.Find("elevator").GetComponent<Elevator>();
+            Transform lights = transform.Find("lights");
+            _frontLight = lights.GetChild(0).GetComponent<Light>();
+            _backLight = lights.GetChild(1).GetComponent<Light>();
 
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
@@ -283,6 +289,12 @@ namespace FloorModule
         {
             _leftDoor.Randomize();
             _rightDoor.Randomize();
+        }
+
+        public void SetLightsState(bool front, bool back)
+        {
+            _frontLight.gameObject.SetActive(front);
+            _backLight.gameObject.SetActive(back);
         }
     }
 }

@@ -18,7 +18,7 @@ using Utils;
 public class GameController : MonoBehaviour
 {
     private const float FloorHeight = 3.99f;
-    private const int FloorCount = 5;
+    private const int FloorCount = 6;
     private const int FirstFloorNumber = 7;
 
     private const int SuspenseStartFloorNumber = 9;
@@ -72,6 +72,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < FloorCount; i++)
         {
             _floors[i] = GenerateRandomFloor(floorPrefab.transform.position + new Vector3(0, FloorHeight * i, 0));
+            _floors[i].Id = i.ToString();
             _ground1Colliders.Add(_floors[i],
                 _floors[i].transform.Find(GameConstants.collidersObjectName)
                     .Find(GameConstants.ground1ColliderObjectName).gameObject);
@@ -184,6 +185,13 @@ public class GameController : MonoBehaviour
     {
         int dist = Math.Abs(GetFloorIndex(floor) - GetCurrentFloorIndex());
         return (byte) Math.Min(dist, FloorCount - dist);
+    }
+
+    private int GetFloorDirectionToPlayer(Floor floor)
+    {
+        return IsFloorCurrent(floor)
+            ? 0
+            : Math.Sign(floor.transform.position.y - GetCurrentFloor().transform.position.y);
     }
 
     private bool? IsPlayerGoingUp()
@@ -320,6 +328,15 @@ public class GameController : MonoBehaviour
         ForEachFloorExceptCurrent(floor =>
         {
             byte floorDistanceToPlayer = GetFloorDistanceToPlayer(floor);
+            int floorDirectionToPlayer = GetFloorDirectionToPlayer(floor);
+
+            if (floorDistanceToPlayer < 2)
+                floor.SetLightsState(true, true);
+            else
+                floor.SetLightsState(false, false);
+
+            if (floorDistanceToPlayer == 2 && floorDirectionToPlayer == 1)
+                floor.SetLightsState(false, true);
 
             if (floorDistanceToPlayer <= 0 || floorDistanceToPlayer > 2) return;
 
