@@ -464,7 +464,7 @@ public class GameController : MonoBehaviour
     private void OnFullBlackoutReached()
     {
         if (_gameIsOver)
-            Application.Quit();
+            SceneManager.LoadScene("menu");
     }
 
     private void OnInventoryItemUsedIncorrectly()
