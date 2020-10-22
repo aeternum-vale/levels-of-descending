@@ -73,19 +73,24 @@ namespace SelectableObjectsModule
         {
             if (_materialsCache.ContainsKey(go)) return _materialsCache[go];
 
-            Material mat = go.GetComponent<MeshRenderer>().material;
+            MeshRenderer mr = go.GetComponent<MeshRenderer>();
+            if (!mr) return null;
+
+            Material mat = mr.material;
             _materialsCache.Add(go, mat);
             return mat;
         }
 
         private static void ApplySelectedStateToMaterial(Material mat)
         {
-            mat.SetFloat(IsRimLightEnabledPropertyId, 1f);
+            if (mat != null)
+                mat.SetFloat(IsRimLightEnabledPropertyId, 1f);
         }
 
         private static void ApplyNormalStateToMaterial(Material mat)
         {
-            mat.SetFloat(IsRimLightEnabledPropertyId, 0f);
+            if (mat != null) 
+                mat.SetFloat(IsRimLightEnabledPropertyId, 0f);
         }
 
         public static string GetPath(ESwitchableObjectId id)
@@ -112,7 +117,7 @@ namespace SelectableObjectsModule
         {
             return parent.transform.Find(GetName(id)).GetComponent<SwitchableObject>();
         }
-        
+
         public static SwitchableObject GetAsChildByPath(GameObject parent, ESwitchableObjectId id)
         {
             return parent.transform.Find(GetPath(id)).GetComponent<SwitchableObject>();
