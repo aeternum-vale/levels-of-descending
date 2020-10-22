@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AdGeneratorModule;
@@ -9,6 +10,7 @@ using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
+using Utils;
 using Random = UnityEngine.Random;
 
 namespace FloorModule
@@ -35,11 +37,15 @@ namespace FloorModule
         };
 
         private readonly string _playerPlaceholderName = "player_placeholder";
+        private Light _backLight;
+        private float _backLightInitIntensity;
 
         private Material _elevatorAdMaterial;
 
         private SwitchableObject _ePanelDoor;
         private Material _ePanelDoorMaterial;
+        private Light _frontLight;
+        private float _frontLightInitIntensity;
         private Material _frontWallMaterial;
         private GarbagePropsGenerator _garbagePropsGenerator;
         private Material _gc1AdMaterial;
@@ -51,8 +57,6 @@ namespace FloorModule
         private Door _rightDoor;
         private Scalpel _scalpel;
         private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
-        private Light _frontLight;
-        private Light _backLight;
 
         [SerializeField] private DoorController doorController;
 
@@ -61,7 +65,7 @@ namespace FloorModule
         public Elevator Elevator { get; private set; }
         public GameObject PlayerPlaceholder { get; private set; }
         public GameObject DemoCameraPlaceholder { get; private set; }
-        public String Id { get; set; }
+        public string Id { get; set; }
 
         private void Start()
         {
@@ -78,6 +82,9 @@ namespace FloorModule
             Transform lights = transform.Find("lights");
             _frontLight = lights.GetChild(0).GetComponent<Light>();
             _backLight = lights.GetChild(1).GetComponent<Light>();
+
+            _frontLightInitIntensity = _frontLight.intensity;
+            _backLightInitIntensity = _backLight.intensity;
 
             transform.GetComponentsInChildren<InventoryObject>(true)
                 .ToList()
@@ -293,8 +300,27 @@ namespace FloorModule
 
         public void SetLightsState(bool front, bool back)
         {
-            _frontLight.gameObject.SetActive(front);
-            _backLight.gameObject.SetActive(back);
+            StopAllCoroutines();
+            StartCoroutine(SetLightState(_frontLight, _frontLightInitIntensity, front));
+            StartCoroutine(SetLightState(_backLight, _backLightInitIntensity, back));
+        }
+
+        private IEnumerator SetLightState(Light lightComponent, float initIntensity, bool state)
+        {
+            const float tolerance = 0.01f;
+            if (lightComponent.gameObject.activeSelf == state &&
+                Math.Abs(lightComponent.intensity - initIntensity) < tolerance) yield break;
+
+            float target = state ? initIntensity : 0f;
+
+            lightComponent.gameObject.SetActive(true);
+
+            yield return StartCoroutine(GameUtils.AnimateValue(
+                () => lightComponent.intensity,
+                v => lightComponent.intensity = v,
+                target, 0.04f));
+
+            lightComponent.gameObject.SetActive(state);
         }
     }
 }
