@@ -57,6 +57,10 @@ namespace FloorModule.PropsGenerator
                         currentInstance = Instantiate(prefab, transform);
                         currentInstanceCollider = currentInstance.GetComponent<BoxCollider>();
 
+                        if (!currentInstanceCollider && currentInstance.transform.childCount > 0)
+                            currentInstanceCollider = 
+                                currentInstance.transform.GetChild(0).GetComponent<BoxCollider>();
+                        
                         _instances[id][currentInstanceIndex].GameObject = currentInstance;
                         _instances[id][currentInstanceIndex].BoxCollider = currentInstanceCollider;
                         _allColliders.Add(currentInstanceCollider);
