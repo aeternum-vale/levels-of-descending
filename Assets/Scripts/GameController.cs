@@ -344,8 +344,10 @@ public class GameController : MonoBehaviour
 
             if (floorDistanceToPlayer == 2)
             {
-                floor.GenerateRandomTextureProjectorsAndGarbageProps();
-                floor.SetGcAdsRandomTextures();
+                if (_fakeFloorNumber % 2 == 0)
+                    floor.GenerateRandomTextureProjectorsAndGarbageProps();
+                else
+                    floor.SetGcAdsRandomTextures();
             }
 
             if (floorDistanceToPlayer == 1) floor.SetElevatorAdRandomTexture();
