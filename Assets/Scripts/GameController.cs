@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -359,7 +359,7 @@ public class GameController : MonoBehaviour
 
     private void UpdateInventoryObjectsPresence()
     {
-        ForEachFloorExceptCurrent(floor =>
+        ForEachFloor(floor =>
         {
             floor.HideSomeInventoryObjects(id => inventory.Contains(id));
 
@@ -383,6 +383,12 @@ public class GameController : MonoBehaviour
 
             action.Invoke(floor);
         }
+    }
+
+    private void ForEachFloor(Action<Floor> action)
+    {
+        foreach (Floor floor in _floors)
+            action.Invoke(floor);
     }
 
     private void ImplementFloorMarksAndFakeFloorNumber()
