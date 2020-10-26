@@ -19,12 +19,12 @@ namespace InventoryModule
         private readonly Dictionary<EInventoryItemId, InventoryItemData> _itemsData =
             new Dictionary<EInventoryItemId, InventoryItemData>
             {
-                [EInventoryItemId.POSTBOX_KEY] = new InventoryItemData() {},
-                [EInventoryItemId.LETTER] = new InventoryItemData() {},
-                [EInventoryItemId.SCALPEL] = new InventoryItemData() {},
-                [EInventoryItemId.E_PANEL_KEY] = new InventoryItemData() {},
-                [EInventoryItemId.SCREWDRIVER] = new InventoryItemData() {},
-                [EInventoryItemId.INSULATING_TAPE] = new InventoryItemData() {},
+                [EInventoryItemId.POSTBOX_KEY] = new InventoryItemData() { },
+                [EInventoryItemId.LETTER] = new InventoryItemData() { },
+                [EInventoryItemId.SCALPEL] = new InventoryItemData() { },
+                [EInventoryItemId.E_PANEL_KEY] = new InventoryItemData() { },
+                [EInventoryItemId.SCREWDRIVER] = new InventoryItemData() { },
+                [EInventoryItemId.INSULATING_TAPE] = new InventoryItemData() { },
                 [EInventoryItemId.ELEVATOR_CALLER_BUTTON] =
                     new InventoryItemData {IsDisposable = true},
                 [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData {IsDisposable = true}
@@ -147,6 +147,7 @@ namespace InventoryModule
             IsInventoryModeOn = false;
             _inventoryCamera.IsInventoryModeOn = false;
             _inventoryCamera.gameObject.SetActive(false);
+            Messenger.Broadcast(Events.InventoryModeDeactivated);
         }
 
         private void SwitchCurrentItemIdToNext()

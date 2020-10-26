@@ -124,6 +124,7 @@ public class GameController : MonoBehaviour
             Messenger.AddListener(Events.FloorWasTouched, OnFloorWasTouched);
             Messenger.AddListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
             Messenger.AddListener(Events.InventoryModeBeforeActivating, OnInventoryModeBeforeActivating);
+            Messenger.AddListener(Events.InventoryModeDeactivated, OnInventoryModeDeactivated);
             Messenger.AddListener(Events.CowCodeActivated, OnCowCodeActivated);
             Messenger.AddListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
             Messenger.AddListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
@@ -315,7 +316,13 @@ public class GameController : MonoBehaviour
 
     private void OnInventoryModeBeforeActivating()
     {
+        gameCanvas.gameObject.SetActive(false);
         inventoryTipText.gameObject.SetActive(false);
+    }
+
+    private void OnInventoryModeDeactivated()
+    {
+        gameCanvas.gameObject.SetActive(true);
     }
 
     private void OnCowCodeActivated()
@@ -555,6 +562,7 @@ public class GameController : MonoBehaviour
         Messenger.RemoveListener(Events.FloorWasTouched, OnFloorWasTouched);
         Messenger.RemoveListener(Events.InventoryWasUpdated, OnInventoryWasUpdated);
         Messenger.RemoveListener(Events.InventoryModeBeforeActivating, OnInventoryModeBeforeActivating);
+        Messenger.RemoveListener(Events.InventoryModeDeactivated, OnInventoryModeDeactivated);
         Messenger.RemoveListener(Events.CowCodeActivated, OnCowCodeActivated);
         Messenger.RemoveListener(Events.ElevatorFloorWasTouched, OnElevatorFloorWasTouched);
         Messenger.RemoveListener(Events.PlayerCutSceneMoveCompleted, OnPlayerCutSceneMoveCompleted);
