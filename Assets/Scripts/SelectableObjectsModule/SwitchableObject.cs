@@ -13,7 +13,7 @@ namespace SelectableObjectsModule
 
         private Animator _animator;
         private AudioSource _audioSource;
-        
+
         [SerializeField] private ESwitchableObjectId id;
         [SerializeField] private EInventoryItemId necessaryInventoryItem;
         [SerializeField] private bool hasValueOfNecessaryInventoryItem;
@@ -22,7 +22,7 @@ namespace SelectableObjectsModule
         [SerializeField] private AudioClip openSound;
         [SerializeField] private AudioClip closeSound;
         [SerializeField] protected bool isDisposable;
-        
+
         protected bool IsAnimationOn;
         public bool IsOpened { get; private set; }
         public bool IsDependent { get; private set; }
@@ -35,6 +35,8 @@ namespace SelectableObjectsModule
         public Func<bool> OpenCondition { get; set; }
 
         public int AnimationNameHash { get; set; }
+
+        public bool IsMuted { get; set; }
 
         public int InitStateSafeDistanceToPlayer { get; set; } = 1;
 
@@ -205,6 +207,7 @@ namespace SelectableObjectsModule
 
         private void PlaySound(AudioClip clip)
         {
+            if (IsMuted) return;
             if (_audioSource == null) return;
             if (clip == null) return;
 

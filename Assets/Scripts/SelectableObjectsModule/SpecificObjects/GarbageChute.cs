@@ -7,14 +7,14 @@ namespace SelectableObjectsModule.SpecificObjects
     public class GarbageChute : MonoBehaviour, IInitStateReturnable
     {
         private static readonly int RemoveStateNameHash = Animator.StringToHash("Remove");
-
-        private InventoryObject _elevatorButtonPanel;
         private SwitchableObject _door;
-        private SwitchableObject _hinge;
         private Rigidbody _doorRigidbody;
 
         private Vector3 _doorRigidbodyInitPosition;
         private Quaternion _doorRigidbodyInitRotation;
+
+        private InventoryObject _elevatorButtonPanel;
+        private SwitchableObject _hinge;
         public int InitStateSafeDistanceToPlayer { get; set; } = 2;
 
         public void ReturnToInitState(int floorDistanceToPlayer)
@@ -22,11 +22,12 @@ namespace SelectableObjectsModule.SpecificObjects
             if (floorDistanceToPlayer < InitStateSafeDistanceToPlayer) return;
 
             _door.gameObject.SetActive(true);
+            _door.IsMuted = false;
             _door.AnimationNameHash = SwitchableObject.defaultSwitchStateNameHash;
             _door.OpenAnimationCompleted -= OnDoorOpenAnimationCompleted;
             _door.IsGlowingEnabled = true;
             _door.Close();
-            
+
             _elevatorButtonPanel.IsGrabable = false;
             _doorRigidbody.gameObject.SetActive(false);
             _doorRigidbody.velocity = new Vector3(0f, 0f, 0f);
@@ -35,7 +36,7 @@ namespace SelectableObjectsModule.SpecificObjects
             Transform doorRigidbodyTransform = _doorRigidbody.transform;
             doorRigidbodyTransform.localPosition = _doorRigidbodyInitPosition;
             doorRigidbodyTransform.localRotation = _doorRigidbodyInitRotation;
-            
+
             _hinge.gameObject.SetActive(true);
         }
 
@@ -60,6 +61,7 @@ namespace SelectableObjectsModule.SpecificObjects
 
         private void OnUnhinged(object s, EventArgs e)
         {
+            _door.IsMuted = true;
             _door.AnimationNameHash = RemoveStateNameHash;
             _door.OpenAnimationCompleted += OnDoorOpenAnimationCompleted;
             _elevatorButtonPanel.IsGrabable = true;
