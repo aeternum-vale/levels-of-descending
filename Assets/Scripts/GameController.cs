@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -344,10 +344,18 @@ public class GameController : MonoBehaviour
 
             if (floorDistanceToPlayer == 2)
             {
-                if (_fakeFloorNumber % 2 == 0)
-                    floor.GenerateRandomTextureProjectorsAndGarbageProps();
-                else
-                    floor.SetGcAdsRandomTextures();
+                switch (_fakeFloorNumber % 3)
+                {
+                    case 0:
+                        floor.GenerateRandomGarbageProps();
+                        break;
+                    case 1:
+                        floor.GenerateRandomTextureProjectors();
+                        break;
+                    case 2:
+                        floor.SetGcAdsRandomTextures();
+                        break;
+                }
             }
 
             if (floorDistanceToPlayer == 1) floor.SetElevatorAdRandomTexture();

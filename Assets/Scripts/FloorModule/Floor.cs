@@ -278,7 +278,17 @@ namespace FloorModule
 
         public void GenerateRandomTextureProjectorsAndGarbageProps()
         {
+            GenerateRandomTextureProjectors();
+            GenerateRandomGarbageProps();
+        }
+
+        public void GenerateRandomTextureProjectors()
+        {
             _textureProjectorPropsGenerator.GenerateProps();
+        }
+
+        public void GenerateRandomGarbageProps()
+        {
             _garbagePropsGenerator.GenerateProps();
         }
 
