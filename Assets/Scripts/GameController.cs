@@ -22,7 +22,7 @@ public class GameController : MonoBehaviour
     private const int FirstFloorNumber = 7;
 
     private const int SuspenseStartFloorNumber = 9;
-    private const int SuspenseEndFloorNumber = 42;
+    private const int SuspenseEndFloorNumber = 48;
 
     private const int DemoCameraMoveDurationSec = 25;
     private const float TipAlpha = 0.6f;
