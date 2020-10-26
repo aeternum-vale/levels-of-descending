@@ -13,7 +13,7 @@ namespace MenuModule
     public class MainMenu : MonoBehaviour
     {
         private const float HoverAlpha = 1f;
-        private const float NormalAlpha = .55f;
+        private const float NormalAlpha = .6f;
         private const float DisabledAlpha = 0.07f;
         private const float MenuItemAlphaRate = 0.15f;
         private const float AlphaRate = 0.05f;
