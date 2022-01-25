@@ -5,45 +5,33 @@ namespace PlayerModule
 {
     public class PlayerCamera : MonoBehaviour
     {
-        private readonly float _mouseVerticalMax = 70;
-        private readonly float _mouseVerticalMin = -80;
+        [SerializeField] private Material blurMaterial;
+		
         private Camera _cameraComponent;
         private float _rotationX;
-        [SerializeField] private Material blurMaterial;
+
         public bool IsInventoryModeOn { get; set; }
-        public float MouseSensitivity { get; } = 1;
-
         public bool IsCutSceneMoving { get; set; }
+		public float RotationX { get => _rotationX; set => _rotationX = value; }
 
-        private void Start()
+		private void Start()
         {
             _cameraComponent = GetComponent<Camera>();
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            //Cursor.lockState = CursorLockMode.Locked;
+           // Cursor.visible = false;
         }
 
-        private void Update()
-        {
-            if (IsInventoryModeOn) return;
+        // private void Update()
+        // {
+        //     if (IsInventoryModeOn) return;
 
-            if (IsCutSceneMoving)
-            {
-                _rotationX = NormalizeAngle(transform.localEulerAngles.x, -90, 90);
-                return;
-            }
+        //     if (IsCutSceneMoving)
+        //     {
+		// 		transform.localEulerAngles = new Vector3(NormalizeAngle(transform.localEulerAngles.x, -90, 90), 0, 0);
+        //         return;
+        //     }
+        // }
 
-            _rotationX -= Input.GetAxis("Mouse Y") * MouseSensitivity;
-            _rotationX = Mathf.Clamp(_rotationX, _mouseVerticalMin, _mouseVerticalMax);
-            transform.localEulerAngles = new Vector3(_rotationX, 0, 0);
-        }
-
-        private static int NormalizeAngle(float value, int start, int end)
-        {
-            int width = end - start;
-            float offsetValue = value - start;
-
-            return (int) (offsetValue + start - (int) (offsetValue / width) * width);
-        }
 
         private void OnGUI()
         {

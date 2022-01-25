@@ -2,314 +2,354 @@
 using Plugins;
 using SelectableObjectsModule;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace PlayerModule
 {
-    public class Player : MonoBehaviour
-    {
-        private static readonly float MaxDistanceToSelectableObjectOnStanding = .45f;
-        private static readonly float MaxDistanceToSelectableObjectOnSquatting = .8f;
-        private static readonly float StairPaceYSpeed = 0.02f;
-        private static readonly float StairPaceYAmplitude = 0.2f;
-        private static readonly float StairPaceYFrequency = 20f;
-        private readonly float _cutSceneMoveDurationSec = 4f;
-        private readonly float _gravity = -9.8f;
+	public class Player : MonoBehaviour
+	{
+		private static readonly float MaxDistanceToSelectableObjectOnStanding = .45f;
+		private static readonly float MaxDistanceToSelectableObjectOnSquatting = .8f;
+		private static readonly float StairPaceYSpeed = 0.02f;
+		private static readonly float StairPaceYAmplitude = 0.2f;
+		private static readonly float StairPaceYFrequency = 20f;
+		private readonly float _cutSceneMoveDurationSec = 4f;
+		private readonly float _gravity = -9.8f;
 
-        private readonly float _speed = 1.5f;
-        private readonly float _squattingMaxAmount = 2f;
-        private readonly float _squattingSpeed = 3f;
+		private readonly float _squattingMaxAmount = 2f;
+		private readonly float _squattingSpeed = 3f;
+		private readonly float _mouseVerticalMax = 70;
+		private readonly float _mouseVerticalMin = -80;
 
-        private GameObject _bindingPlatform;
-        private float _bindingPlatformStartY;
-        private CharacterController _charController;
-        private GameObject _colliderCarrier;
 
-        private bool _isCutSceneMoving;
-        private bool _isGround1Last;
-        private bool _isStair1Pace;
+		private GameObject _bindingPlatform;
+		private float _bindingPlatformStartY;
+		private CharacterController _charController;
+		private GameObject _colliderCarrier;
 
-        private bool _isStairCommonPace;
-        private bool _isYBind;
+		private bool _isCutSceneMoving;
+		private bool _isGround1Last;
+		private bool _isStair1Pace;
 
-        private float _maxDistanceToSelectableObject = .45f;
-        private float _mouseSensitivity;
+		private bool _isStairCommonPace;
+		private bool _isYBind;
 
-        private Camera _playerCameraComponent;
-        private Transform _playerTransform;
-        private float _playerYBeforeBinding;
-        private bool _prevIsStairPace;
-        private float _realSquattingAmount;
+		private float _maxDistanceToSelectableObject = .45f;
 
-        private SelectableObject _selectedObject;
-        private float _stairPaceXAdjustment;
-        private float _stairPaceYRealOffset;
-        private float _stairPaceYTargetOffset;
+		private Camera _playerCameraComponent;
+		private Transform _playerTransform;
+		private float _playerYBeforeBinding;
+		private bool _prevIsStairPace;
+		private float _realSquattingAmount;
 
-        private float _startCameraY;
-        [SerializeField] public Inventory inventory;
-        [SerializeField] public bool isSquattingOn = true;
-        [SerializeField] private PlayerCamera playerCamera;
-        public GameObject LastGround1ColliderTouched { get; private set; }
-        public GameObject PrevLastGround1ColliderTouched { get; private set; }
+		private SelectableObject _selectedObject;
+		private float _stairPaceXAdjustment;
+		private float _stairPaceYRealOffset;
+		private float _stairPaceYTargetOffset;
 
-        private void Start()
-        {
-            _playerCameraComponent = playerCamera.GetComponent<Camera>();
-            _charController = GetComponent<CharacterController>();
-            _mouseSensitivity = playerCamera.MouseSensitivity;
-            _startCameraY = playerCamera.transform.localPosition.y;
-            _playerTransform = transform;
-        }
+		private float _startCameraY;
+		private bool _isSquattingOn = false;
 
-        private void Update()
-        {
-            if (!inventory.IsInventoryModeOn)
-            {
-                if (!_isCutSceneMoving)
-                {
-                    UpdateMouse();
-                    UpdateCameraY();
-                    UpdateMovement();
-                    UpdateStairPace();
-                    UpdateSquatting();
-                }
 
-                if (_isYBind) UpdateBindY();
-            }
 
-            UpdateUseButton();
-            UpdateInventoryButton();
-            UpdateExitButton();
-        }
+		[SerializeField] private Inventory _inventory;
+		[SerializeField] private PlayerCamera _playerCamera;
+		[SerializeField] private InputsCombiner _input;
 
-        private void UpdateInventoryButton()
-        {
-            if (!Input.GetButtonDown("Inventory")) return;
-            if (playerCamera.IsCutSceneMoving) return;
+		[Space(10)]
 
-            if (!inventory.IsInventoryModeOn)
-            {
-                if (!inventory.CanActivateInventoryMode) return;
+		[SerializeField] private float _mouseSensitivity = 0.05f;
+		[SerializeField] private float _movementSpeed = 1.5f;
 
-                Messenger.Broadcast(Events.InventoryModeBeforeActivating);
+		public GameObject LastGround1ColliderTouched { get; private set; }
+		public GameObject PrevLastGround1ColliderTouched { get; private set; }
 
-                playerCamera.IsInventoryModeOn = true;
-                inventory.ActivateInventoryMode(playerCamera.GetBackgroundTexture());
-                playerCamera.ActivateInventoryMode();
-            }
-            else
-            {
-                inventory.OnInventorySwitchToNextItem();
-            }
-        }
 
-        private void UpdateMouse()
-        {
-            float delta = Input.GetAxis("Mouse X") * _mouseSensitivity;
-            Transform transformValue = transform;
+		private void Start()
+		{
+			_playerCameraComponent = _playerCamera.GetComponent<Camera>();
+			_charController = GetComponent<CharacterController>();
+			_startCameraY = _playerCamera.transform.localPosition.y;
+			_playerTransform = transform;
 
-            float rotationY = transformValue.localEulerAngles.y + delta;
-            transformValue.localEulerAngles = new Vector3(0, rotationY, 0);
+		}
 
-            if (_selectedObject)
-            {
-                _selectedObject.OnOut();
-                _selectedObject = null;
-            }
+		private void Update()
+		{
+			if (!_inventory.IsInventoryModeOn)
+			{
+				if (!_isCutSceneMoving)
+				{
+					UpdateMouse();
+					UpdateCameraY();
+					UpdateMovement();
+					UpdateStairPace();
+					UpdateSquatting();
+				}
 
-            Vector3 point = new Vector3(_playerCameraComponent.pixelWidth / 2, _playerCameraComponent.pixelHeight / 2,
-                0);
-            Ray ray = _playerCameraComponent.ScreenPointToRay(point);
+				if (_isYBind) UpdateBindY();
+			}
 
-            if (!Physics.Raycast(ray, out RaycastHit hit)) return;
+			UpdateUseButton();
+			UpdateInventoryButton();
+			UpdateExitButton();
+		}
 
-            Transform currentTransform = hit.transform;
-            SelectableObject currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
+		private void UpdateInventoryButton()
+		{
+			if (!_input.inventoryDown) return;
 
-            while (currentSelectedObject == null && currentTransform.parent != null)
-            {
-                currentTransform = currentTransform.parent;
-                currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
-            }
+			if (_playerCamera.IsCutSceneMoving) return;
 
-            if (!currentSelectedObject) return;
+			if (!_inventory.IsInventoryModeOn)
+			{
+				if (!_inventory.CanActivateInventoryMode) return;
 
-            float distance = _maxDistanceToSelectableObject;
-            if (currentSelectedObject.MaxDistanceToSelect != null)
-                distance = (float) currentSelectedObject.MaxDistanceToSelect;
+				Messenger.Broadcast(Events.InventoryModeBeforeActivating);
 
-            if (!(hit.distance <= distance)) return;
+				_playerCamera.IsInventoryModeOn = true;
+				_inventory.ActivateInventoryMode(_playerCamera.GetBackgroundTexture());
+				_playerCamera.ActivateInventoryMode();
+			}
+			else
+			{
+				_inventory.OnInventorySwitchToNextItem();
+			}
 
-            _selectedObject = currentSelectedObject;
-            _colliderCarrier = hit.transform.gameObject;
-            _selectedObject.OnOver(_colliderCarrier);
-        }
 
-        private void UpdateUseButton()
-        {
-            if (!Input.GetMouseButtonDown(0)) return;
+		}
 
-            EInventoryItemId? selectedInventoryItem = null;
+		private void UpdateMouse()
+		{
+			float deltaY = _input.look.x * _mouseSensitivity;
+			Transform transformValue = transform;
+			float rotationY = transformValue.localEulerAngles.y + deltaY;
+			transformValue.localEulerAngles = new Vector3(0, rotationY, 0);
 
-            if (inventory.IsInventoryModeOn)
-            {
-                selectedInventoryItem = inventory.CurrentItemId;
-                DeactivateInventoryMode();
+			float deltaX = _input.look.y * _mouseSensitivity;
+			Debug.Log($"<color=lightblue>{GetType().Name}:</color> deltaX={deltaX}");
+			Transform cameraTransformValue = _playerCamera.transform;
+			float rotationX = cameraTransformValue.localEulerAngles.x + deltaX;
+			Debug.Log($"<color=lightblue>{GetType().Name}:</color> rotationX1={rotationX}");
+			rotationX = NormalizeAngle(rotationX, -90, 90);
+			rotationX = Mathf.Clamp(rotationX, _mouseVerticalMin, _mouseVerticalMax);
+			Debug.Log($"<color=lightblue>{GetType().Name}:</color> rotationX2={rotationX}");
+			cameraTransformValue.localEulerAngles = new Vector3(rotationX, 0, 0);
 
-                if (!_selectedObject)
-                    Messenger.Broadcast(Events.InventoryItemUsedIncorrectly);
-            }
+			if (_selectedObject)
+			{
+				_selectedObject.OnOut();
+				_selectedObject = null;
+			}
 
-            if (_selectedObject)
-                _selectedObject.OnClick(selectedInventoryItem, _colliderCarrier);
-        }
+			Vector3 point = new Vector3(_playerCameraComponent.pixelWidth / 2, _playerCameraComponent.pixelHeight / 2,
+				0);
+			Ray ray = _playerCameraComponent.ScreenPointToRay(point);
 
-        private void UpdateExitButton()
-        {
-            if (!Input.GetButtonDown("Cancel")) return;
+			if (!Physics.Raycast(ray, out RaycastHit hit)) return;
 
-            if (inventory.IsInventoryModeOn)
-                DeactivateInventoryMode();
-            else
-                Messenger.Broadcast(Events.ExitButtonClicked);
-        }
+			Transform currentTransform = hit.transform;
+			SelectableObject currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
 
-        private void OnControllerColliderHit(ControllerColliderHit hit)
-        {
-            if (!_isCutSceneMoving && hit.collider.gameObject.name == GameConstants.elevatorFloorColliderObjectName)
-            {
-                Messenger.Broadcast(Events.ElevatorFloorWasTouched);
-                return;
-            }
+			while (currentSelectedObject == null && currentTransform.parent != null)
+			{
+				currentTransform = currentTransform.parent;
+				currentSelectedObject = currentTransform.GetComponent<SelectableObject>();
+			}
 
-            if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName &&
-                LastGround1ColliderTouched != hit.collider.gameObject)
-            {
-                PrevLastGround1ColliderTouched = LastGround1ColliderTouched;
-                LastGround1ColliderTouched = hit.collider.gameObject;
-                Messenger.Broadcast(Events.FloorWasTouched);
-            }
+			if (!currentSelectedObject) return;
 
-            _prevIsStairPace = _isStairCommonPace;
+			float distance = _maxDistanceToSelectableObject;
+			if (currentSelectedObject.MaxDistanceToSelect != null)
+				distance = (float)currentSelectedObject.MaxDistanceToSelect;
 
-            if (hit.collider.gameObject.name == GameConstants.stairs1ColliderObjectName ||
-                hit.collider.gameObject.name == GameConstants.stairs2ColliderObjectName)
-            {
-                _isStairCommonPace = true;
-                _isStair1Pace = hit.collider.gameObject.name == GameConstants.stairs1ColliderObjectName;
-            }
-            else
-            {
-                if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName ||
-                    hit.collider.gameObject.name == GameConstants.ground2ColliderObjectName)
-                {
-                    _isGround1Last = hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName;
-                    _isStairCommonPace = false;
-                }
-            }
-        }
+			if (!(hit.distance <= distance)) return;
 
-        private void DeactivateInventoryMode()
-        {
-            playerCamera.DeactivateInventoryMode();
-            inventory.DeactivateInventoryMode();
-        }
+			_selectedObject = currentSelectedObject;
+			_colliderCarrier = hit.transform.gameObject;
+			_selectedObject.OnOver(_colliderCarrier);
+		}
 
-        private void UpdateMovement()
-        {
-            float deltaX = Input.GetAxis("Horizontal") * _speed;
-            float deltaZ = Input.GetAxis("Vertical") * _speed;
-            Vector3 movement = new Vector3(deltaX, 0, deltaZ);
+		private void UpdateUseButton()
+		{
+			if (!_input.useDown) return;
 
-            movement = Vector3.ClampMagnitude(movement, _speed);
-            movement.y = _gravity;
-            movement *= Time.deltaTime;
+			EInventoryItemId? selectedInventoryItem = null;
 
-            movement = transform.TransformDirection(movement);
-            _charController.Move(movement);
-        }
+			if (_inventory.IsInventoryModeOn)
+			{
+				selectedInventoryItem = _inventory.CurrentItemId;
+				DeactivateInventoryMode();
 
-        private void UpdateStairPace()
-        {
-            if (_isCutSceneMoving) return;
+				if (!_selectedObject)
+					Messenger.Broadcast(Events.InventoryItemUsedIncorrectly);
+			}
 
-            if (!_isStairCommonPace)
-            {
-                _stairPaceYTargetOffset = 0;
+			if (_selectedObject)
+				_selectedObject.OnClick(selectedInventoryItem, _colliderCarrier);
+		}
 
-                if (_stairPaceYRealOffset == _stairPaceYTargetOffset) return;
+		private void UpdateExitButton()
+		{
+			//if (!Input.GetButtonDown("Cancel")) return; TODO
+			return;
 
-                float diff = Mathf.Abs(_stairPaceYRealOffset - _stairPaceYTargetOffset);
-                if (diff <= StairPaceYSpeed)
-                    _stairPaceYRealOffset = _stairPaceYTargetOffset;
-                else
-                    _stairPaceYRealOffset +=
-                        StairPaceYSpeed * (_stairPaceYRealOffset < _stairPaceYTargetOffset ? 1 : -1) *
-                        Time.deltaTime;
-            }
-            else
-            {
-                if (_prevIsStairPace == false)
-                    _stairPaceXAdjustment = -(gameObject.transform.position.x + (!_isStair1Pace ? Mathf.PI : 0));
-                _stairPaceYRealOffset =
-                    Mathf.Sin((gameObject.transform.position.x + _stairPaceXAdjustment) * StairPaceYFrequency) / 2 *
-                    StairPaceYAmplitude;
-            }
-        }
+			if (_inventory.IsInventoryModeOn)
+				DeactivateInventoryMode();
+			else
+				Messenger.Broadcast(Events.ExitButtonClicked);
+		}
 
-        private void UpdateSquatting()
-        {
-            if (!isSquattingOn) return;
+		private void OnControllerColliderHit(ControllerColliderHit hit)
+		{
+			if (!_isCutSceneMoving && hit.collider.gameObject.name == GameConstants.elevatorFloorColliderObjectName)
+			{
+				Messenger.Broadcast(Events.ElevatorFloorWasTouched);
+				return;
+			}
 
-            _realSquattingAmount += (Input.GetButton("Squat") ? 1 : -1) * _squattingSpeed * Time.deltaTime;
-            _realSquattingAmount = Mathf.Clamp(_realSquattingAmount, 0, _squattingMaxAmount);
+			if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName &&
+				LastGround1ColliderTouched != hit.collider.gameObject)
+			{
+				PrevLastGround1ColliderTouched = LastGround1ColliderTouched;
+				LastGround1ColliderTouched = hit.collider.gameObject;
+				Messenger.Broadcast(Events.FloorWasTouched);
+			}
 
-            _maxDistanceToSelectableObject = _realSquattingAmount == _squattingMaxAmount
-                ? MaxDistanceToSelectableObjectOnSquatting
-                : MaxDistanceToSelectableObjectOnStanding;
-        }
+			_prevIsStairPace = _isStairCommonPace;
 
-        private void UpdateCameraY()
-        {
-            playerCamera.transform.localPosition =
-                new Vector3(0, _startCameraY + _stairPaceYRealOffset - _realSquattingAmount, 0);
-        }
+			if (hit.collider.gameObject.name == GameConstants.stairs1ColliderObjectName ||
+				hit.collider.gameObject.name == GameConstants.stairs2ColliderObjectName)
+			{
+				_isStairCommonPace = true;
+				_isStair1Pace = hit.collider.gameObject.name == GameConstants.stairs1ColliderObjectName;
+			}
+			else
+			{
+				if (hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName ||
+					hit.collider.gameObject.name == GameConstants.ground2ColliderObjectName)
+				{
+					_isGround1Last = hit.collider.gameObject.name == GameConstants.ground1ColliderObjectName;
+					_isStairCommonPace = false;
+				}
+			}
+		}
 
-        public void CutSceneMoveToPosition(Vector3 position, Vector3 rotation, Vector3 cameraRotation)
-        {
-            _isCutSceneMoving = true;
-            playerCamera.IsCutSceneMoving = true;
+		private void DeactivateInventoryMode()
+		{
+			_playerCamera.DeactivateInventoryMode();
+			_inventory.DeactivateInventoryMode();
+		}
 
-            iTween.MoveTo(gameObject,
-                iTween.Hash("position", position,
-                    "time", _cutSceneMoveDurationSec,
-                    "oncomplete", "OnCutSceneMoveComplete"));
-            iTween.RotateTo(gameObject, rotation, _cutSceneMoveDurationSec);
-            iTween.RotateTo(playerCamera.gameObject, cameraRotation, _cutSceneMoveDurationSec);
-        }
+		private void UpdateMovement()
+		{
+			float movementSpeed = _movementSpeed * (_isSquattingOn ? 0.4f : 1f);
 
-        public void OnCutSceneMoveComplete()
-        {
-            Messenger.Broadcast(Events.PlayerCutSceneMoveCompleted);
-        }
+			float deltaX = _input.move.x * movementSpeed;
+			float deltaZ = _input.move.y * movementSpeed;
 
-        public void BindYTo(GameObject platform)
-        {
-            _isYBind = true;
-            _bindingPlatform = platform;
-            _bindingPlatformStartY = platform.transform.position.y;
-            _playerYBeforeBinding = transform.position.y;
-        }
+			Vector3 movement = new Vector3(deltaX, 0, deltaZ);
 
-        private void UpdateBindY()
-        {
-            Vector3 pos = _playerTransform.position;
+			movement = Vector3.ClampMagnitude(movement, movementSpeed);
+			movement.y = _gravity;
+			movement *= Time.deltaTime;
 
-            _playerTransform.position = new Vector3(
-                pos.x,
-                _playerYBeforeBinding + (_bindingPlatform.transform.position.y - _bindingPlatformStartY),
-                pos.z
-            );
-        }
-    }
+			movement = transform.TransformDirection(movement);
+			_charController.Move(movement);
+		}
+
+		private void UpdateStairPace()
+		{
+			if (_isCutSceneMoving) return;
+
+			if (!_isStairCommonPace)
+			{
+				_stairPaceYTargetOffset = 0;
+
+				if (_stairPaceYRealOffset == _stairPaceYTargetOffset) return;
+
+				float diff = Mathf.Abs(_stairPaceYRealOffset - _stairPaceYTargetOffset);
+				if (diff <= StairPaceYSpeed)
+					_stairPaceYRealOffset = _stairPaceYTargetOffset;
+				else
+					_stairPaceYRealOffset +=
+						StairPaceYSpeed * (_stairPaceYRealOffset < _stairPaceYTargetOffset ? 1 : -1) *
+						Time.deltaTime;
+			}
+			else
+			{
+				if (_prevIsStairPace == false)
+					_stairPaceXAdjustment = -(gameObject.transform.position.x + (!_isStair1Pace ? Mathf.PI : 0));
+				_stairPaceYRealOffset =
+					Mathf.Sin((gameObject.transform.position.x + _stairPaceXAdjustment) * StairPaceYFrequency) / 2 *
+					StairPaceYAmplitude;
+			}
+		}
+
+		private void UpdateSquatting()
+		{
+			if (_input.squatDown)
+				_isSquattingOn = !_isSquattingOn;
+
+			_realSquattingAmount += (_isSquattingOn ? 1 : -1) * _squattingSpeed * Time.deltaTime;
+			_realSquattingAmount = Mathf.Clamp(_realSquattingAmount, 0, _squattingMaxAmount);
+
+			_maxDistanceToSelectableObject = _realSquattingAmount == _squattingMaxAmount
+				? MaxDistanceToSelectableObjectOnSquatting
+				: MaxDistanceToSelectableObjectOnStanding;
+		}
+
+		private void UpdateCameraY()
+		{
+			_playerCamera.transform.localPosition =
+				new Vector3(0, _startCameraY + _stairPaceYRealOffset - _realSquattingAmount, 0);
+		}
+
+		public void CutSceneMoveToPosition(Vector3 position, Vector3 rotation, Vector3 cameraRotation)
+		{
+			_isCutSceneMoving = true;
+			_playerCamera.IsCutSceneMoving = true;
+
+			iTween.MoveTo(gameObject,
+				iTween.Hash("position", position,
+					"time", _cutSceneMoveDurationSec,
+					"oncomplete", "OnCutSceneMoveComplete"));
+			iTween.RotateTo(gameObject, rotation, _cutSceneMoveDurationSec);
+			iTween.RotateTo(_playerCamera.gameObject, cameraRotation, _cutSceneMoveDurationSec);
+		}
+
+		public void OnCutSceneMoveComplete()
+		{
+			Messenger.Broadcast(Events.PlayerCutSceneMoveCompleted);
+		}
+
+		public void BindYTo(GameObject platform)
+		{
+			_isYBind = true;
+			_bindingPlatform = platform;
+			_bindingPlatformStartY = platform.transform.position.y;
+			_playerYBeforeBinding = transform.position.y;
+		}
+
+		private void UpdateBindY()
+		{
+			Vector3 pos = _playerTransform.position;
+
+			_playerTransform.position = new Vector3(
+				pos.x,
+				_playerYBeforeBinding + (_bindingPlatform.transform.position.y - _bindingPlatformStartY),
+				pos.z
+			);
+		}
+
+
+		private static float NormalizeAngle(float value, int start, int end)
+		{
+			int width = end - start;
+			float offsetValue = value - start;
+
+			return (float)(offsetValue + start - (int)(offsetValue / width) * width);
+		}
+
+	}
 }

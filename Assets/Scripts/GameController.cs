@@ -99,8 +99,8 @@ public class GameController : MonoBehaviour
 
         if (isItMenuScene)
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            //Cursor.lockState = CursorLockMode.None;
+            //Cursor.visible = true;
 
             backgroundMusicController.BackgroundMusicIntensity = .45f;
             _currentDemoCameraFloor = initPlayerFloor;
