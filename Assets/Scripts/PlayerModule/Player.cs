@@ -127,13 +127,10 @@ namespace PlayerModule
 			transformValue.localEulerAngles = new Vector3(0, rotationY, 0);
 
 			float deltaX = _input.look.y * _mouseSensitivity;
-			Debug.Log($"<color=lightblue>{GetType().Name}:</color> deltaX={deltaX}");
 			Transform cameraTransformValue = _playerCamera.transform;
 			float rotationX = cameraTransformValue.localEulerAngles.x + deltaX;
-			Debug.Log($"<color=lightblue>{GetType().Name}:</color> rotationX1={rotationX}");
 			rotationX = NormalizeAngle(rotationX, -90, 90);
 			rotationX = Mathf.Clamp(rotationX, _mouseVerticalMin, _mouseVerticalMax);
-			Debug.Log($"<color=lightblue>{GetType().Name}:</color> rotationX2={rotationX}");
 			cameraTransformValue.localEulerAngles = new Vector3(rotationX, 0, 0);
 
 			if (_selectedObject)

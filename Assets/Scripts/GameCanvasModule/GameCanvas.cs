@@ -26,6 +26,8 @@ namespace GameCanvasModule
         private bool _isFlickerOn;
         private bool _isFlickerSynced;
 
+		private CanvasGroup _backImageCanvasGroup;
+
         public void FadeOut()
         {
             _isFlickerOn = false;
@@ -113,7 +115,7 @@ namespace GameCanvasModule
                 }
             }
 
-            _backImage.color = GameUtils.SetColorAlpha(_backImage.color, _blackoutIntensity);
+			SetBackImageAlpha(_blackoutIntensity);
 
             /*Debug.Log(_blackoutIntensity + " : " + (_isFlickerOn ? 1 : 0) + " : " +
                       _blackoutTimeMultiplier);*/
@@ -125,7 +127,13 @@ namespace GameCanvasModule
         private void Awake()
         {
             _backImage = transform.Find("backImage").GetComponent<Image>();
+			_backImageCanvasGroup = _backImage.GetComponent<CanvasGroup>();
         }
+
+		private void SetBackImageAlpha(float alpha)
+		{
+			_backImageCanvasGroup.alpha = alpha;
+		}
 
         private void Start()
         {
