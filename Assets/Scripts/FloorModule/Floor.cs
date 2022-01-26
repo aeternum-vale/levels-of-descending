@@ -10,327 +10,366 @@ using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Utils;
 using Random = UnityEngine.Random;
 
 namespace FloorModule
 {
-    public class Floor : MonoBehaviour
-    {
-        private const string FrontWallName = "front_wall";
-        private const string EntrywayObjectName = "entryway";
-        private const string LeftDoorBaseObjectName = "door_left";
-        private const string RightDoorBaseObjectName = "door_right";
-        private const string LeftDoorObjectName = "left_door_prefab";
-        private const string RightDoorObjectName = "right_door_prefab";
-        private static readonly int MainTexPropertyId = Shader.PropertyToID("_MainTex");
-        private static readonly int FloorNumberPropertyId = Shader.PropertyToID("_FloorNumber");
+	public class Floor : MonoBehaviour
+	{
+		private const string FrontWallName = "front_wall";
+		private const string EntrywayObjectName = "entryway";
+		private const string LeftDoorBaseObjectName = "door_left";
+		private const string RightDoorBaseObjectName = "door_right";
+		private const string LeftDoorObjectName = "left_door_prefab";
+		private const string RightDoorObjectName = "right_door_prefab";
+		private static readonly int MainTexPropertyId = Shader.PropertyToID("_MainTex");
+		private static readonly int FloorNumberPropertyId = Shader.PropertyToID("_FloorNumber");
 
-        private readonly Dictionary<EInventoryItemId, InventoryObject> _inventoryObjects =
-            new Dictionary<EInventoryItemId, InventoryObject>();
+		private readonly Dictionary<EInventoryItemId, InventoryObject> _inventoryObjects =
+			new Dictionary<EInventoryItemId, InventoryObject>();
 
-        private readonly Dictionary<EFloorMarkId, bool> _markStates = new Dictionary<EFloorMarkId, bool>
-        {
-            {EFloorMarkId.DRAGONFLY, false},
-            {EFloorMarkId.RABBIT_AD, false},
-            {EFloorMarkId.RABBIT_SYMBOL, false}
-        };
+		private readonly Dictionary<EFloorMarkId, bool> _markStates = new Dictionary<EFloorMarkId, bool>
+		{
+			{EFloorMarkId.DRAGONFLY, false},
+			{EFloorMarkId.RABBIT_AD, false},
+			{EFloorMarkId.RABBIT_SYMBOL, false}
+		};
 
-        private readonly string _playerPlaceholderName = "player_placeholder";
-        private Light _backLight;
-        private float _backLightInitIntensity;
+		private readonly string _playerPlaceholderName = "player_placeholder";
+		private Light _backLight;
+		private float _backLightInitIntensity;
 
-        private Material _elevatorAdMaterial;
+		private Material _elevatorAdMaterial;
 
-        private SwitchableObject _ePanelDoor;
-        private Material _ePanelDoorMaterial;
-        private Light _frontLight;
-        private float _frontLightInitIntensity;
-        private Material _frontWallMaterial;
-        private GarbagePropsGenerator _garbagePropsGenerator;
-        private Material _gc1AdMaterial;
-        private Material _gc2AdMaterial;
-        private Door _leftDoor;
-        private Material _postboxBaseMaterial;
-        private SwitchableObject _postboxDoor;
-        private List<IInitStateReturnable> _returnableObjects;
-        private Door _rightDoor;
-        private Scalpel _scalpel;
-        private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
+		private SwitchableObject _ePanelDoor;
+		private Material _ePanelDoorMaterial;
+		private Light _frontLight;
+		private float _frontLightInitIntensity;
+		private Material _frontWallMaterial;
+		private GarbagePropsGenerator _garbagePropsGenerator;
+		private Material _gc1AdMaterial;
+		private Material _gc2AdMaterial;
+		private Door _leftDoor;
+		private Material _postboxBaseMaterial;
+		private SwitchableObject _postboxDoor;
+		private List<IInitStateReturnable> _returnableObjects;
+		private Door _rightDoor;
+		private Scalpel _scalpel;
+		private TextureProjectorPropsGenerator _textureProjectorPropsGenerator;
 
-        [SerializeField] private DoorController doorController;
+		[SerializeField] private DoorController doorController;
 
-        public ResourcesController ResourcesController { get; set; }
-        public AdGenerator AdGenerator { get; set; }
-        public Elevator Elevator { get; private set; }
-        public GameObject PlayerPlaceholder { get; private set; }
-        public GameObject DemoCameraPlaceholder { get; private set; }
-        public string Id { get; set; }
+		public ResourcesController ResourcesController { get; set; }
+		public AdGenerator AdGenerator { get; set; }
+		public Elevator Elevator { get; private set; }
+		public GameObject PlayerPlaceholder { get; private set; }
+		public GameObject DemoCameraPlaceholder { get; private set; }
+		public string Id { get; set; }
 
-        private void Start()
-        {
-            _postboxBaseMaterial =
-                transform.Find("postbox/postbox-base").GetComponent<MeshRenderer>().material;
-            _leftDoor = transform.Find("left_door_prefab").GetComponent<Door>();
-            _rightDoor = transform.Find("right_door_prefab").GetComponent<Door>();
-            _scalpel = SelectableObject.GetAsChild<Scalpel>(gameObject, EInventoryItemId.SCALPEL);
-            _ePanelDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.E_PANEL);
-            _postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_LEFT_DOOR);
-            _returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
-            PlayerPlaceholder = transform.Find(_playerPlaceholderName).gameObject;
-            Elevator = transform.Find("elevator").GetComponent<Elevator>();
-            Transform lights = transform.Find("lights");
-            _frontLight = lights.GetChild(0).GetComponent<Light>();
-            _backLight = lights.GetChild(1).GetComponent<Light>();
+		[SerializeField] private List<GameObject> _rendererHolders1 = new List<GameObject>();
+		[SerializeField] private List<GameObject> _rendererHolders2 = new List<GameObject>();
+		[SerializeField] private List<GameObject> _colliderHolders1 = new List<GameObject>();
+		[SerializeField] private List<GameObject> _colliderHolders2 = new List<GameObject>();
 
-            _frontLightInitIntensity = _frontLight.intensity;
-            _backLightInitIntensity = _backLight.intensity;
+		private List<MeshRenderer> _toggableRenderers1 = new List<MeshRenderer>();
+		private List<MeshRenderer> _toggableRenderers2 = new List<MeshRenderer>();
+		private List<Collider> _toggableColliders1 = new List<Collider>();
+		private List<Collider> _toggableColliders2 = new List<Collider>();
 
-            transform.GetComponentsInChildren<InventoryObject>(true)
-                .ToList()
-                .ForEach(io => _inventoryObjects.Add(io.objectId, io));
 
-            _ePanelDoor.OpenCondition = () => _markStates[EFloorMarkId.RABBIT_SYMBOL];
-            _postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
+		private void Start()
+		{
+			_postboxBaseMaterial =
+				transform.Find("postbox/postbox-base").GetComponent<MeshRenderer>().material;
+			_leftDoor = transform.Find("left_door_prefab").GetComponent<Door>();
+			_rightDoor = transform.Find("right_door_prefab").GetComponent<Door>();
+			_scalpel = SelectableObject.GetAsChild<Scalpel>(gameObject, EInventoryItemId.SCALPEL);
+			_ePanelDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.E_PANEL);
+			_postboxDoor = SelectableObject.GetAsChildByPath(gameObject, ESwitchableObjectId.POSTBOX_LEFT_DOOR);
+			_returnableObjects = transform.GetComponentsInChildren<IInitStateReturnable>(true).ToList();
+			PlayerPlaceholder = transform.Find(_playerPlaceholderName).gameObject;
+			Elevator = transform.Find("elevator").GetComponent<Elevator>();
+			Transform lights = transform.Find("lights");
+			_frontLight = lights.GetChild(0).GetComponent<Light>();
+			_backLight = lights.GetChild(1).GetComponent<Light>();
 
-            if (AdGenerator == null) throw new Exception("AdGenerator is not provided to the floor");
-            if (ResourcesController == null) throw new Exception("ResourcesController is not provided to the floor");
-            if (doorController == null) throw new Exception("doorController is not provided to the floor");
+			_frontLightInitIntensity = _frontLight.intensity;
+			_backLightInitIntensity = _backLight.intensity;
 
-            SetGcAdsRandomTextures();
-        }
+			transform.GetComponentsInChildren<InventoryObject>(true)
+				.ToList()
+				.ForEach(io => _inventoryObjects.Add(io.objectId, io));
 
-        private void Awake()
-        {
-            DemoCameraPlaceholder = transform.Find("demoCamera_placeholder").gameObject;
-            _textureProjectorPropsGenerator = transform.GetComponentInChildren<TextureProjectorPropsGenerator>();
-            _garbagePropsGenerator = transform.GetComponentInChildren<GarbagePropsGenerator>();
+			_ePanelDoor.OpenCondition = () => _markStates[EFloorMarkId.RABBIT_SYMBOL];
+			_postboxDoor.OpenCondition = () => _markStates[EFloorMarkId.DRAGONFLY];
 
-            _frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
-                .GetComponent<MeshRenderer>().material;
+			if (AdGenerator == null) throw new Exception("AdGenerator is not provided to the floor");
+			if (ResourcesController == null) throw new Exception("ResourcesController is not provided to the floor");
+			if (doorController == null) throw new Exception("doorController is not provided to the floor");
 
-            _elevatorAdMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.ELEVATOR_AD))
-                .GetComponent<MeshRenderer>()
-                .material;
+			SetGcAdsRandomTextures();
+		}
 
-            _gc1AdMaterial = transform.Find("bulletin-board-gc/ad").GetComponent<MeshRenderer>().material;
-            _gc2AdMaterial = transform.Find("bulletin-board-gc_2/ad").GetComponent<MeshRenderer>().material;
+		private void Awake()
+		{
+			DemoCameraPlaceholder = transform.Find("demoCamera_placeholder").gameObject;
+			_textureProjectorPropsGenerator = transform.GetComponentInChildren<TextureProjectorPropsGenerator>();
+			_garbagePropsGenerator = transform.GetComponentInChildren<GarbagePropsGenerator>();
 
-            _ePanelDoorMaterial = transform.Find("e-panel/right_door").GetComponent<MeshRenderer>().material;
-        }
+			_frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
+				.GetComponent<MeshRenderer>().material;
 
-        public void ReturnAllObjectsToInitState(int floorDistanceToPlayer)
-        {
-            _returnableObjects.ForEach(returnable => returnable.ReturnToInitState(floorDistanceToPlayer));
-        }
+			_elevatorAdMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.ELEVATOR_AD))
+				.GetComponent<MeshRenderer>()
+				.material;
 
-        private void SetActivityOfInventoryObject(EInventoryItemId id, bool active)
-        {
-            _inventoryObjects[id].gameObject.SetActive(active);
-        }
+			_gc1AdMaterial = transform.Find("bulletin-board-gc/ad").GetComponent<MeshRenderer>().material;
+			_gc2AdMaterial = transform.Find("bulletin-board-gc_2/ad").GetComponent<MeshRenderer>().material;
 
-        public void HideInventoryObject(EInventoryItemId id)
-        {
-            SetActivityOfInventoryObject(id, false);
-        }
+			_ePanelDoorMaterial = transform.Find("e-panel/right_door").GetComponent<MeshRenderer>().material;
 
-        public void ShowInventoryObject(EInventoryItemId id)
-        {
-            SetActivityOfInventoryObject(id, true);
-        }
 
-        public void HideAllInventoryObjects()
-        {
-            _inventoryObjects.Keys.ToList().ForEach(HideInventoryObject);
-        }
+			_rendererHolders1.ToList().ForEach(rh => rh.GetComponentsInChildren<MeshRenderer>(true).ToList().ForEach(mr => _toggableRenderers1.Add(mr)));
+			_rendererHolders2.ToList().ForEach(rh => rh.GetComponentsInChildren<MeshRenderer>(true).ToList().ForEach(mr => _toggableRenderers2.Add(mr)));
 
-        public void HideSomeInventoryObjects(Func<EInventoryItemId, bool> condition)
-        {
-            _inventoryObjects.Keys.Where(condition).ToList().ForEach(HideInventoryObject);
-        }
+			_colliderHolders1.ToList().ForEach(ch => ch.GetComponentsInChildren<Collider>(true).ToList().ForEach(c => _toggableColliders1.Add(c)));
+			_colliderHolders2.ToList().ForEach(ch => ch.GetComponentsInChildren<Collider>(true).ToList().ForEach(c => _toggableColliders2.Add(c)));
+		}
 
-        public void SetFloorDrawnNumber(int number)
-        {
-            _frontWallMaterial.SetFloat(FloorNumberPropertyId, number);
-        }
+		public void ReturnAllObjectsToInitState(int floorDistanceToPlayer)
+		{
+			_returnableObjects.ForEach(returnable => returnable.ReturnToInitState(floorDistanceToPlayer));
+		}
 
-        public void EmergeScalpel()
-        {
-            _scalpel.Emerge();
-        }
+		private void SetActivityOfInventoryObject(EInventoryItemId id, bool active)
+		{
+			_inventoryObjects[id].gameObject.SetActive(active);
+		}
 
-        public void SetMark(EFloorMarkId id)
-        {
-            _markStates[id] = true;
+		public void HideInventoryObject(EInventoryItemId id)
+		{
+			SetActivityOfInventoryObject(id, false);
+		}
 
-            switch (id)
-            {
-                case EFloorMarkId.DRAGONFLY:
-                    _postboxBaseMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
-                    _leftDoor.MarkWithDragonfly();
-                    break;
+		public void ShowInventoryObject(EInventoryItemId id)
+		{
+			SetActivityOfInventoryObject(id, true);
+		}
 
-                case EFloorMarkId.RABBIT_AD:
-                    SetLostRabbitTextureToElevatorAd();
-                    break;
+		public void HideAllInventoryObjects()
+		{
+			_inventoryObjects.Keys.ToList().ForEach(HideInventoryObject);
+		}
 
-                case EFloorMarkId.RABBIT_SYMBOL:
-                    _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
-                    break;
+		public void HideSomeInventoryObjects(Func<EInventoryItemId, bool> condition)
+		{
+			_inventoryObjects.Keys.Where(condition).ToList().ForEach(HideInventoryObject);
+		}
 
-                case EFloorMarkId.COW:
-                    _rightDoor.MarkWithCow();
-                    break;
+		public void SetFloorDrawnNumber(int number)
+		{
+			_frontWallMaterial.SetFloat(FloorNumberPropertyId, number);
+		}
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(id), id, null);
-            }
-        }
+		public void EmergeScalpel()
+		{
+			_scalpel.Emerge();
+		}
 
-        public void ResetMark(EFloorMarkId id)
-        {
-            _markStates[id] = false;
+		public void SetMark(EFloorMarkId id)
+		{
+			_markStates[id] = true;
 
-            switch (id)
-            {
-                case EFloorMarkId.DRAGONFLY:
-                    _postboxBaseMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
-                    _leftDoor.Unmark();
-                    break;
+			switch (id)
+			{
+				case EFloorMarkId.DRAGONFLY:
+					_postboxBaseMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
+					_leftDoor.MarkWithDragonfly();
+					break;
 
-                case EFloorMarkId.RABBIT_SYMBOL:
-                    _ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
-                    break;
+				case EFloorMarkId.RABBIT_AD:
+					SetLostRabbitTextureToElevatorAd();
+					break;
 
-                case EFloorMarkId.RABBIT_AD:
-                    SetElevatorAdRandomTexture();
-                    break;
+				case EFloorMarkId.RABBIT_SYMBOL:
+					_ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 1f);
+					break;
 
-                case EFloorMarkId.COW:
-                    _rightDoor.Unmark();
-                    break;
+				case EFloorMarkId.COW:
+					_rightDoor.MarkWithCow();
+					break;
 
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(id), id, null);
-            }
-        }
+				default:
+					throw new ArgumentOutOfRangeException(nameof(id), id, null);
+			}
+		}
 
-        public void ResetAllMarks()
-        {
-            foreach (EFloorMarkId key in _markStates.Keys.ToList()) ResetMark(key);
-        }
+		public void ResetMark(EFloorMarkId id)
+		{
+			_markStates[id] = false;
 
-        public void SetElevatorAdRandomTexture()
-        {
-            SetAdRandomTexture(_elevatorAdMaterial);
-        }
+			switch (id)
+			{
+				case EFloorMarkId.DRAGONFLY:
+					_postboxBaseMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
+					_leftDoor.Unmark();
+					break;
 
-        public void SetAdRandomTexture(Material adMaterial)
-        {
-            if (Random.Range(0, 10) <= 3)
-            {
-                int randomIndex = Random.Range(0, ResourcesController.StaticAdPicTextures.Length);
-                adMaterial.SetTexture(MainTexPropertyId, ResourcesController.StaticAdPicTextures[randomIndex]);
-            }
-            else
-            {
-                adMaterial.SetTexture(MainTexPropertyId, AdGenerator.GetRandomAdTexture());
-            }
-        }
+				case EFloorMarkId.RABBIT_SYMBOL:
+					_ePanelDoorMaterial.SetFloat(GameConstants.isPaintingOnPropertyId, 0f);
+					break;
 
-        public void SetLostRabbitTextureToElevatorAd()
-        {
-            _elevatorAdMaterial.SetTexture(MainTexPropertyId, ResourcesController.LostRabbitAdTexture);
-        }
+				case EFloorMarkId.RABBIT_AD:
+					SetElevatorAdRandomTexture();
+					break;
 
-        public void SetHandsTextureToElevatorAd()
-        {
-            _elevatorAdMaterial.SetTexture(MainTexPropertyId, ResourcesController.HandsTexture);
-        }
+				case EFloorMarkId.COW:
+					_rightDoor.Unmark();
+					break;
 
-        public void SetGcAdsRandomTextures()
-        {
-            SetAdRandomTexture(_gc1AdMaterial);
-            SetAdRandomTexture(_gc2AdMaterial);
-        }
+				default:
+					throw new ArgumentOutOfRangeException(nameof(id), id, null);
+			}
+		}
 
-        public void GenerateDoors()
-        {
-            Transform entrywayTransform = transform.Find(EntrywayObjectName);
-            Transform floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
-            Transform floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
+		public void ResetAllMarks()
+		{
+			foreach (EFloorMarkId key in _markStates.Keys.ToList()) ResetMark(key);
+		}
 
-            Door leftDoor = doorController.GenerateRandomDoor();
-            Door rightDoor = doorController.GenerateRandomDoor();
+		public void SetElevatorAdRandomTexture()
+		{
+			SetAdRandomTexture(_elevatorAdMaterial);
+		}
 
-            leftDoor.transform.position = floorLeftDoorBaseTransform.position;
+		public void SetAdRandomTexture(Material adMaterial)
+		{
+			if (Random.Range(0, 10) <= 3)
+			{
+				int randomIndex = Random.Range(0, ResourcesController.StaticAdPicTextures.Length);
+				adMaterial.SetTexture(MainTexPropertyId, ResourcesController.StaticAdPicTextures[randomIndex]);
+			}
+			else
+			{
+				adMaterial.SetTexture(MainTexPropertyId, AdGenerator.GetRandomAdTexture());
+			}
+		}
 
-            rightDoor.transform.position = floorRightDoorBaseTransform.position;
-            rightDoor.Invert();
+		public void SetLostRabbitTextureToElevatorAd()
+		{
+			_elevatorAdMaterial.SetTexture(MainTexPropertyId, ResourcesController.LostRabbitAdTexture);
+		}
 
-            leftDoor.name = LeftDoorObjectName;
-            rightDoor.name = RightDoorObjectName;
+		public void SetHandsTextureToElevatorAd()
+		{
+			_elevatorAdMaterial.SetTexture(MainTexPropertyId, ResourcesController.HandsTexture);
+		}
 
-            Transform transformValue = transform;
-            leftDoor.transform.SetParent(transformValue);
-            rightDoor.transform.SetParent(transformValue);
-        }
+		public void SetGcAdsRandomTextures()
+		{
+			SetAdRandomTexture(_gc1AdMaterial);
+			SetAdRandomTexture(_gc2AdMaterial);
+		}
 
-        public void GenerateRandomTextureProjectorsAndGarbageProps()
-        {
-            GenerateRandomTextureProjectors();
-            GenerateRandomGarbageProps();
-        }
+		public void GenerateDoors()
+		{
+			Transform entrywayTransform = transform.Find(EntrywayObjectName);
+			Transform floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
+			Transform floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
 
-        public void GenerateRandomTextureProjectors()
-        {
-            _textureProjectorPropsGenerator.GenerateProps();
-        }
+			Door leftDoor = doorController.GenerateRandomDoor();
+			Door rightDoor = doorController.GenerateRandomDoor();
 
-        public void GenerateRandomGarbageProps()
-        {
-            _garbagePropsGenerator.GenerateProps();
-        }
+			leftDoor.transform.position = floorLeftDoorBaseTransform.position;
 
-        public void CloseAndElevateElevator()
-        {
-            Elevator.CloseAndElevate();
-        }
+			rightDoor.transform.position = floorRightDoorBaseTransform.position;
+			rightDoor.Invert();
 
-        public void HideElevator()
-        {
-            Elevator.gameObject.SetActive(false);
-        }
+			leftDoor.name = LeftDoorObjectName;
+			rightDoor.name = RightDoorObjectName;
 
-        public void RandomizeDoors()
-        {
-            _leftDoor.Randomize();
-            _rightDoor.Randomize();
-        }
+			Transform transformValue = transform;
+			leftDoor.transform.SetParent(transformValue);
+			rightDoor.transform.SetParent(transformValue);
+		}
 
-        public void SetLightsState(bool front, bool back)
-        {
-            StopAllCoroutines();
-            StartCoroutine(SetLightState(_frontLight, _frontLightInitIntensity, front));
-            StartCoroutine(SetLightState(_backLight, _backLightInitIntensity, back));
-        }
+		public void GenerateRandomTextureProjectorsAndGarbageProps()
+		{
+			GenerateRandomTextureProjectors();
+			GenerateRandomGarbageProps();
+		}
 
-        private IEnumerator SetLightState(Light lightComponent, float initIntensity, bool state)
-        {
-            const float tolerance = 0.01f;
-            if (lightComponent.gameObject.activeSelf == state &&
-                Math.Abs(lightComponent.intensity - initIntensity) < tolerance) yield break;
+		public void GenerateRandomTextureProjectors()
+		{
+			_textureProjectorPropsGenerator.GenerateProps();
+		}
 
-            float target = state ? initIntensity : 0f;
+		public void GenerateRandomGarbageProps()
+		{
+			_garbagePropsGenerator.GenerateProps();
+		}
 
-            lightComponent.gameObject.SetActive(true);
+		public void CloseAndElevateElevator()
+		{
+			Elevator.CloseAndElevate();
+		}
 
-            yield return StartCoroutine(GameUtils.AnimateValue(
-                () => lightComponent.intensity,
-                v => lightComponent.intensity = v,
-                target, 0.04f));
+		public void HideElevator()
+		{
+			Elevator.gameObject.SetActive(false);
+		}
 
-            lightComponent.gameObject.SetActive(state);
-        }
-    }
+		public void RandomizeDoors()
+		{
+			_leftDoor.Randomize();
+			_rightDoor.Randomize();
+		}
+
+		public void SetLightsState(bool front, bool back)
+		{
+			StopAllCoroutines();
+			StartCoroutine(SetLightState(_frontLight, _frontLightInitIntensity, front));
+			StartCoroutine(SetLightState(_backLight, _backLightInitIntensity, back));
+		}
+
+		private IEnumerator SetLightState(Light lightComponent, float initIntensity, bool state)
+		{
+			const float tolerance = 0.01f;
+			if (lightComponent.gameObject.activeSelf == state &&
+				Math.Abs(lightComponent.intensity - initIntensity) < tolerance) yield break;
+
+			float target = state ? initIntensity : 0f;
+
+			lightComponent.gameObject.SetActive(true);
+
+			yield return StartCoroutine(GameUtils.AnimateValue(
+				() => lightComponent.intensity,
+				v => lightComponent.intensity = v,
+				target, 0.04f));
+
+			lightComponent.gameObject.SetActive(state);
+		}
+
+		public void SetСolliders1Active(bool areActive)
+		{
+			_toggableColliders1.ForEach(c => c.enabled = areActive);
+		}
+
+		public void SetСolliders2Active(bool areActive)
+		{
+			_toggableColliders2.ForEach(c => c.enabled = areActive);
+		}
+
+		public void SetRenderers1Visibility(bool areVisible)
+		{
+			_toggableRenderers1.ForEach(mr => mr.enabled = areVisible);
+		}
+
+		public void SetRenderers2Visibility(bool areVisible)
+		{
+			_toggableRenderers2.ForEach(mr => mr.enabled = areVisible);
+		}
+	}
 }

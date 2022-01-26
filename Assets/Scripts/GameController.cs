@@ -18,7 +18,7 @@ using Utils;
 public class GameController : MonoBehaviour
 {
 	private const float FloorHeight = 3.99f;
-	private const int FloorCount = 4;
+	private const int FloorCount = 5;
 	private const int FirstFloorNumber = 7;
 
 	private const int SuspenseStartFloorNumber = 9;
@@ -64,7 +64,7 @@ public class GameController : MonoBehaviour
 
 	private int LowestFloorIndex => (_highestFloorIndex + 1) % FloorCount;
 
-
+	private Floor _initPlayerFloor;
 	private void Start()
 	{
 		_highestFloorIndex = FloorCount - 1;
@@ -81,19 +81,19 @@ public class GameController : MonoBehaviour
 
 		_floorsHalf = FloorCount / 2;
 
-		Floor initPlayerFloor = _floors[_floorsHalf];
-		initPlayerFloor.SetFloorDrawnNumber(_fakeFloorNumber--);
+		_initPlayerFloor = _floors[_floorsHalf];
+		_initPlayerFloor.SetFloorDrawnNumber(_fakeFloorNumber--);
 
 		Vector3 localPosition = playerGameObject.transform.localPosition;
 
 		localPosition = new Vector3(
 			localPosition.x,
-			initPlayerFloor.transform.localPosition.y,
+			_initPlayerFloor.transform.localPosition.y,
 			localPosition.z
 		);
 
 		playerGameObject.transform.localPosition = localPosition;
-		initPlayerFloor.SetHandsTextureToElevatorAd();
+		_initPlayerFloor.SetHandsTextureToElevatorAd();
 
 		foreach (Floor floor in _floors)
 			floor.GenerateRandomTextureProjectorsAndGarbageProps();
@@ -104,15 +104,17 @@ public class GameController : MonoBehaviour
 			//Cursor.visible = true;
 
 			backgroundMusicController.BackgroundMusicIntensity = .45f;
-			_currentDemoCameraFloor = initPlayerFloor;
+			_currentDemoCameraFloor = _initPlayerFloor;
 			GetNextHigherFloor().SetFloorDrawnNumber(++_fakeFloorNumber + 1);
-			demoCamera.transform.position = initPlayerFloor.DemoCameraPlaceholder.transform.position;
+			demoCamera.transform.position = _initPlayerFloor.DemoCameraPlaceholder.transform.position;
 			MoveDemoCameraToNextPlaceholder();
 		}
 		else
 		{
 			gameCanvas.FadeIn();
+			ToggleInvisibleObjects();
 		}
+
 	}
 
 	private void Awake()
@@ -147,6 +149,9 @@ public class GameController : MonoBehaviour
 	{
 		if (isItMenuScene)
 			return floor == _currentDemoCameraFloor;
+
+		if (_player.LastGround1ColliderTouched == null)
+			return _initPlayerFloor;
 
 		return _player.LastGround1ColliderTouched == _ground1Colliders[floor];
 	}
@@ -229,6 +234,7 @@ public class GameController : MonoBehaviour
 		UpdateRealFloorNumber();
 		RearrangeFloors();
 		FloorsSelectiveUpdate();
+		ToggleInvisibleObjects();
 	}
 
 	private void UpdateSuspenseIntensity()
@@ -333,6 +339,21 @@ public class GameController : MonoBehaviour
 		if (!inventory.Contains(EInventoryItemId.SCALPEL)) GetCurrentFloor().EmergeScalpel();
 	}
 
+
+	private void ToggleInvisibleObjects()
+	{
+		ForEachFloorExceptCurrent(floor =>
+			{
+				byte floorDistanceToPlayer = GetFloorDistanceToPlayer(floor);
+
+				floor.SetСolliders1Active(floorDistanceToPlayer < 1);
+				floor.SetRenderers1Visibility(floorDistanceToPlayer < 1);
+
+				floor.SetСolliders2Active(floorDistanceToPlayer < 2);
+				floor.SetRenderers2Visibility(floorDistanceToPlayer < 2);
+			});
+	}
+
 	private void FloorsSelectiveUpdate()
 	{
 		ForEachFloorExceptCurrent(floor =>
@@ -341,9 +362,15 @@ public class GameController : MonoBehaviour
 			int floorDirectionToPlayer = GetFloorDirectionToPlayer(floor);
 
 			if (floorDistanceToPlayer < 2)
+			{
 				floor.SetLightsState(true, true);
+				floor.SetRenderers1Visibility(true);
+			}
 			else
+			{
 				floor.SetLightsState(false, false);
+				floor.SetRenderers1Visibility(false);
+			}
 
 			if (floorDistanceToPlayer == 2 && floorDirectionToPlayer == 1)
 				floor.SetLightsState(false, true);
