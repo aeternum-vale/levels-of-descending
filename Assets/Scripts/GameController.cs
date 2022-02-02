@@ -119,7 +119,7 @@ public class GameController : MonoBehaviour
 
 	private void Awake()
 	{
-		//Screen.SetResolution(800, 480, true);
+		Screen.SetResolution(800, 450, true);
 
 		if (!isItMenuScene)
 		{
@@ -229,11 +229,21 @@ public class GameController : MonoBehaviour
 	private void OnFloorWasTouched()
 	{
 		_fakeFloorNumber++;
+		StartCoroutine(OnFloorWasTouchedCoroutine());
+	}
+
+	private IEnumerator OnFloorWasTouchedCoroutine()
+	{
+		float delaySec = 0.4f;
 
 		UpdateSuspenseIntensity();
+		yield return new WaitForSeconds(delaySec);
 		UpdateRealFloorNumber();
+		yield return new WaitForSeconds(delaySec);
 		RearrangeFloors();
+		yield return new WaitForSeconds(delaySec);
 		FloorsSelectiveUpdate();
+		yield return new WaitForSeconds(delaySec);
 		ToggleInvisibleObjects();
 	}
 

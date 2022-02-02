@@ -10,7 +10,6 @@ using SelectableObjectsModule;
 using SelectableObjectsModule.SpecificObjects;
 using SelectableObjectsModule.Utilities;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Utils;
 using Random = UnityEngine.Random;
 
@@ -47,7 +46,6 @@ namespace FloorModule
 		private Material _ePanelDoorMaterial;
 		private Light _frontLight;
 		private float _frontLightInitIntensity;
-		private Material _frontWallMaterial;
 		private GarbagePropsGenerator _garbagePropsGenerator;
 		private Material _gc1AdMaterial;
 		private Material _gc2AdMaterial;
@@ -67,6 +65,11 @@ namespace FloorModule
 		public GameObject PlayerPlaceholder { get; private set; }
 		public GameObject DemoCameraPlaceholder { get; private set; }
 		public string Id { get; set; }
+
+		[SerializeField] private GameObject _frontWall;
+		[SerializeField] private Material _frontWallMaterial;
+		[SerializeField] Transform _floorLeftDoorBaseTransform;
+		[SerializeField] Transform _floorRightDoorBaseTransform;
 
 		[SerializeField] private List<GameObject> _rendererHolders1 = new List<GameObject>();
 		[SerializeField] private List<GameObject> _rendererHolders2 = new List<GameObject>();
@@ -118,8 +121,7 @@ namespace FloorModule
 			_textureProjectorPropsGenerator = transform.GetComponentInChildren<TextureProjectorPropsGenerator>();
 			_garbagePropsGenerator = transform.GetComponentInChildren<GarbagePropsGenerator>();
 
-			_frontWallMaterial = transform.Find(GameConstants.entrywayObjectName).Find(FrontWallName)
-				.GetComponent<MeshRenderer>().material;
+			_frontWallMaterial = _frontWall.GetComponent<MeshRenderer>().material;
 
 			_elevatorAdMaterial = transform.Find(SelectableObject.GetPath(ESwitchableObjectId.ELEVATOR_AD))
 				.GetComponent<MeshRenderer>()
@@ -273,18 +275,16 @@ namespace FloorModule
 			SetAdRandomTexture(_gc2AdMaterial);
 		}
 
+
 		public void GenerateDoors()
 		{
-			Transform entrywayTransform = transform.Find(EntrywayObjectName);
-			Transform floorLeftDoorBaseTransform = entrywayTransform.Find(LeftDoorBaseObjectName);
-			Transform floorRightDoorBaseTransform = entrywayTransform.Find(RightDoorBaseObjectName);
 
 			Door leftDoor = doorController.GenerateRandomDoor();
 			Door rightDoor = doorController.GenerateRandomDoor();
 
-			leftDoor.transform.position = floorLeftDoorBaseTransform.position;
+			leftDoor.transform.position = _floorLeftDoorBaseTransform.position;
 
-			rightDoor.transform.position = floorRightDoorBaseTransform.position;
+			rightDoor.transform.position = _floorRightDoorBaseTransform.position;
 			rightDoor.Invert();
 
 			leftDoor.name = LeftDoorObjectName;
