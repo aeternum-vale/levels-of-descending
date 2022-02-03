@@ -48,14 +48,11 @@ public class GameController : MonoBehaviour
 
 	private string _useButtonName;
 
-	private bool _wasInventoryTipShown;
 	[SerializeField] private AdGenerator adGenerator;
 	[SerializeField] private BackgroundMusicController backgroundMusicController;
 	[SerializeField] private GameObject demoCamera;
-	[SerializeField] private Text exitTipText;
 	[SerializeField] private GameObject floorPrefab;
 	[SerializeField] private Inventory inventory;
-	[SerializeField] private Text inventoryTipText;
 
 	[SerializeField] private bool isItMenuScene;
 	[SerializeField] private GameObject playerGameObject;
@@ -292,51 +289,12 @@ public class GameController : MonoBehaviour
 
 	private void OnInventoryWasUpdated()
 	{
-		if (!_wasInventoryTipShown)
-		{
-			_wasInventoryTipShown = true;
-			StartCoroutine(ShowTip(inventoryTipText));
-		}
-
 		UpdateInventoryObjectsPresence();
-	}
-
-	private IEnumerator ShowTip(Text tip)
-	{
-		yield return HideAllTips();
-
-		tip.gameObject.SetActive(true);
-		tip.color = GameUtils.SetColorAlpha(tip.color, 0f);
-
-		yield return StartCoroutine(GameUtils.AnimateValue(
-			() => tip.color.a,
-			v => tip.color = GameUtils.SetColorAlpha(tip.color, v),
-			TipAlpha, TipAlphaRate));
-	}
-
-	private IEnumerator HideTip(Text tip)
-	{
-		yield return StartCoroutine(GameUtils.AnimateValue(
-			() => tip.color.a,
-			v => tip.color = GameUtils.SetColorAlpha(tip.color, v),
-			0f, TipAlphaRate));
-
-		tip.gameObject.SetActive(false);
-	}
-
-	private IEnumerator HideAllTips()
-	{
-		if (exitTipText.gameObject.activeSelf)
-			yield return HideTip(exitTipText);
-
-		if (inventoryTipText.gameObject.activeSelf)
-			yield return HideTip(inventoryTipText);
 	}
 
 	private void OnInventoryModeBeforeActivating()
 	{
 		gameCanvas.gameObject.SetActive(false);
-		inventoryTipText.gameObject.SetActive(false);
 	}
 
 	private void OnInventoryModeDeactivated()
@@ -580,17 +538,7 @@ public class GameController : MonoBehaviour
 
 	private void OnExitButtonClicked()
 	{
-		if (exitTipText.gameObject.activeSelf)
-			SceneManager.LoadScene("menu");
-		else
-			StartCoroutine(ShowExitTip());
-	}
 
-	private IEnumerator ShowExitTip()
-	{
-		yield return ShowTip(exitTipText);
-		yield return new WaitForSeconds(3f);
-		yield return HideTip(exitTipText);
 	}
 
 	private void OnDestroy()

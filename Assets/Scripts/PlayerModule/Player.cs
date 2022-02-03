@@ -1,4 +1,6 @@
-﻿using InventoryModule;
+﻿using System.Collections;
+using InventoryModule;
+using Lean.Touch;
 using Plugins;
 using SelectableObjectsModule;
 using UnityEngine;
@@ -71,7 +73,6 @@ namespace PlayerModule
 			_charController = GetComponent<CharacterController>();
 			_startCameraY = _playerCamera.transform.localPosition.y;
 			_playerTransform = transform;
-
 		}
 
 		private void Update()
@@ -113,11 +114,13 @@ namespace PlayerModule
 			}
 			else
 			{
-				_inventory.OnInventorySwitchToNextItem();
+				_inventory.SwitchInventoryToNextItem();
 			}
-
-
 		}
+
+
+
+
 
 		private void UpdateMouse()
 		{
@@ -180,11 +183,14 @@ namespace PlayerModule
 
 				if (!_selectedObject)
 					Messenger.Broadcast(Events.InventoryItemUsedIncorrectly);
+
 			}
 
 			if (_selectedObject)
 				_selectedObject.OnClick(selectedInventoryItem, _colliderCarrier);
 		}
+
+
 
 		private void UpdateExitButton()
 		{

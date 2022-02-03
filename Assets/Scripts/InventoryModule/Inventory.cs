@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Lean.Touch;
 using Plugins;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,234 +10,242 @@ using Utils;
 
 namespace InventoryModule
 {
-    public class Inventory : MonoBehaviour
-    {
-        private const float TransitionStep = 0.1f;
-        private const float TransitionXOffset = 15f;
-        private const string ItemsContainerName = "items";
-        private static readonly int ItemRotationStateNameHash = Animator.StringToHash("inventoryItemRotation");
 
-        private readonly Dictionary<EInventoryItemId, InventoryItemData> _itemsData =
-            new Dictionary<EInventoryItemId, InventoryItemData>
-            {
-                [EInventoryItemId.POSTBOX_KEY] = new InventoryItemData() { },
-                [EInventoryItemId.LETTER] = new InventoryItemData() { },
-                [EInventoryItemId.SCALPEL] = new InventoryItemData() { },
-                [EInventoryItemId.E_PANEL_KEY] = new InventoryItemData() { },
-                [EInventoryItemId.SCREWDRIVER] = new InventoryItemData() { },
-                [EInventoryItemId.INSULATING_TAPE] = new InventoryItemData() { },
-                [EInventoryItemId.ELEVATOR_CALLER_BUTTON] =
-                    new InventoryItemData {IsDisposable = true},
-                [EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData {IsDisposable = true}
-            };
 
-        private Image _backgroundImageComponent;
-        private Texture2D _backgroundTexture;
+	public class Inventory : MonoBehaviour
+	{
 
-        private float _currentTransitionOpacity = 1f;
-        private InventoryCamera _inventoryCamera;
-        private Camera _inventoryCameraCameraComponent;
-        private RenderTexture _inventoryCameraTexture;
-        private bool _isTransition;
-        private bool _isTransitionOut = true;
-        private AudioListener _inventoryCameraAudioListener;
+		private const float TransitionStep = 0.1f;
 
-        public bool IsInventoryModeOn { get; private set; }
-        public bool CanActivateInventoryMode => _itemsData.Any(pair => pair.Value.IsInStock);
+		private const float TransitionXOffset = 15f;
+		private const string ItemsContainerName = "items";
+		private static readonly int ItemRotationStateNameHash = Animator.StringToHash("inventoryItemRotation");
 
-        private EInventoryItemId[] ArrayOfAvailableItemsIds => _itemsData
-            .Where(pair => pair.Value.IsInStock)
-            .Select(pair => pair.Key)
-            .ToArray();
+		private readonly Dictionary<EInventoryItemId, InventoryItemData> _itemsData =
+			new Dictionary<EInventoryItemId, InventoryItemData>
+			{
+				[EInventoryItemId.POSTBOX_KEY] = new InventoryItemData() {  },
+				[EInventoryItemId.LETTER] = new InventoryItemData() {  },
+				[EInventoryItemId.SCALPEL] = new InventoryItemData() {  },
+				[EInventoryItemId.E_PANEL_KEY] = new InventoryItemData() { },
+				[EInventoryItemId.SCREWDRIVER] = new InventoryItemData() { },
+				[EInventoryItemId.INSULATING_TAPE] = new InventoryItemData() { },
+				[EInventoryItemId.ELEVATOR_CALLER_BUTTON] =
+					new InventoryItemData { IsDisposable = true },
+				[EInventoryItemId.ELEVATOR_CALLER_PANEL] = new InventoryItemData { IsDisposable = true }
+			};
 
-        public EInventoryItemId CurrentItemId { get; private set; }
+		private Image _backgroundImageComponent;
+		private Texture2D _backgroundTexture;
 
-        public bool Contains(EInventoryItemId id)
-        {
-            return _itemsData[id].IsInStock;
-        }
+		private float _currentTransitionOpacity = 1f;
+		private InventoryCamera _inventoryCamera;
+		private Camera _inventoryCameraCameraComponent;
+		private RenderTexture _inventoryCameraTexture;
+		private bool _isTransition;
+		private bool _isTransitionOut = true;
+		private AudioListener _inventoryCameraAudioListener;
 
-        private void Awake()
-        {
-            _inventoryCamera = transform.GetComponentInChildren<InventoryCamera>();
-            _inventoryCameraCameraComponent = _inventoryCamera.GetComponent<Camera>();
-            _backgroundImageComponent = transform.Find("Canvas/Image").GetComponent<Image>();
-            _inventoryCameraAudioListener = _inventoryCamera.GetComponent<AudioListener>();
+		public bool IsInventoryModeOn { get; private set; }
+		public bool CanActivateInventoryMode => _itemsData.Any(pair => pair.Value.IsInStock);
 
-            Messenger<EInventoryItemId>.AddListener(Events.InventoryObjectWasClicked,
-                OnInventoryObjectWasClicked);
-            Messenger<EInventoryItemId>.AddListener(Events.InventoryItemWasSuccessfullyUsed,
-                OnInventoryItemSuccessfullyUsed);
+		private EInventoryItemId[] ArrayOfAvailableItemsIds => _itemsData
+			.Where(pair => pair.Value.IsInStock)
+			.Select(pair => pair.Key)
+			.ToArray();
 
-            Transform itemsContainerTransform = transform.Find(ItemsContainerName);
-            foreach (var pair in _itemsData)
-            {
-                string itemName = GameUtils.GetNameByPath(GameConstants.inventoryObjectPaths[pair.Key]);
-                GameObject go = itemsContainerTransform.Find(itemName).gameObject;
-                pair.Value.Container = go;
-                pair.Value.Content = go.transform.GetChild(0).gameObject;
-                pair.Value.AnimatorComponent = go.GetComponent<Animator>();
-                HideInstance(pair.Key);
-            }
-        }
+		public EInventoryItemId CurrentItemId { get; private set; }
 
-        private void OnInventoryObjectWasClicked(EInventoryItemId id)
-        {
-            if (IsInventoryModeOn) return;
+		public bool Contains(EInventoryItemId id)
+		{
+			return _itemsData[id].IsInStock;
+		}
 
-            _itemsData[id].IsInStock = true;
-            Messenger.Broadcast(Events.InventoryWasUpdated);
-        }
+		private void Awake()
+		{
+			_inventoryCamera = transform.GetComponentInChildren<InventoryCamera>();
+			_inventoryCameraCameraComponent = _inventoryCamera.GetComponent<Camera>();
+			_backgroundImageComponent = transform.Find("Canvas/Image").GetComponent<Image>();
+			_inventoryCameraAudioListener = _inventoryCamera.GetComponent<AudioListener>();
 
-        private void ShowInstance(EInventoryItemId id)
-        {
-            _itemsData[id].Content.SetActive(true);
-        }
+			Messenger<EInventoryItemId>.AddListener(Events.InventoryObjectWasClicked,
+				OnInventoryObjectWasClicked);
+			Messenger<EInventoryItemId>.AddListener(Events.InventoryItemWasSuccessfullyUsed,
+				OnInventoryItemSuccessfullyUsed);
 
-        private void HideInstance(EInventoryItemId id)
-        {
-            StopInstanceAnimation(id);
-            _itemsData[id].Content.SetActive(false);
-        }
+			Transform itemsContainerTransform = transform.Find(ItemsContainerName);
+			foreach (var pair in _itemsData)
+			{
+				string itemName = GameUtils.GetNameByPath(GameConstants.inventoryObjectPaths[pair.Key]);
+				GameObject go = itemsContainerTransform.Find(itemName).gameObject;
+				pair.Value.Container = go;
+				pair.Value.Content = go.transform.GetChild(0).gameObject;
+				pair.Value.AnimatorComponent = go.GetComponent<Animator>();
+				HideInstance(pair.Key);
+			}
+		}
 
-        private void StopInstanceAnimation(EInventoryItemId id)
-        {
-            _itemsData[id].AnimatorComponent.Play(ItemRotationStateNameHash, -1, 0f);
-            _itemsData[id].AnimatorComponent.speed = 0f;
-        }
+		private void OnInventoryObjectWasClicked(EInventoryItemId id)
+		{
+			if (IsInventoryModeOn) return;
 
-        private void StartInstanceAnimation(EInventoryItemId id)
-        {
-            _itemsData[id].AnimatorComponent.speed = 1f;
-        }
+			_itemsData[id].IsInStock = true;
+			Messenger.Broadcast(Events.InventoryWasUpdated);
+		}
 
-        private void HideAllInstances()
-        {
-            _itemsData.Keys.ToList().ForEach(HideInstance);
-        }
+		private void ShowInstance(EInventoryItemId id)
+		{
+			_itemsData[id].Content.SetActive(true);
+		}
 
-        public void ActivateInventoryMode(Texture2D backgroundTexture)
-        {
-            if (CanActivateInventoryMode)
-            {
-                IsInventoryModeOn = true;
-                _backgroundTexture = backgroundTexture;
-                _backgroundImageComponent.sprite = Sprite.Create(backgroundTexture,
-                    new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
+		private void HideInstance(EInventoryItemId id)
+		{
+			StopInstanceAnimation(id);
+			_itemsData[id].Content.SetActive(false);
+		}
 
-                _inventoryCamera.IsInventoryModeOn = true;
-                _inventoryCamera.DrawInventory = DrawInventory;
+		private void StopInstanceAnimation(EInventoryItemId id)
+		{
+			_itemsData[id].AnimatorComponent.Play(ItemRotationStateNameHash, -1, 0f);
+			_itemsData[id].AnimatorComponent.speed = 0f;
+		}
 
-                HideAllInstances();
+		private void StartInstanceAnimation(EInventoryItemId id)
+		{
+			_itemsData[id].AnimatorComponent.speed = 1f;
+		}
 
-                CurrentItemId = ArrayOfAvailableItemsIds.First();
-                ShowInstance(CurrentItemId);
-                StartInstanceAnimation(CurrentItemId);
+		private void HideAllInstances()
+		{
+			_itemsData.Keys.ToList().ForEach(HideInstance);
+		}
 
-                _inventoryCamera.gameObject.SetActive(true);
-                _inventoryCameraAudioListener.enabled = true;
-            }
-            else
-            {
-                throw new Exception("cannot activate inventory mode: there is no items in inventory");
-            }
-        }
+		public void ActivateInventoryMode(Texture2D backgroundTexture)
+		{
+			if (CanActivateInventoryMode)
+			{
+				IsInventoryModeOn = true;
+				_backgroundTexture = backgroundTexture;
+				_backgroundImageComponent.sprite = Sprite.Create(backgroundTexture,
+					new Rect(0, 0, Screen.width, Screen.height), new Vector2(0, 0));
 
-        public void DeactivateInventoryMode()
-        {
-            IsInventoryModeOn = false;
-            _inventoryCamera.IsInventoryModeOn = false;
-            _inventoryCamera.gameObject.SetActive(false);
-            Messenger.Broadcast(Events.InventoryModeDeactivated);
-        }
+				_inventoryCamera.IsInventoryModeOn = true;
+				_inventoryCamera.DrawInventory = DrawInventory;
 
-        private void SwitchCurrentItemIdToNext()
-        {
-            var arrayOfAvailableItemsIdsCopy = ArrayOfAvailableItemsIds;
-            int indexOfCurrentItemId = Array.IndexOf(arrayOfAvailableItemsIdsCopy, CurrentItemId);
+				HideAllInstances();
 
-            CurrentItemId =
-                arrayOfAvailableItemsIdsCopy[(indexOfCurrentItemId + 1) % arrayOfAvailableItemsIdsCopy.Length];
-        }
+				CurrentItemId = ArrayOfAvailableItemsIds.First();
+				ShowInstance(CurrentItemId);
+				StartInstanceAnimation(CurrentItemId);
 
-        private IEnumerator SwitchToNextItem()
-        {
-            _isTransition = true;
+				_inventoryCamera.gameObject.SetActive(true);
+				_inventoryCameraAudioListener.enabled = true;
+			}
+			else
+			{
+				throw new Exception("cannot activate inventory mode: there is no items in inventory");
+			}
+		}
 
-            _backgroundImageComponent.enabled = false;
-            _inventoryCameraCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
-            _inventoryCameraCameraComponent.Render();
-            _inventoryCameraTexture = _inventoryCameraCameraComponent.targetTexture;
-            _inventoryCameraCameraComponent.targetTexture = null;
-            HideAllInstances();
+		public void DeactivateInventoryMode()
+		{
+			IsInventoryModeOn = false;
+			_inventoryCamera.IsInventoryModeOn = false;
+			_inventoryCamera.gameObject.SetActive(false);
+			Messenger.Broadcast(Events.InventoryModeDeactivated);
+		}
 
-            _isTransitionOut = true;
-            yield return StartCoroutine(FadeCurrentItem(true));
+		private void SwitchCurrentItemIdToNext()
+		{
+			var arrayOfAvailableItemsIdsCopy = ArrayOfAvailableItemsIds;
+			int indexOfCurrentItemId = Array.IndexOf(arrayOfAvailableItemsIdsCopy, CurrentItemId);
 
-            SwitchCurrentItemIdToNext();
-            ShowInstance(CurrentItemId);
+			CurrentItemId =
+				arrayOfAvailableItemsIdsCopy[(indexOfCurrentItemId + 1) % arrayOfAvailableItemsIdsCopy.Length];
+		}
 
-            _inventoryCameraCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
-            _inventoryCameraCameraComponent.Render();
-            _inventoryCameraTexture = _inventoryCameraCameraComponent.targetTexture;
-            _inventoryCameraCameraComponent.targetTexture = null;
+		private IEnumerator SwitchToNextItem()
+		{
+			_isTransition = true;
 
-            _isTransitionOut = false;
-            yield return StartCoroutine(FadeCurrentItem(false));
+			_backgroundImageComponent.enabled = false;
+			_inventoryCameraCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
+			_inventoryCameraCameraComponent.Render();
+			_inventoryCameraTexture = _inventoryCameraCameraComponent.targetTexture;
+			_inventoryCameraCameraComponent.targetTexture = null;
+			HideAllInstances();
 
-            _isTransition = false;
-            _inventoryCameraCameraComponent.targetTexture = null;
-            _backgroundImageComponent.enabled = true;
-            StartInstanceAnimation(CurrentItemId);
-        }
+			_isTransitionOut = true;
+			//yield return StartCoroutine(FadeCurrentItem(true));
 
-        public void OnInventorySwitchToNextItem()
-        {
-            if (!IsInventoryModeOn || _isTransition || ArrayOfAvailableItemsIds.Length <= 1) return;
+			SwitchCurrentItemIdToNext();
+			ShowInstance(CurrentItemId);
 
-            StartCoroutine(SwitchToNextItem());
-        }
+			_inventoryCameraCameraComponent.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
+			_inventoryCameraCameraComponent.Render();
+			_inventoryCameraTexture = _inventoryCameraCameraComponent.targetTexture;
+			_inventoryCameraCameraComponent.targetTexture = null;
 
-        private IEnumerator FadeCurrentItem(bool isOut)
-        {
-            for (_currentTransitionOpacity = isOut ? 1f : 0f;
-                _currentTransitionOpacity >= 0 && _currentTransitionOpacity <= 1f;
-                _currentTransitionOpacity += (isOut ? -1 : 1) * TransitionStep)
-                yield return new WaitForFixedUpdate();
-            yield return null;
-        }
+			_isTransitionOut = false;
+			//yield return StartCoroutine(FadeCurrentItem(false));
 
-        public void DrawInventory()
-        {
-            if (!_isTransition) return;
+			_isTransition = false;
+			_inventoryCameraCameraComponent.targetTexture = null;
+			_backgroundImageComponent.enabled = true;
+			StartInstanceAnimation(CurrentItemId);
 
-            GL.PushMatrix();
-            GL.LoadPixelMatrix();
+			yield return null;
+		}
 
-            Graphics.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), _backgroundTexture, new Rect(0, 1, 1, -1),
-                0,
-                0, 0, 0, new Color(.5f, .5f, .5f, 1f));
+		public void SwitchInventoryToNextItem()
+		{
+			if (!IsInventoryModeOn || _isTransition || ArrayOfAvailableItemsIds.Length <= 1) return;
 
-            Graphics.DrawTexture(new Rect(
-                    (1 - _currentTransitionOpacity) * TransitionXOffset * (_isTransitionOut ? 1 : -1),
-                    0, Screen.width, Screen.height), _inventoryCameraTexture, new Rect(0, 1, 1, -1), 0, 0, 0, 0,
-                new Color(.5f, .5f, .5f, _currentTransitionOpacity));
+			StartCoroutine(SwitchToNextItem());
+		}
 
-            GL.PopMatrix();
-        }
+		private IEnumerator FadeCurrentItem(bool isOut)
+		{
+			for (_currentTransitionOpacity = isOut ? 1f : 0f;
+				_currentTransitionOpacity >= 0 && _currentTransitionOpacity <= 1f;
+				_currentTransitionOpacity += (isOut ? -1 : 1) * TransitionStep)
+				yield return new WaitForFixedUpdate();
+			yield return null;
+		}
 
-        private void OnInventoryItemSuccessfullyUsed(EInventoryItemId id)
-        {
-            if (_itemsData[id].IsDisposable) _itemsData[id].IsInStock = false;
-        }
+		public void DrawInventory()
+		{
+			if (!_isTransition) return;
 
-        private void OnDestroy()
-        {
-            StopAllCoroutines();
-            Messenger<EInventoryItemId>.RemoveListener(Events.InventoryObjectWasClicked,
-                OnInventoryObjectWasClicked);
-            Messenger<EInventoryItemId>.RemoveListener(Events.InventoryItemWasSuccessfullyUsed,
-                OnInventoryItemSuccessfullyUsed);
-        }
-    }
+			GL.PushMatrix();
+			GL.LoadPixelMatrix();
+
+			Graphics.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), _backgroundTexture, new Rect(0, 1, 1, -1),
+				0,
+				0, 0, 0, new Color(.5f, .5f, .5f, 1f));
+
+			Graphics.DrawTexture(new Rect(
+					(1 - _currentTransitionOpacity) * TransitionXOffset * (_isTransitionOut ? 1 : -1),
+					0, Screen.width, Screen.height), _inventoryCameraTexture, new Rect(0, 1, 1, -1), 0, 0, 0, 0,
+				new Color(.5f, .5f, .5f, _currentTransitionOpacity));
+
+			GL.PopMatrix();
+		}
+
+		private void OnInventoryItemSuccessfullyUsed(EInventoryItemId id)
+		{
+			if (_itemsData[id].IsDisposable) _itemsData[id].IsInStock = false;
+		}
+
+		private void OnDestroy()
+		{
+			StopAllCoroutines();
+			Messenger<EInventoryItemId>.RemoveListener(Events.InventoryObjectWasClicked,
+				OnInventoryObjectWasClicked);
+			Messenger<EInventoryItemId>.RemoveListener(Events.InventoryItemWasSuccessfullyUsed,
+				OnInventoryItemSuccessfullyUsed);
+		}
+
+
+	}
 }

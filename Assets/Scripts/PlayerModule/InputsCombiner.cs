@@ -60,6 +60,7 @@ namespace PlayerModule
 		{
 			InventoryInput(value.isPressed);
 		}
+
 #else
 	// old input sys if we do decide to have it (most likely wont)...
 #endif
