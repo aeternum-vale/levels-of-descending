@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using InventoryModule;
-using Lean.Touch;
+﻿using InventoryModule;
 using Plugins;
 using SelectableObjectsModule;
 using UnityEngine;
