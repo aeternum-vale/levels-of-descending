@@ -242,6 +242,8 @@ public class GameController : MonoBehaviour
 		FloorsSelectiveUpdate();
 		yield return new WaitForSeconds(delaySec);
 		ToggleInvisibleObjects();
+		yield return new WaitForSeconds(delaySec);
+		Messenger.Broadcast(Events.AfterFloorWasTouched);
 	}
 
 	private void UpdateSuspenseIntensity()

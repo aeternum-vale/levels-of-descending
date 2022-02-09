@@ -56,6 +56,7 @@ public enum EFloorMarkId
 public static class Events
 {
     public const string FloorWasTouched = "FLOOR_WAS_TOUCHED";
+	public const string AfterFloorWasTouched = "AFTER_FLOOR_WAS_TOUCHED";
     public const string InventoryObjectWasClicked = "INVENTORY_ITEM_WAS_CLICKED";
     public const string InventoryWasUpdated = "INVENTORY_WAS_UPDATED";
     public const string InventoryModeBeforeActivating = "INVENTORY_BUTTON_WAS_PRESSED";
@@ -71,6 +72,8 @@ public static class Events
     public const string MenuBackClicked = "MENU_BACK_CLICKED";
     public const string FullBlackoutReached = "FULL_BLACKOUT_REACHED";
     public const string ExitButtonClicked = "EXIT_BUTTON_CLICKED";
+
+
 }
 
 public static class GameConstants
